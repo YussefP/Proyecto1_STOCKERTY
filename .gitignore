@@ -1,0 +1,25 @@
+# Archivos de compilación de Java
+bin/
+*.class
+*.log
+
+# Carpetas de construcción (Maven o Gradle)
+target/
+build/
+.gradle/
+
+# Configuración de editores (VS Code)
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+.vscode/
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
+
+# Configuración local y credenciales de la Base de Datos
+.env
+config.properties
