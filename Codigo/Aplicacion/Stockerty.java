@@ -11,10 +11,28 @@ import java.sql.ResultSet;
 
 public class Stockerty {
 
+    // OPCIÓN 1 (ACTIVA): Conexión a la base de datos de la nube (aiven.io)
+
+    private static final String HOST_NUBE = "stockerty-yusep-0335.e.aivencloud.com";
+    private static final String PUERTO_NUBE = "13210";
+    private static final String BD_NUBE = "defaultdb";
+
+    private static final String URL = "jdbc:mysql://" + HOST_NUBE + ":" + PUERTO_NUBE + "/" + BD_NUBE + "?useSSL=true";
+    private static final String USUARIO = "usuario_stockerty";
+    private static final String CLAVE = "stockerty5";
+
+    // OPCIÓN 2 (INACTIVA): Conexión local (Importando el script stockerty.sql)
+    
+    // stockerty.sql incluye la creación de la estructura de la base de datos y la creación del usuario, contraseña y privilegios.
+
+    // Para usar la opción 2, descomenta las 3 variables siguientes y comenta las variables de la opción 1.
+    /* 
     private static final String URL = "jdbc:mysql://localhost:3306/stockerty";
-    private static final String USUARIO = "root";
-    private static final String CLAVE = ""; // Buscar forma de no tener que introducir contraseña visible
-    public static void main(String[] args) {
+    private static final String USUARIO = "usuario_stockerty";
+    private static final String CLAVE = "stockerty5";
+    */
+
+    public static void main(String[] args) { 
         
         System.out.println("\n Comienzo");
 
@@ -38,7 +56,7 @@ public class Stockerty {
 
         } catch(SQLException e) {
 
-            System.out.println(" Error de conexión a la base de datos");
+            System.out.println(" Error de conexión a la base de datos: " + e.getMessage());
         }
 
     }
