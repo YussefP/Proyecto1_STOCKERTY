@@ -32,6 +32,27 @@ public class Stockerty {
     private static final String CLAVE = "stockerty5";
     */
 
+    // Comandos ANSI para el diseño de la consola
+
+    public static final String NEGRITA = "\u001B[1m";
+    public static final String NARANJA = "\u001B[1;38;5:208m";
+    public static final String VERDE = "\u001B[32m";
+    public static final String VERDE_NEGRITA = "\u001B[1;32m";
+    public static final String ROJO = "\u001B[31m";
+    public static final String ROJO_NEGRITA = "\u001B[1;31m";
+    public static final String GRIS_OSCURO = "\u001B[90m";
+    public static final String GRIS_NEGRITA = "\u001B[1;90m";
+    public static final String RESET = "\u001B[0m";
+
+    // Variable para diferenciar privilegios
+
+    public static boolean esGestor = false;
+
+    // Métodos
+
+    /**
+     * Método para conectar con la base de datos
+     */
     public static void conectar() {
 
         Scanner sc = new Scanner(System.in);
@@ -43,7 +64,7 @@ public class Stockerty {
 
             do {
 
-                System.out.print("\n usuario: ");
+                System.out.print(VERDE + "\n usuario: " + RESET);
                 String usuario = sc.nextLine();
 
                 String sql = "SELECT * FROM empleado";
@@ -67,7 +88,7 @@ public class Stockerty {
 
             do {
 
-                System.out.print("\n contraseña: ");
+                System.out.print(VERDE + "\n contraseña: " + RESET);
                 String clave = sc.nextLine();
 
                 String sql = "SELECT * FROM empleado";
@@ -80,6 +101,13 @@ public class Stockerty {
                         if(clave.equals(rs.getString("contrasenya"))) {
 
                             existe = true;
+                            String tipo = rs.getString("tipo");
+
+                            if(tipo.equals("gestor")) {
+                                esGestor = true;
+                            } else {
+                                break;
+                            }
                         } else {
 
                             existe = false;
@@ -88,7 +116,10 @@ public class Stockerty {
                 } 
             } while (!existe);
 
-            System.out.println("\n\tHOLA " + nombre + "\n");
+
+
+            nuevaPantalla();
+            System.out.println(VERDE + "\n\tHOLA " + nombre + "\n" + RESET);
         
         } catch(SQLException e) {
 
@@ -96,22 +127,38 @@ public class Stockerty {
         }
         
     }
+
+    public static void nuevaPantalla() {
+
+        System.out.println("\033[H\033[2J");
+        System.out.flush();
+
+    }
     public static void main(String[] args) { 
         
-        System.out.println("\n\tSTOCKERTY");
+        System.out.println(VERDE_NEGRITA + "\n\n\t\tSTOCKERTY" + RESET);
+        
+        Scanner sc = new Scanner(System.in);
+
+        System.out.println(VERDE + "\n\n Pulsa ENTER para acceder al programa..." + RESET);
+        sc.nextLine();
+
+        nuevaPantalla();
         
         conectar();
+        System.out.println(VERDE + "==============================================");
+        System.out.println("\t\tMENU PRINCIPAL");
+        System.out.println("==============================================");
+        System.out.println("\n\t1-RECEPCIÓN (deshabilitado)");
+        System.out.println("\n\t2-EXPEDICIÓN (deshabilitado)");
+        System.out.println("\n\t3-PEDIDOS (deshabilitado)");
+        System.out.println("\n\t4-ALMACÉN (deshabilitado)");
+        System.out.println("\n\t5-HISTÓRICO (deshabilitado)");
+        System.out.println("\n\t6-ADMINISTRADOR");
+        System.out.println("\n\t7-SALIR");
 
-        System.out.println("\n 1 - Recepción (deshabilitado)");
-        System.out.println("\n 2 - Expedición (deshabilitado)");
-        System.out.println("\n 3 - Pedidos (deshabilitado)");
-        System.out.println("\n 4 - Almacén (deshabilitado)");
-        System.out.println("\n 5 - Histórico (deshabilitado)");
-        System.out.println("\n 6 - Administrador");
-        System.out.println("\n 7 - Salir");
-
-        System.out.print("\n Introduce una opción: ");
-        Scanner sc = new Scanner(System.in);
+        System.out.print("\n Introduce una opción: " + RESET);
+        
         int opcion = sc.nextInt();
 
         switch (opcion) {
@@ -132,8 +179,47 @@ public class Stockerty {
 
             case 6:
 
-                System.out.println("\n\t - Administrador -");
-                break;
+                nuevaPantalla();
+                System.out.println(VERDE + "==============================================");
+                System.out.println("\t\tADMINISTRADOR");
+                System.out.println("==============================================");
+
+                if (esGestor) {
+                    System.out.println("\n\t1-PERFIL (deshabilitado)");
+                    System.out.println("\n\t2-CAMBIAR CONTRASEÑA (deshabilitado)");
+                    System.out.println("\n\t3-GESTIONAR USUARIOS (deshabilitado)");
+                    System.out.println("\n\t4-SALIR (deshabilitado)");
+
+                    System.out.print("\n Introduce una opción: " + RESET);
+                    int admOpcion = sc.nextInt();
+
+                    switch (admOpcion) {
+                    case 1:
+                        break;
+
+                    case 2:
+                        break;
+                
+                    case 3:
+
+                        nuevaPantalla();
+                        System.out.println(VERDE + "==============================================");
+                        System.out.println("\t\tGESTIONAR USUARIOS");
+                        System.out.println("==============================================" + RESET);
+
+                    case 4:
+                        
+                        System.exit(0);
+                        break;
+                    }
+
+                } else {
+                    System.out.println("\n\t1-PERFIL (deshabilitado)");
+                    System.out.println("\n\t2-CAMBIAR CONTRASEÑA (deshabilitado)");
+                    System.out.println("\n\t3-SALIR (deshabilitado)");
+
+                    System.out.print("\n Introduce una opción: " + RESET);
+                }
 
             case 7:
                 
