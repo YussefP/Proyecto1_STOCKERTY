@@ -48,7 +48,13 @@ public class Stockerty {
 
     public static boolean esGestor = false;
 
-    // Métodos
+    // Variable para opcion de menú
+
+    public static int opcion;
+
+    //============================================
+    //                  Métodos
+    //============================================
 
     /**
      * Método para conectar con la base de datos
@@ -61,173 +67,358 @@ public class Stockerty {
 
             boolean existe = false;
             String nombre = "";
+            int idUsuario;
 
             do {
-
                 System.out.print(VERDE + "\n usuario: " + RESET);
                 String usuario = sc.nextLine();
-
+                System.out.println(usuario);
                 String sql = "SELECT * FROM empleado";
-
+                
                 try (PreparedStatement ps = conexion.prepareStatement(sql);
                     ResultSet rs = ps.executeQuery()) {
-
+                        
                     while (rs.next()) {
-
+                        
                         if(Integer.parseInt(usuario) == rs.getInt("id")) {
-
+                            
                             nombre = rs.getString("nombre").toUpperCase();
+                            idUsuario = Integer.parseInt(usuario);
                             existe = true;
-                        } else {
+                            
+                            do {
+                                System.out.print(VERDE + "\n contraseña: " + RESET);
+                                String clave = sc.nextLine();
 
-                            break;
+                                String sql2 = "SELECT * FROM empleado WHERE id = ?";
+
+                                try (PreparedStatement pst = conexion.prepareStatement(sql2)) {
+
+                                    pst.setInt(1, idUsuario);
+                                    
+                                    ResultSet rst = pst.executeQuery();
+
+                                    while (rst.next()) {
+                                        
+                                        if(clave.equals(rst.getString("contrasenya"))) {
+                                            
+                                            existe = true;
+                                            String tipo = rst.getString("tipo");
+                                            
+                                            if(tipo.equals("gestor")) {
+                                                esGestor = true;
+                                            }
+                                        } else {
+                                            existe = false;
+                                        }   
+                                    }
+                                } 
+                            } while (!existe);
+                        } else {
+                            ;
                         }   
                     }
+                    
                 } 
             } while (!existe);
-
-            do {
-
-                System.out.print(VERDE + "\n contraseña: " + RESET);
-                String clave = sc.nextLine();
-
-                String sql = "SELECT * FROM empleado";
-
-                try (PreparedStatement ps = conexion.prepareStatement(sql);
-                    ResultSet rs = ps.executeQuery()) {
-
-                    while (rs.next()) {
-
-                        if(clave.equals(rs.getString("contrasenya"))) {
-
-                            existe = true;
-                            String tipo = rs.getString("tipo");
-
-                            if(tipo.equals("gestor")) {
-                                esGestor = true;
-                            } else {
-                                break;
-                            }
-                        } else {
-
-                            existe = false;
-                        }   
-                    }
-                } 
-            } while (!existe);
-
-
 
             nuevaPantalla();
-            System.out.println(VERDE + "\n\tHOLA " + nombre + "\n" + RESET);
+            System.out.println(VERDE + "\tHOLA " + nombre + "\n" + RESET);
         
         } catch(SQLException e) {
 
             System.out.println(" Error de conexión a la base de datos: " + e.getMessage());
-        }
-        
+            System.exit(0);
+        } 
     }
 
+    /**
+     * Método para limpiar la pantalla
+     */
     public static void nuevaPantalla() {
 
         System.out.println("\033[H\033[2J");
         System.out.flush();
-
+        System.out.println("\n\n");
     }
+
+    /**
+     * Método para abandonar el programa
+     */
+    public static void salir() {
+
+        nuevaPantalla();
+        System.out.print("\n\n\t¿Salir del programa? s/n: ");
+        Scanner sc = new Scanner(System.in);
+        String salida = sc.nextLine();
+
+        if(salida.toLowerCase().equals("s")) {
+            System.out.println(VERDE + "\n\t¡HASTA PRONTO!\n" + RESET);
+            System.exit(0);
+
+        } else {
+            opcion = 0;
+            nuevaPantalla();
+        }
+    }
+
+    public static void gestionarUsuarios() {
+
+        do {
+            try {
+                nuevaPantalla();
+                System.out.println(VERDE + "==============================================");
+                System.out.println("\t\tGESTIONAR USUARIOS");
+                System.out.println("==============================================");
+                System.out.println("\n\t1-CREAR USUARIO");
+                System.out.println("\n\t2-BORRAR USUARIO");
+                System.out.println("\n\t3-MODIFICAR USUARIO");
+                System.out.println("\n\t4-VER USUARIOS");
+                System.out.println(GRIS_OSCURO + "\n\t5-OTRO (deshabilitado)" + RESET);
+                System.out.println(VERDE + "\n\t6-SALIR");
+
+                System.out.print("\n Introduce una opción: " + RESET);
+                
+                Scanner sc = new Scanner(System.in);
+                opcion = Integer.parseInt(sc.nextLine());
+
+                if(opcion < 1 || opcion > 6) {
+                    nuevaPantalla();
+                    System.out.println(ROJO + "\tError, opción no válida\n" + RESET); 
+                }
+            } catch(Exception e) {
+
+                nuevaPantalla();
+                System.out.println(ROJO + "\tError, introduce un número [1-6]\n" + RESET);
+            }
+            switch (opcion) {
+                case 1:
+                    try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE)) {
+
+                        boolean error = false;
+                        do {
+                            try {
+                                System.out.print(VERDE + "\n NUEVO EMPLEADO ");
+                                Scanner sc = new Scanner(System.in);
+
+                                System.out.print("\n Nombre: " + RESET);
+                                String nombreEmpleado = sc.nextLine();
+
+                                System.out.print(VERDE + "\n Apellidos: " + RESET);
+                                String apellidosEmpleado = sc.nextLine();
+
+                                System.out.print(VERDE + "\n NIF/DNI: " + RESET);
+                                String nifEmpleado = sc.nextLine();
+
+                                System.out.print(VERDE + "\n Dirección: " + RESET);
+                                String direccionEmpleado = sc.nextLine();
+
+                                System.out.print(VERDE + "\n Email: " + RESET);
+                                String emailEmpleado = sc.nextLine();
+
+                                System.out.print(VERDE + "\n Teléfono: " + RESET);
+                                String telefonoEmpleado = sc.nextLine();
+
+                                System.out.print(VERDE + "\n Puesto: " + RESET);
+                                String puestoEmpleado = sc.nextLine();
+
+                                System.out.print(VERDE + "\n Departamento: " + RESET);
+                                int departamentoEmpleado = Integer.parseInt(sc.nextLine());
+
+                                System.out.print(VERDE + "\n Privilegios (gestor/operario): " + RESET);
+                                String tipoEmpleado = sc.nextLine();
+
+                                String sql = "INSERT INTO empleado (contrasenya, nif, nombre, apellidos, puesto, direccion, email, telefono, id_departamento, tipo) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+
+                                try (PreparedStatement ps = conexion.prepareStatement(sql)) {
+
+                                    ps.setString(1, apellidosEmpleado.replaceAll("\\s+", ""));
+                                    ps.setString(2, nifEmpleado);
+                                    ps.setString(3, nombreEmpleado);
+                                    ps.setString(4, apellidosEmpleado);
+                                    ps.setString(5, puestoEmpleado);
+                                    ps.setString(6, direccionEmpleado);
+                                    ps.setString(7, emailEmpleado);
+                                    ps.setString(8, telefonoEmpleado);
+                                    ps.setInt(9, departamentoEmpleado);
+                                    ps.setString(10, tipoEmpleado);
+
+                                    int filas = ps.executeUpdate();
+
+                                    int idEmpleado = 0;
+
+                                    sql = "SELECT * FROM empleado";
+
+                                    try (PreparedStatement pst = conexion.prepareStatement(sql);
+                                        ResultSet rs = pst.executeQuery()) {
+
+                                        while (rs.next()) {
+
+                                        idEmpleado = rs.getInt("id");
+                                        }
+                                    }
+
+                                    if(filas > 0) {
+                                        System.out.println(VERDE + "\n\t¡Nuevo empleado creado!" + RESET);
+                                        System.out.println("\n ID   ->  " + idEmpleado);
+                                        System.out.println("\n Clave   ->  " + apellidosEmpleado.replaceAll("\\s+", ""));
+                                        System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
+                                        sc.nextLine();
+
+                                    } else {
+                                        System.out.println(ROJO + "\n\tError al crear el empleado" + RESET);
+                                    }
+                                }
+                                
+                            } catch(Exception e) {
+                                System.out.println(ROJO + "\n\tError en la introducción de datos" + e.getMessage() + RESET);
+                                error = true;
+                            }
+
+                        } while(error);
+                    
+                    } catch(SQLException e) {
+
+                        System.out.println(" Error de conexión a la base de datos: " + e.getMessage());
+                    }
+
+                case 2:
+                    break;
+            
+                case 3:
+                    break;
+
+                case 4:
+                    break;
+
+                case 5:
+                    break;
+
+                case 6:
+                   salir();
+
+                default:
+                    break;
+            }
+        } while(opcion < 1 || opcion > 6);
+    }
+
+    //========================================
+    //          PROGRAMA PRINCIPAL
+    //========================================
     public static void main(String[] args) { 
         
-        System.out.println(VERDE_NEGRITA + "\n\n\t\tSTOCKERTY" + RESET);
-        
-        Scanner sc = new Scanner(System.in);
-
+        nuevaPantalla();
+        System.out.println(VERDE_NEGRITA + "\t\tSTOCKERTY" + RESET);
         System.out.println(VERDE + "\n\n Pulsa ENTER para acceder al programa..." + RESET);
+
+        Scanner sc = new Scanner(System.in);
         sc.nextLine();
 
         nuevaPantalla();
-        
         conectar();
-        System.out.println(VERDE + "==============================================");
-        System.out.println("\t\tMENU PRINCIPAL");
-        System.out.println("==============================================");
-        System.out.println("\n\t1-RECEPCIÓN (deshabilitado)");
-        System.out.println("\n\t2-EXPEDICIÓN (deshabilitado)");
-        System.out.println("\n\t3-PEDIDOS (deshabilitado)");
-        System.out.println("\n\t4-ALMACÉN (deshabilitado)");
-        System.out.println("\n\t5-HISTÓRICO (deshabilitado)");
-        System.out.println("\n\t6-ADMINISTRADOR");
-        System.out.println("\n\t7-SALIR");
 
-        System.out.print("\n Introduce una opción: " + RESET);
-        
-        int opcion = sc.nextInt();
+        do {
+            try {
+                System.out.println(VERDE + "==============================================");
+                System.out.println("\t\tMENU PRINCIPAL");
+                System.out.println("==============================================");
+                System.out.println(GRIS_OSCURO + "\n\t1-RECEPCIÓN (deshabilitado)");
+                System.out.println("\n\t2-EXPEDICIÓN (deshabilitado)");
+                System.out.println("\n\t3-PEDIDOS (deshabilitado)");
+                System.out.println("\n\t4-ALMACÉN (deshabilitado)");
+                System.out.println("\n\t5-HISTÓRICO (deshabilitado)" + RESET);
+                System.out.println(VERDE + "\n\t6-ADMINISTRADOR");
+                System.out.println("\n\t7-SALIR");
 
-        switch (opcion) {
-            case 1:
-                break;
+                System.out.print("\n Introduce una opción: " + RESET);
+                
+                opcion = Integer.parseInt(sc.nextLine());
 
-            case 2:
-                break;
-        
-            case 3:
-                break;
-
-            case 4:
-                break;
-
-            case 5:
-                break;
-
-            case 6:
+                if(opcion < 1 || opcion > 7) {
+                    nuevaPantalla();
+                    System.out.println(ROJO + "\tError, opción no válida\n" + RESET); 
+                }
+            } catch(Exception e) {
 
                 nuevaPantalla();
-                System.out.println(VERDE + "==============================================");
-                System.out.println("\t\tADMINISTRADOR");
-                System.out.println("==============================================");
+                System.out.println(ROJO + "\tError, introduce un número [1-7]\n" + RESET);
+            }
+            switch (opcion) {
+                case 1:
+                    break;
 
-                if (esGestor) {
-                    System.out.println("\n\t1-PERFIL (deshabilitado)");
-                    System.out.println("\n\t2-CAMBIAR CONTRASEÑA (deshabilitado)");
-                    System.out.println("\n\t3-GESTIONAR USUARIOS (deshabilitado)");
-                    System.out.println("\n\t4-SALIR (deshabilitado)");
+                case 2:
+                    break;
+            
+                case 3:
+                    break;
 
-                    System.out.print("\n Introduce una opción: " + RESET);
-                    int admOpcion = sc.nextInt();
+                case 4:
+                    break;
 
-                    switch (admOpcion) {
-                    case 1:
-                        break;
+                case 5:
+                    break;
 
-                    case 2:
-                        break;
-                
-                    case 3:
+                case 6:
 
+                    do {
                         nuevaPantalla();
                         System.out.println(VERDE + "==============================================");
-                        System.out.println("\t\tGESTIONAR USUARIOS");
-                        System.out.println("==============================================" + RESET);
+                        System.out.println("\t\tADMINISTRADOR");
+                        System.out.println("==============================================");
 
-                    case 4:
-                        
-                        System.exit(0);
-                        break;
-                    }
+                        if (esGestor) {
+                            try {
+                                System.out.println(GRIS_OSCURO + "\n\t1-PERFIL (deshabilitado)");
+                                System.out.println("\n\t2-CAMBIAR CONTRASEÑA (deshabilitado)" + RESET);
+                                System.out.println(VERDE + "\n\t3-GESTIONAR USUARIOS");
+                                System.out.println("\n\t4-SALIR ");
 
-                } else {
-                    System.out.println("\n\t1-PERFIL (deshabilitado)");
-                    System.out.println("\n\t2-CAMBIAR CONTRASEÑA (deshabilitado)");
-                    System.out.println("\n\t3-SALIR (deshabilitado)");
+                                System.out.print("\n Introduce una opción: " + RESET);
 
-                    System.out.print("\n Introduce una opción: " + RESET);
-                }
+                                opcion = Integer.parseInt(sc.nextLine());
 
-            case 7:
-                
-            System.exit(0);
+                                if(opcion < 1 || opcion > 4) {
+                                    nuevaPantalla();
+                                    System.out.println(ROJO + "\n\tError, introduce una opción válida" + RESET);
+                                }
+                            } catch(Exception e) {
+                                nuevaPantalla();
+                                System.out.println(ROJO + "\n\tError, introduce un número [1-4]" + RESET);
+                            }
+                            switch (opcion) {
+                                case 1:
+                                    break;
 
-            default:
-                break;
-        }
+                                case 2:
+                                    break;
+                            
+                                case 3:
+                                    gestionarUsuarios();
+                                    break;
+
+                                case 4: 
+                                    salir();
+
+                                default:
+                                    break;
+                            }  
+                        } else {
+                            System.out.println("\n\t1-PERFIL (deshabilitado)");
+                            System.out.println("\n\t2-CAMBIAR CONTRASEÑA (deshabilitado)");
+                            System.out.println("\n\t3-SALIR (deshabilitado)");
+
+                            System.out.print("\n Introduce una opción: " + RESET);
+                        }
+                    } while(opcion > 0 || opcion < 5);
+                case 7:
+                    salir();
+
+                default:
+                    break;
+            }
+        } while(opcion < 1 || opcion > 7);
 
         sc.close();
     }
