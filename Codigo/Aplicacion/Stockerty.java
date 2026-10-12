@@ -974,7 +974,7 @@ public class Stockerty {
                 System.out.println(GRIS_OSCURO + "\n\t1-RECEPCIÓN (deshabilitado)");
                 System.out.println("\n\t2-EXPEDICIÓN (deshabilitado)");
                 System.out.println("\n\t3-PEDIDOS (deshabilitado)");
-                System.out.println(VERDE + "\n\t4-ALMACÉN (deshabilitado)");
+                System.out.println(VERDE + "\n\t4-ALMACÉN");
                 System.out.println("\n\t5-PRODUCTOS");
                 System.out.println(GRIS_OSCURO + "\n\t6-HISTÓRICO (deshabilitado)");
                 System.out.println(VERDE + "\n\t7-ADMINISTRADOR");
