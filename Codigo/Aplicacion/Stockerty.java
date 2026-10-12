@@ -3,6 +3,7 @@ Proyecto Intermodular 1 - Stockerty
 v.1.0
 Aplicación para la gestión logística
  */
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -76,7 +77,7 @@ public class Stockerty {
                 System.out.print(VERDE + "\n usuario: " + RESET);
                 String usuario = sc.nextLine();
 
-                String sql = "SELECT * FROM empleado";
+                String sql = "SELECT id, nombre FROM empleado";
                 
                 try (PreparedStatement ps = conexion.prepareStatement(sql);
                     ResultSet rs = ps.executeQuery()) {
@@ -93,7 +94,7 @@ public class Stockerty {
                                 System.out.print(VERDE + "\n contraseña: " + RESET);
                                 String clave = sc.nextLine();
 
-                                String sql2 = "SELECT * FROM empleado WHERE id = ?";
+                                String sql2 = "SELECT contrasenya, tipo FROM empleado WHERE id = ?";
 
                                 try (PreparedStatement pst = conexion.prepareStatement(sql2)) {
 
@@ -180,32 +181,42 @@ public class Stockerty {
 
             String[] columnas = {"id", "contrasenya", "nif", "nombre", "apellidos", "puesto", "direccion", "email", "telefono", "id_departamento", "tipo"};
             
-            System.out.println("\n");
+            System.out.println(VERDE + "\n-----------------------------------------------------------------------" + RESET);
 
-            for (String columna : columnas) {
+            ResultSet rs = ps.executeQuery();
 
-                ResultSet rs = ps.executeQuery();
-            
-                System.out.print(VERDE + " " + columna.toUpperCase() + "\t" + RESET);
+            if(!rs.next()) {
+                System.out.println(ROJO + "\n\tNo se ha encontrado un usuario con este ID\n" + RESET);
+                error = true;
+            } else {
+                for (String columna : columnas) {
 
-                while(rs.next()) {
-                    for (String column : columnas) {
+                    rs = ps.executeQuery();
 
-                        if(columna.equals(column)) {
+                    while(rs.next()) {
+                        System.out.print(VERDE + " " + columna.toUpperCase() + "\t" + RESET);
 
-                            if(columna.length() < 8) {
-                                System.out.println(VERDE + "\t\t->\t" + RESET + rs.getString(column));
-                            } else if(columna.length() == 8 || columna.length() < 15) {
-                                System.out.println(VERDE + "\t->\t" + RESET + rs.getString(column));
+                        for (String column : columnas) {
+
+                            if(columna.equals(column)) {
+
+                                if(columna.length() < 8) {
+                                    System.out.println(VERDE + "\t\t->\t" + RESET + rs.getString(column));
+                                } else if(columna.length() == 8 || columna.length() < 15) {
+                                    System.out.println(VERDE + "\t->\t" + RESET + rs.getString(column));
+                                } else {
+                                    System.out.println(VERDE + "->\t" + RESET + rs.getString(column));
+                                }
                             } else {
-                                System.out.println(VERDE + "->\t" + RESET + rs.getString(column));
+                                ;
                             }
-                        } else {
-                            ;
                         }
-                    }
+                    }  
                 }
             }
+            
+            System.out.println(VERDE + "-----------------------------------------------------------------------" + RESET);
+
         } catch(SQLException e) {
             System.out.println(ROJO + "\n\tError en la conexión de la base de datos: " + e.getMessage() + RESET);
         }
@@ -269,10 +280,13 @@ public class Stockerty {
 
                         int idEmpleado = 0;
 
-                        sql = "SELECT * FROM empleado";
+                        sql = "SELECT id FROM empleado WHERE nif = ?";
 
-                        try (PreparedStatement pst = conexion.prepareStatement(sql);
-                            ResultSet rs = pst.executeQuery()) {
+                        try (PreparedStatement pst = conexion.prepareStatement(sql)) {
+
+                            pst.setString(1, nifEmpleado);
+
+                            ResultSet rs = pst.executeQuery();
 
                             while (rs.next()) {
 
@@ -280,10 +294,12 @@ public class Stockerty {
                             }
                         }
                         if(filas > 0) {
-                            System.out.println(VERDE + "\n\t¡Nuevo empleado creado!" + RESET);
-                            System.out.println("\n ID   ->  " + idEmpleado);
-                            System.out.println("\n Clave   ->  " + apellidosEmpleado.replaceAll("\\s+", ""));
-                            System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
+                            System.out.println(VERDE + "\n\t¡Nuevo empleado creado!");
+                            System.out.println("\n---------------------------------------------------");
+                            System.out.println(" ID   ->  " + RESET + idEmpleado);
+                            System.out.println(VERDE + " Clave   ->  " + RESET + apellidosEmpleado.replaceAll("\\s+", ""));
+                            System.out.println(VERDE + "---------------------------------------------------");
+                            System.out.println("\n Pulsa ENTER para continuar..." + RESET);
                             sc.nextLine();
 
                         } else {
@@ -308,21 +324,37 @@ public class Stockerty {
      */
     public static void borrarUsuario(int id) {
 
-        String sql = "DELETE FROM empleado WHERE id = " + id;
-        
-        try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
-            PreparedStatement ps = conexion.prepareStatement(sql)) {
+        mostrarUsuario(id);
 
-            int filas = ps.executeUpdate();
+        if(error) {
+            ;
+        } else {
+            System.out.print(VERDE + "\n ¿Estas seguro de eliminar al usuario " + id + "? s/n: " + RESET);
+            Scanner sc = new Scanner(System.in);
+            String validar = sc.nextLine();
 
-            if (filas > 0) {
-                System.out.println(VERDE + "\n ¡Usuario eliminado con éxito!" + RESET);
+            if(validar.toLowerCase().equals("s")) {
+
+                String sql = "DELETE FROM empleado WHERE id = " + id;
+            
+                try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+                    PreparedStatement ps = conexion.prepareStatement(sql)) {
+
+                    int filas = ps.executeUpdate();
+
+                    if (filas > 0) {
+                        System.out.println(VERDE + "\n ¡Usuario eliminado con éxito!" + RESET);
+                    } else {
+                        System.out.println(ROJO + "\n El id no pertenece a ningún usuario" + RESET);
+                    }
+                } catch(SQLException e) {
+                    System.out.println(ROJO + "\n\tError de conexión con la base de datos: " + e.getMessage() + RESET);
+                }
             } else {
-                System.out.println(ROJO + "\n El id no pertenece a ningún usuario" + RESET);
+                opcion = 0;
             }
-        } catch(SQLException e) {
-            System.out.println(ROJO + "\n\tError de conexión con la base de datos: " + e.getMessage() + RESET);
         }
+        error = false;
     }
 
     /**
@@ -333,84 +365,89 @@ public class Stockerty {
 
         mostrarUsuario(id);
 
-        do {
-            try {
-                System.out.print(VERDE + "\n ¿Qué dato quieres modificar?: " + RESET);
-                Scanner sc = new Scanner(System.in);
-                String dato = sc.nextLine().toLowerCase();
-                
-                String[] columnas = {"id", "contrasenya", "nif", "nombre", "apellidos", "puesto", "direccion", "email", "telefono", "id_departamento", "tipo"};
-                
-                for(String column : columnas) {
+        if(error) {
+            ;
+        } else {
+            do {
+                try {
+                    System.out.print(VERDE + "\n ¿Qué dato quieres modificar?: " + RESET);
+                    Scanner sc = new Scanner(System.in);
+                    String dato = sc.nextLine().toLowerCase();
+                    
+                    String[] columnas = {"id", "contrasenya", "nif", "nombre", "apellidos", "puesto", "direccion", "email", "telefono", "id_departamento", "tipo"};
+                    
+                    for(String column : columnas) {
 
-                    if(dato.equals(column)) {
+                        if(dato.equals(column)) {
 
-                        if(dato.equals("id")) {
+                            if(dato.equals("id")) {
 
-                            System.out.println(ROJO + "\n\tNo se puede modificar el ID del usuario" + RESET);
-                            error = true;
-
-                        } else if(dato.equals("id_departamento")) {
-
-                            System.out.print(VERDE + "\n Nuevo " + dato + ": " + RESET);
-                            int valor = Integer.parseInt(sc.nextLine());
-
-                            String sql = "UPDATE empleado SET " + dato + " = " + valor + " WHERE id = " + id;
-
-                            try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
-                                PreparedStatement ps = conexion.prepareStatement(sql)) {
-
-                                int filas = ps.executeUpdate();
-
-                                if (filas > 0) {
-                                    System.out.println(VERDE + "\n ¡Dato modificado con éxito!" + RESET);
-                                    error = false;
-                                } else {
-                                    System.out.println(ROJO + "\n Error al modificar el dato" + RESET);
-                                    error = true;
-                                }
-                            } catch(SQLException e) {
-                                System.out.println(ROJO + "\n\tError de conexión con la base de datos: " + e.getMessage() + RESET);
-                            }
-                        } else {
-                            System.out.print(VERDE + "\n Nuevo " + dato + ": " + RESET);
-                            String info = sc.nextLine();
-
-                            String sql = "UPDATE empleado SET " + dato + " = ? WHERE id = " + id;
-
-                            try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
-                                PreparedStatement ps = conexion.prepareStatement(sql)) {
-
-                                ps.setString(1, info);
-                                int filas = ps.executeUpdate();
-
-                                if (filas > 0) {
-                                    System.out.println(VERDE + "\n ¡Dato modificado con éxito!" + RESET);
-                                    error = false;
-                                } else {
-                                    System.out.println(ROJO + "\n Error al modificar el dato" + RESET);
-                                    error = true;
-                                }
-                            } catch(SQLException e) {
-                                System.out.println(ROJO + "\n\tError de conexión con la base de datos: " + e.getMessage() + RESET);
+                                System.out.println(ROJO + "\n\tNo se puede modificar el ID del usuario" + RESET);
                                 error = true;
-                                break;
+
+                            } else if(dato.equals("id_departamento")) {
+
+                                System.out.print(VERDE + "\n Nuevo " + dato + ": " + RESET);
+                                int valor = Integer.parseInt(sc.nextLine());
+
+                                String sql = "UPDATE empleado SET " + dato + " = " + valor + " WHERE id = " + id;
+
+                                try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+                                    PreparedStatement ps = conexion.prepareStatement(sql)) {
+
+                                    int filas = ps.executeUpdate();
+
+                                    if (filas > 0) {
+                                        System.out.println(VERDE + "\n ¡Dato modificado con éxito!" + RESET);
+                                        error = false;
+                                    } else {
+                                        System.out.println(ROJO + "\n Error al modificar el dato" + RESET);
+                                        error = true;
+                                    }
+                                } catch(SQLException e) {
+                                    System.out.println(ROJO + "\n\tError de conexión con la base de datos: " + e.getMessage() + RESET);
+                                }
+                            } else {
+                                System.out.print(VERDE + "\n Nuevo " + dato + ": " + RESET);
+                                String info = sc.nextLine();
+
+                                String sql = "UPDATE empleado SET " + dato + " = ? WHERE id = " + id;
+
+                                try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+                                    PreparedStatement ps = conexion.prepareStatement(sql)) {
+
+                                    ps.setString(1, info);
+                                    int filas = ps.executeUpdate();
+
+                                    if (filas > 0) {
+                                        System.out.println(VERDE + "\n ¡Dato modificado con éxito!" + RESET);
+                                        error = false;
+                                    } else {
+                                        System.out.println(ROJO + "\n Error al modificar el dato" + RESET);
+                                        error = true;
+                                    }
+                                } catch(SQLException e) {
+                                    System.out.println(ROJO + "\n\tError de conexión con la base de datos: " + e.getMessage() + RESET);
+                                    error = true;
+                                    break;
+                                }
                             }
+                            break;
+                        } else {
+                            ;
                         }
-                        break;
-                    } else {
-                        ;
                     }
-                }
-                if(!Arrays.asList(columnas).contains(dato)) {
-                    System.out.println(ROJO + "\n\tDato no encontrado" + RESET);
+                    if(!Arrays.asList(columnas).contains(dato)) {
+                        System.out.println(ROJO + "\n\tDato no encontrado" + RESET);
+                        error = true;
+                    } 
+                } catch(Exception e) {
+                    System.out.println(ROJO + "\n\tError, introduce una opción válida" + RESET);
                     error = true;
-                } 
-            } catch(Exception e) {
-                System.out.println(ROJO + "\n\tError, introduce una opción válida" + RESET);
-                error = true;
-            }
-        } while(error);
+                }
+            } while(error);
+        }
+        error = false;
     }
 
     /**
@@ -426,7 +463,7 @@ public class Stockerty {
                 System.out.print(VERDE + "\n Contraseña actual: " + RESET);
                 String claveActual = sc.nextLine();
 
-                String sql = "SELECT * FROM empleado WHERE id = ?";
+                String sql = "SELECT contrasenya FROM empleado WHERE id = ?";
 
                 try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
                     PreparedStatement ps = conexion.prepareStatement(sql)) {
@@ -491,7 +528,7 @@ public class Stockerty {
                 System.out.println("\n\t1-CREAR USUARIO");
                 System.out.println("\n\t2-BORRAR USUARIO");
                 System.out.println("\n\t3-MODIFICAR USUARIO");
-                System.out.println("\n\t4-VER USUARIOS");
+                System.out.println("\n\t4-VER USUARIO");
                 System.out.println(GRIS_OSCURO + "\n\t5-OTRO (deshabilitado)" + RESET);
                 System.out.println(VERDE + "\n\t6-SALIR");
                 System.out.println("\n <- Volver [0]");
@@ -504,6 +541,7 @@ public class Stockerty {
 
                 if(opcion < 1 || opcion > 6) {
                     if(opcion == 0) {
+                        nuevaPantalla();
                         break;
                     } else {
                         nuevaPantalla();
@@ -521,20 +559,23 @@ public class Stockerty {
                         case 2:
                             nuevaPantalla();
                             System.out.println(VERDE + "\n\tBORRAR USUARIO");
-                            System.out.print("\n Introduce el ID del usuario que quieres borrar: " + RESET);
 
                             do {
                                 try {
+                                    System.out.print(VERDE + "\n Introduce el ID del usuario que quieres borrar: " + RESET);
                                     int id = Integer.parseInt(sc.nextLine());
 
                                     borrarUsuario(id);
                                     error = false;
 
-                                    System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
-                                    sc.nextLine();
-
+                                    if(opcion == 0) {
+                                        nuevaPantalla();
+                                    } else {
+                                        System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
+                                        sc.nextLine();
+                                    }
                                 } catch (Exception e) {
-                                    System.out.println(ROJO + "\n\tError, introduce una opción válida" + RESET);
+                                    System.out.println(ROJO + "\n\tError, se necesita un ID numérico" + RESET);
                                     error = true;
                                 }
                             } while(error);
@@ -543,10 +584,10 @@ public class Stockerty {
                         case 3:
                             nuevaPantalla();
                             System.out.println(VERDE + "\n\tMODIFICAR USUARIO");
-                            System.out.print("\n Introduce el ID del usuario que quieres modificar: " + RESET);
 
                             do {
                                 try {
+                                    System.out.print(VERDE + "\n Introduce el ID del usuario que quieres modificar: " + RESET);
                                     int id = Integer.parseInt(sc.nextLine());
 
                                     modificarUsuario(id);
@@ -556,7 +597,7 @@ public class Stockerty {
                                     sc.nextLine();
 
                                 } catch (Exception e) {
-                                    System.out.println(ROJO + "\n\tError, introduce una opción válida" + RESET);
+                                    System.out.println(ROJO + "\n\tError, se necesita un ID numérico" + RESET);
                                     error = true;
                                 }
                             } while(error);
@@ -565,10 +606,10 @@ public class Stockerty {
                         case 4:
                             nuevaPantalla();
                             System.out.println(VERDE + "\n\tVER USUARIO");
-                            System.out.print("\n Introduce el ID del usuario que quieres mostrar: " + RESET);
 
                             do {
                                 try {
+                                    System.out.print(VERDE + "\n Introduce el ID del usuario que quieres mostrar: " + RESET);
                                     int id = Integer.parseInt(sc.nextLine());
 
                                     mostrarUsuario(id);
@@ -578,7 +619,7 @@ public class Stockerty {
                                     sc.nextLine();
 
                                 } catch (Exception e) {
-                                    System.out.println(ROJO + "\n\tError, introduce una opción válida" + RESET);
+                                    System.out.println(ROJO + "\n\tError, se necesita un ID numérico" + RESET);
                                     error = true;
                                 }
                             } while(error);
@@ -604,6 +645,299 @@ public class Stockerty {
         } while(opcion > 0 || opcion < 7);
     }
 
+    /**
+     * Método para introducir un nuevo producto en la base de datos
+     */
+    public static void introducirProducto() {
+
+        try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE)) {
+
+            do {
+                try {
+                    System.out.print(VERDE + "\n NUEVO PRODUCTO ");
+                    Scanner sc = new Scanner(System.in);
+
+                    System.out.print("\n EAN: " + RESET);
+                    String eanProducto = sc.nextLine();
+
+                    System.out.print(VERDE + "\n Nombre: " + RESET);
+                    String nombreProducto = sc.nextLine();
+
+                    System.out.print(VERDE + "\n Descripción: " + RESET);
+                    String descripcionProducto = sc.nextLine();
+
+                    System.out.print(VERDE + "\n Precio: " + RESET);
+                    String precio = sc.nextLine();
+                    BigDecimal precioProducto = new BigDecimal(precio);
+
+                    System.out.print(VERDE + "\n Stock: " + RESET);
+                    int stockProducto = Integer.parseInt(sc.nextLine());
+
+                    System.out.print(VERDE + "\n Stock mínimo: " + RESET);
+                    int stockMinimo = Integer.parseInt(sc.nextLine());
+
+                    String sql = "INSERT INTO producto (ean, nombre, descripcion, precio, stock, stock_minimo) VALUES (?, ?, ?, ?, ?, ?);";
+
+                    try (PreparedStatement ps = conexion.prepareStatement(sql)) {
+
+                        ps.setString(1, eanProducto);
+                        ps.setString(2, nombreProducto);
+                        ps.setString(3, descripcionProducto);
+                        ps.setBigDecimal(4, precioProducto);
+                        ps.setInt(5, stockProducto);
+                        ps.setInt(6, stockMinimo);
+
+                        int filas = ps.executeUpdate();
+
+                        int idProducto = 0;
+
+                        sql = "SELECT id FROM producto";
+
+                        try (PreparedStatement pst = conexion.prepareStatement(sql);
+                            ResultSet rs = pst.executeQuery()) {
+
+                            while (rs.next()) {
+
+                            idProducto = rs.getInt("id");
+                            }
+                        }
+                        if(filas > 0) {
+                            System.out.println(VERDE + "\n\t¡Nuevo producto insertado!");
+                            System.out.println("\n---------------------------------------------------");
+                            System.out.println(" ID   ->  " + RESET + idProducto);
+                            System.out.println(VERDE + " Nombre   ->  " + RESET + nombreProducto);
+                            System.out.println(VERDE + " Stock   ->  " + RESET + stockProducto);
+                            System.out.println(VERDE + "---------------------------------------------------" + RESET);
+
+                        } else {
+                            System.out.println(ROJO + "\n\tError al introducir el producto" + RESET);
+                        }
+                    } 
+                } catch(Exception e) {
+                    System.out.println(ROJO + "\n\tError en la introducción de datos" + e.getMessage() + RESET);
+                    error = true;
+                }
+            } while(error);
+        
+        } catch(SQLException e) {
+
+            System.out.println(" Error de conexión a la base de datos: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Método para borrar un producto introduciendo su número ID
+     * @param id
+     */
+    public static void borrarProducto(int id) {
+
+        mostrarProducto(id);
+
+        if(error) {
+            ;
+        } else {
+            System.out.print(VERDE + "\n ¿Estas seguro de eliminar el producto " + id + "? s/n: " + RESET);
+            Scanner sc = new Scanner(System.in);
+            String validar = sc.nextLine();
+
+            if(validar.toLowerCase().equals("s")) {
+
+                String sql = "DELETE FROM producto WHERE id = " + id;
+            
+                try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+                    PreparedStatement ps = conexion.prepareStatement(sql)) {
+
+                    int filas = ps.executeUpdate();
+
+                    if (filas > 0) {
+                        System.out.println(VERDE + "\n ¡Producto eliminado con éxito!" + RESET);
+                    } else {
+                        System.out.println(ROJO + "\n El id no pertenece a ningún producto" + RESET);
+                    }
+                } catch(SQLException e) {
+                    System.out.println(ROJO + "\n\tError de conexión con la base de datos: " + e.getMessage() + RESET);
+                }
+            } else {
+                opcion = 0;
+            }
+        }
+        error = false;
+    }
+
+    /**
+     * Método para mostrar los datos de un producto mediante la introducción de su número ID
+     * @param id
+     */
+    public static void mostrarProducto(int id) {
+
+        String sql = "SELECT * FROM producto WHERE id = " + id;
+
+        try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+            PreparedStatement ps = conexion.prepareStatement(sql)) {
+
+            String[] columnas = {"id", "ean", "nombre", "descripcion", "precio", "stock", "stock_minimo", "id_ubicacion"};
+            
+            System.out.println(VERDE + "\n-----------------------------------------------------------------------" + RESET);
+            
+            ResultSet rs = ps.executeQuery();
+
+            if(!rs.next()){
+                System.out.println(ROJO + "\n\tNo se ha encontrado un producto con este ID\n" + RESET);
+                error = true;
+            } else {
+                for (String columna : columnas) {
+
+                    rs = ps.executeQuery();
+
+                    if(rs.next()) {
+                        System.out.print(VERDE + " " + columna.toUpperCase() + "\t" + RESET);
+
+                        for (String column : columnas) {
+
+                            if(columna.equals(column)) {
+
+                                if(columna.length() < 8) {
+                                    System.out.println(VERDE + "\t\t->\t" + RESET + rs.getString(column));
+                                } else if(columna.length() == 8 || columna.length() < 15) {
+                                    System.out.println(VERDE + "\t->\t" + RESET + rs.getString(column));
+                                } else {
+                                    System.out.println(VERDE + "->\t" + RESET + rs.getString(column));
+                                }
+                            } else {
+                                ;
+                            }
+                        }
+                    } else {
+                        System.out.println(ROJO + "\n\tNo se ha encontrado un producto con este ID" + RESET);
+                        error = true;
+                    }
+                }
+            } 
+            System.out.println(VERDE + "-----------------------------------------------------------------------" + RESET);
+        } catch(SQLException e) {
+            System.out.println(ROJO + "\n\tError en la conexión de la base de datos: " + e.getMessage() + RESET);
+        }
+    }
+
+    /**
+     * Método para modificar uno de los datos del producto introduciendo su número ID
+     * @param id
+     */
+    public static void modificarProducto(int id) {
+
+        mostrarProducto(id);
+
+        if(error) {
+            ;
+        } else {
+            do {
+                try {
+                    System.out.print(VERDE + "\n ¿Qué dato quieres modificar?: " + RESET);
+                    Scanner sc = new Scanner(System.in);
+                    String dato = sc.nextLine().toLowerCase();
+                    
+                    String[] columnas = {"id", "ean", "nombre", "descripcion", "precio", "stock", "stock_minimo", "id_ubicacion"};
+                    
+                    for(String column : columnas) {
+
+                        if(dato.equals(column)) {
+
+                            if(dato.equals("id")) {
+
+                                System.out.println(ROJO + "\n\tNo se puede modificar el ID del producto" + RESET);
+                                error = true;
+
+                            } else if(dato.equals("ean") || dato.equals("stock") || dato.equals("stock_minimo") || dato.equals("id_ubicacion")) {
+
+                                // Si el dato es Stock, enlazar con forzar stock (nueva tabla modificaciones de stock o almacenar idUsuario)
+
+                                System.out.print(VERDE + "\n Nuevo " + dato + ": " + RESET);
+                                int valor = Integer.parseInt(sc.nextLine());
+
+                                String sql = "UPDATE producto SET " + dato + " = " + valor + " WHERE id = " + id;
+
+                                try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+                                    PreparedStatement ps = conexion.prepareStatement(sql)) {
+
+                                    int filas = ps.executeUpdate();
+
+                                    if (filas > 0) {
+                                        System.out.println(VERDE + "\n ¡Dato modificado con éxito!" + RESET);
+                                        error = false;
+                                    } else {
+                                        System.out.println(ROJO + "\n Error al modificar el dato" + RESET);
+                                        error = true;
+                                    }
+                                } catch(SQLException e) {
+                                    System.out.println(ROJO + "\n\tError de conexión con la base de datos: " + e.getMessage() + RESET);
+                                }
+                            } else if(dato.equals("precio")) {
+
+                                System.out.print(VERDE + "\n Nuevo " + dato + ": " + RESET);
+                                String precioNuevo = sc.nextLine();
+                                BigDecimal valor = new BigDecimal(precioNuevo);
+
+                                String sql = "UPDATE producto SET " + dato + " = " + valor + " WHERE id = " + id;
+
+                                try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+                                    PreparedStatement ps = conexion.prepareStatement(sql)) {
+
+                                    int filas = ps.executeUpdate();
+
+                                    if (filas > 0) {
+                                        System.out.println(VERDE + "\n ¡Dato modificado con éxito!" + RESET);
+                                        error = false;
+                                    } else {
+                                        System.out.println(ROJO + "\n Error al modificar el dato" + RESET);
+                                        error = true;
+                                    }
+                                } catch(SQLException e) {
+                                    System.out.println(ROJO + "\n\tError de conexión con la base de datos: " + e.getMessage() + RESET);
+                                }
+
+                            }else {
+                                System.out.print(VERDE + "\n Nuevo " + dato + ": " + RESET);
+                                String info = sc.nextLine();
+
+                                String sql = "UPDATE empleado SET " + dato + " = ? WHERE id = " + id;
+
+                                try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+                                    PreparedStatement ps = conexion.prepareStatement(sql)) {
+
+                                    ps.setString(1, info);
+                                    int filas = ps.executeUpdate();
+
+                                    if (filas > 0) {
+                                        System.out.println(VERDE + "\n ¡Dato modificado con éxito!" + RESET);
+                                        error = false;
+                                    } else {
+                                        System.out.println(ROJO + "\n Error al modificar el dato" + RESET);
+                                        error = true;
+                                    }
+                                } catch(SQLException e) {
+                                    System.out.println(ROJO + "\n\tError de conexión con la base de datos: " + e.getMessage() + RESET);
+                                    error = true;
+                                    break;
+                                }
+                            }
+                            break;
+                        } else {
+                            ;
+                        }
+                    }
+                    if(!Arrays.asList(columnas).contains(dato)) {
+                        System.out.println(ROJO + "\n\tDato no encontrado" + RESET);
+                        error = true;
+                    } 
+                } catch(Exception e) {
+                    System.out.println(ROJO + "\n\tError, introduce una opción válida" + RESET);
+                    error = true;
+                }
+            } while(error);
+        }
+        error = false;
+    }
+
     //========================================
     //          PROGRAMA PRINCIPAL
     //========================================
@@ -621,7 +955,6 @@ public class Stockerty {
 
         do {
             try {
-                nuevaPantalla();
                 System.out.println(VERDE + "==============================================");
                 System.out.println("\t\tMENU PRINCIPAL");
                 System.out.println("==============================================");
@@ -684,6 +1017,7 @@ public class Stockerty {
 
                             if(opcion < 1 || opcion > 5) {
                                 if(opcion == 0) {
+                                    nuevaPantalla();
                                     break;
                                 } else {
                                     nuevaPantalla();
@@ -698,7 +1032,7 @@ public class Stockerty {
                                         
                                         do {
                                             try {
-                                                // introducirProducto()
+                                                introducirProducto();
                                                 error = false;
 
                                                 System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
@@ -712,19 +1046,26 @@ public class Stockerty {
                                         break;
 
                                     case 2:
+                                        
                                         nuevaPantalla();
                                         System.out.println(VERDE + "\n\tELIMINAR PRODUCTO");
-                                        
+
                                         do {
                                             try {
-                                                // eliminarProducto()
+                                                System.out.print(VERDE + "\n Introduce el ID del producto que quieres eliminar: " + RESET);
+                                                int idProducto = Integer.parseInt(sc.nextLine());
+
+                                                borrarProducto(idProducto);
                                                 error = false;
 
-                                                System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
-                                                sc.nextLine();
-
+                                                if(opcion == 0) {
+                                                    nuevaPantalla();
+                                                } else {
+                                                    System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
+                                                    sc.nextLine();
+                                                }
                                             } catch (Exception e) {
-                                                System.out.println(ROJO + "\n\tError, introduce una opción válida" + RESET);
+                                                System.out.println(ROJO + "\n\tError, se necesita un ID numérico" + RESET);
                                                 error = true;
                                             }
                                         } while(error);
@@ -733,17 +1074,20 @@ public class Stockerty {
                                     case 3:
                                         nuevaPantalla();
                                         System.out.println(VERDE + "\n\tMODIFICAR PRODUCTO");
-                                        
+
                                         do {
                                             try {
-                                                // modificarProducto()
+                                                System.out.print(VERDE + "\n Introduce el ID del producto que quieres eliminar: " + RESET);
+                                                int idProducto = Integer.parseInt(sc.nextLine());
+
+                                                modificarProducto(idProducto);
                                                 error = false;
 
                                                 System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
                                                 sc.nextLine();
 
                                             } catch (Exception e) {
-                                                System.out.println(ROJO + "\n\tError, introduce una opción válida" + RESET);
+                                                System.out.println(ROJO + "\n\tError, se necesita un ID numérico" + RESET);
                                                 error = true;
                                             }
                                         } while(error);
@@ -752,17 +1096,20 @@ public class Stockerty {
                                     case 4: 
                                         nuevaPantalla();
                                         System.out.println(VERDE + "\n\tVER PRODUCTO");
-                                        
+
                                         do {
                                             try {
-                                                // verProducto()
+                                                System.out.print(VERDE + "\n Introduce el ID del producto que quieres eliminar: " + RESET);
+                                                int idProducto = Integer.parseInt(sc.nextLine());
+
+                                                mostrarProducto(idProducto);
                                                 error = false;
 
                                                 System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
                                                 sc.nextLine();
 
                                             } catch (Exception e) {
-                                                System.out.println(ROJO + "\n\tError, introduce una opción válida" + RESET);
+                                                System.out.println(ROJO + "\n\tError, se necesita un ID numérico" + RESET);
                                                 error = true;
                                             }
                                         } while(error);
@@ -812,6 +1159,7 @@ public class Stockerty {
 
                             if(opcion < 1 || opcion > 4) {
                                 if(opcion == 0) {
+                                    nuevaPantalla();
                                     break;
                                 } else {
                                     nuevaPantalla();
@@ -830,7 +1178,7 @@ public class Stockerty {
 
                                                 System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
                                                 sc.nextLine();
-
+                                                
                                             } catch (Exception e) {
                                                 System.out.println(ROJO + "\n\tError, introduce una opción válida" + RESET);
                                                 error = true;
