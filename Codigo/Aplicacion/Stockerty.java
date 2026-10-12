@@ -551,14 +551,18 @@ public class Stockerty {
                     switch (opcion) {
                         case 1:
                             nuevaPantalla();
-                            System.out.println(VERDE + "\n\tCREAR USUARIO");
+                            System.out.println(VERDE + "----------------------------------------------");
+                            System.out.println("\t\tCREAR USUARIO");
+                            System.out.println("----------------------------------------------" + RESET);
 
                             crearUsuario();
                             break;
 
                         case 2:
                             nuevaPantalla();
-                            System.out.println(VERDE + "\n\tBORRAR USUARIO");
+                            System.out.println(VERDE + "----------------------------------------------");
+                            System.out.println("\t\tBORRAR USUARIO");
+                            System.out.println("----------------------------------------------" + RESET);
 
                             do {
                                 try {
@@ -583,7 +587,9 @@ public class Stockerty {
                     
                         case 3:
                             nuevaPantalla();
-                            System.out.println(VERDE + "\n\tMODIFICAR USUARIO");
+                            System.out.println(VERDE + "----------------------------------------------");
+                            System.out.println("\t\tMODIFICAR USUARIO");
+                            System.out.println("----------------------------------------------" + RESET);
 
                             do {
                                 try {
@@ -605,7 +611,9 @@ public class Stockerty {
 
                         case 4:
                             nuevaPantalla();
-                            System.out.println(VERDE + "\n\tVER USUARIO");
+                            System.out.println(VERDE + "----------------------------------------------");
+                            System.out.println("\t\tVER USUARIO");
+                            System.out.println("----------------------------------------------" + RESET);
 
                             do {
                                 try {
@@ -938,9 +946,14 @@ public class Stockerty {
         error = false;
     }
 
+
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    
+    
     //========================================
     //          PROGRAMA PRINCIPAL
     //========================================
+
     public static void main(String[] args) { 
         
         nuevaPantalla();
@@ -961,8 +974,8 @@ public class Stockerty {
                 System.out.println(GRIS_OSCURO + "\n\t1-RECEPCIÓN (deshabilitado)");
                 System.out.println("\n\t2-EXPEDICIÓN (deshabilitado)");
                 System.out.println("\n\t3-PEDIDOS (deshabilitado)");
-                System.out.println("\n\t4-ALMACÉN (deshabilitado)");
-                System.out.println(VERDE + "\n\t5-PRODUCTOS");
+                System.out.println(VERDE + "\n\t4-ALMACÉN (deshabilitado)");
+                System.out.println("\n\t5-PRODUCTOS");
                 System.out.println(GRIS_OSCURO + "\n\t6-HISTÓRICO (deshabilitado)");
                 System.out.println(VERDE + "\n\t7-ADMINISTRADOR");
                 System.out.println("\n\t8-SALIR");
@@ -976,264 +989,924 @@ public class Stockerty {
                     nuevaPantalla();
                     System.out.println(ROJO + "\tError, opción no válida\n" + RESET); 
                 }
+                switch (opcion) {
+                    case 1:
+                        opcion = 0;
+                        break;
+
+                    case 2:
+                        opcion = 0;
+                        break;
+                
+                    case 3:
+                        opcion = 0;
+                        break;
+
+                    case 4:
+                        do {
+                            nuevaPantalla();
+                            System.out.println(VERDE + "==============================================");
+                            System.out.println("\t\tALMACÉN");
+                            System.out.println("==============================================");
+
+                            try {
+                                System.out.println(VERDE + "\n\t1-CREAR ESTRUCTURA");
+                                System.out.println("\n\t2-ELIMINAR ALMACÉN");
+                                System.out.println("\n\t3-MODIFICAR ELEMENTOS");
+                                System.out.println("\n\t4-VER ALMACÉN");
+                                System.out.println("\n\t5-SALIR");
+                                System.out.println("\n <- Volver [0]");
+                                System.out.println("==============================================");
+
+                                System.out.print("\n Introduce una opción: " + RESET);
+                                
+                                opcion = Integer.parseInt(sc.nextLine());
+
+                                if(opcion < 1 || opcion > 5) {
+                                    if(opcion == 0) {
+                                        nuevaPantalla();
+                                        break;
+                                    } else {
+                                        nuevaPantalla();
+                                        System.out.println(ROJO + "\n\tError, introduce una opción válida" + RESET);
+                                    }
+                                    
+                                } else {
+                                    switch (opcion) {
+                                        case 1:
+                                            do {
+                                                nuevaPantalla();
+                                                System.out.println(VERDE + "==============================================");
+                                                System.out.println("\t\tCREAR ESTRUCTURA");
+                                                System.out.println("==============================================");
+
+                                                try {
+                                                    System.out.println("\n\t1-CREAR ZONA");
+                                                    System.out.println("\n\t2-CREAR PASILLO");
+                                                    System.out.println("\n\t3-CREAR RACK");
+                                                    System.out.println("\n\t4-CREAR UBICACIÓN");
+                                                    System.out.println("\n\t5-SALIR");
+                                                    System.out.println("\n <- Volver [0]");
+                                                    System.out.println("==============================================");
+
+                                                    System.out.print("\n Introduce una opción: " + RESET);
+                                                    
+                                                    opcion = Integer.parseInt(sc.nextLine());
+
+                                                    if(opcion < 1 || opcion > 5) {
+                                                        if(opcion == 0) {
+                                                            nuevaPantalla();
+                                                            break;
+                                                        } else {
+                                                            nuevaPantalla();
+                                                            System.out.println(ROJO + "\n\tError, introduce una opción válida" + RESET);
+                                                        }
+                                                        
+                                                    } else {
+                                                        switch (opcion) {
+                                                            case 1:
+                                                            
+                                                                nuevaPantalla();
+                                                                System.out.println(VERDE + "----------------------------------------------");
+                                                                System.out.println("\t\tCREAR ZONA");
+                                                                System.out.println("----------------------------------------------" + RESET);
+                                                                
+                                                                do {
+                                                                    try {
+                                                                        // crearZona();
+                                                                        error = false;
+
+                                                                        System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
+                                                                        sc.nextLine();
+
+                                                                    } catch (Exception e) {
+                                                                        System.out.println(ROJO + "\n\tError, introduce una opción válida" + RESET);
+                                                                        error = true;
+                                                                    }
+                                                                } while(error);
+                                                                break;
+
+                                                            case 2:
+                                                                
+                                                                nuevaPantalla();
+                                                                System.out.println(VERDE + "----------------------------------------------");
+                                                                System.out.println("\t\tCREAR PASILLO");
+                                                                System.out.println("----------------------------------------------" + RESET);
+
+                                                                do {
+                                                                    try {
+                                                                        // crearPasillo();
+                                                                        error = false;
+
+                                                                        System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
+                                                                        sc.nextLine();
+
+                                                                    } catch (Exception e) {
+                                                                        System.out.println(ROJO + "\n\tError, introduce una opción válida" + RESET);
+                                                                        error = true;
+                                                                    }
+                                                                } while(error);
+                                                                break;
+                                                        
+                                                            case 3:
+                                                                nuevaPantalla();
+                                                                System.out.println(VERDE + "----------------------------------------------");
+                                                                System.out.println("\t\tCREAR RACK");
+                                                                System.out.println("----------------------------------------------" + RESET);
+
+                                                                do {
+                                                                    try {
+                                                                        // crearRack();
+                                                                        error = false;
+
+                                                                        System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
+                                                                        sc.nextLine();
+
+                                                                    } catch (Exception e) {
+                                                                        System.out.println(ROJO + "\n\tError, introduce una opción válida" + RESET);
+                                                                        error = true;
+                                                                    }
+                                                                } while(error);
+                                                                break;
+
+                                                            case 4: 
+                                                                nuevaPantalla();
+                                                                System.out.println(VERDE + "----------------------------------------------");
+                                                                System.out.println("\t\tCREAR UBICACIÓN");
+                                                                System.out.println("----------------------------------------------" + RESET);
+
+                                                                do {
+                                                                    try {
+                                                                        // crearUbicacion();
+                                                                        error = false;
+
+                                                                        System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
+                                                                        sc.nextLine();
+
+                                                                    } catch (Exception e) {
+                                                                        System.out.println(ROJO + "\n\tError, introduce una opción válida" + RESET);
+                                                                        error = true;
+                                                                    }
+                                                                } while(error);
+                                                                break;
+
+                                                            case 5:
+                                                                salir();
+
+                                                            default:
+                                                                break;
+                                                        }
+                                                    }
+                                                } catch(Exception e) {
+                                                    nuevaPantalla();
+                                                    System.out.println(ROJO + "\n\tError, introduce un número [1-5]" + RESET);
+                                                }
+                                                if(opcion == 0) break;
+                                            } while(opcion > 0 || opcion < 6);
+                                            break;
+
+                                        case 2:
+                                            do {
+                                                nuevaPantalla();
+                                                System.out.println(VERDE + "==============================================");
+                                                System.out.println("\t\tELIMINAR ALMACÉN");
+                                                System.out.println("==============================================");
+
+                                                try {
+                                                    System.out.println(VERDE + "\n\t1-ELIMINAR ALMACÉN COMPLETO");
+                                                    System.out.println("\n\t2-ELIMINAR ZONA");
+                                                    System.out.println("\n\t3-ELIMINAR PASILLO");
+                                                    System.out.println("\n\t4-ELIMINAR RACK");
+                                                    System.out.println("\n\t5-ELIMINAR UBICACIÓN");
+                                                    System.out.println("\n\t6-SALIR");
+                                                    System.out.println("\n <- Volver [0]");
+                                                    System.out.println("==============================================");
+
+                                                    System.out.print("\n Introduce una opción: " + RESET);
+                                                    
+                                                    opcion = Integer.parseInt(sc.nextLine());
+
+                                                    if(opcion < 1 || opcion > 6) {
+                                                        if(opcion == 0) {
+                                                            nuevaPantalla();
+                                                            break;
+                                                        } else {
+                                                            nuevaPantalla();
+                                                            System.out.println(ROJO + "\n\tError, introduce una opción válida" + RESET);
+                                                        }
+                                                        
+                                                    } else {
+                                                        switch (opcion) {
+                                                            case 1:
+                                                                nuevaPantalla();
+                                                                System.out.println(VERDE + "----------------------------------------------");
+                                                                System.out.println("\t\tELIMINAR ALMACÉN COMPLETO");
+                                                                System.out.println("----------------------------------------------" + RESET);
+
+                                                                do {
+                                                                    try {
+                                                                        System.out.print(VERDE + "\n Introduce el ID del almacén que quieres eliminar: " + RESET);
+                                                                        // int idAlmacen = Integer.parseInt(sc.nextLine());
+
+                                                                        // borrarAlmacen(idAlmacen);
+                                                                        error = false;
+
+                                                                        if(opcion == 0) {
+                                                                            nuevaPantalla();
+                                                                        } else {
+                                                                            System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
+                                                                            sc.nextLine();
+                                                                        }
+                                                                    } catch (Exception e) {
+                                                                        System.out.println(ROJO + "\n\tError, se necesita un ID numérico" + RESET);
+                                                                        error = true;
+                                                                    }
+                                                                } while(error);
+                                                                break;
+
+                                                            case 2:
+                                                                nuevaPantalla();
+                                                                System.out.println(VERDE + "----------------------------------------------");
+                                                                System.out.println("\t\tELIMINAR ZONA");
+                                                                System.out.println("----------------------------------------------" + RESET);
+
+                                                                do {
+                                                                    try {
+                                                                        System.out.print(VERDE + "\n Introduce el ID de la zona que quieres eliminar: " + RESET);
+                                                                        // int idZona = Integer.parseInt(sc.nextLine());
+
+                                                                        // borrarZona(idZona);
+                                                                        error = false;
+
+                                                                        if(opcion == 0) {
+                                                                            nuevaPantalla();
+                                                                        } else {
+                                                                            System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
+                                                                            sc.nextLine();
+                                                                        }
+                                                                    } catch (Exception e) {
+                                                                        System.out.println(ROJO + "\n\tError, se necesita un ID numérico" + RESET);
+                                                                        error = true;
+                                                                    }
+                                                                } while(error);
+                                                                break;
+                                                        
+                                                            case 3:
+                                                                nuevaPantalla();
+                                                                System.out.println(VERDE + "----------------------------------------------");
+                                                                System.out.println("\t\tELIMINAR PASILLO");
+                                                                System.out.println("----------------------------------------------" + RESET);
+
+                                                                do {
+                                                                    try {
+                                                                        System.out.print(VERDE + "\n Introduce el ID del pasillo que quieres eliminar: " + RESET);
+                                                                        // int idPasillo = Integer.parseInt(sc.nextLine());
+
+                                                                        // borrarPasillo(idPasillo);
+                                                                        error = false;
+
+                                                                        if(opcion == 0) {
+                                                                            nuevaPantalla();
+                                                                        } else {
+                                                                            System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
+                                                                            sc.nextLine();
+                                                                        }
+                                                                    } catch (Exception e) {
+                                                                        System.out.println(ROJO + "\n\tError, se necesita un ID numérico" + RESET);
+                                                                        error = true;
+                                                                    }
+                                                                } while(error);
+                                                                break;
+
+                                                            case 4: 
+                                                                nuevaPantalla();
+                                                                System.out.println(VERDE + "----------------------------------------------");
+                                                                System.out.println("\t\tELIMINAR RACK");
+                                                                System.out.println("----------------------------------------------" + RESET);
+
+                                                                do {
+                                                                    try {
+                                                                        System.out.print(VERDE + "\n Introduce el ID del rack que quieres eliminar: " + RESET);
+                                                                        // int idRack = Integer.parseInt(sc.nextLine());
+
+                                                                        // borrarRack(idRack);
+                                                                        error = false;
+
+                                                                        if(opcion == 0) {
+                                                                            nuevaPantalla();
+                                                                        } else {
+                                                                            System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
+                                                                            sc.nextLine();
+                                                                        }
+                                                                    } catch (Exception e) {
+                                                                        System.out.println(ROJO + "\n\tError, se necesita un ID numérico" + RESET);
+                                                                        error = true;
+                                                                    }
+                                                                } while(error);
+                                                                break;
+
+                                                            case 5:
+                                                                nuevaPantalla();
+                                                                System.out.println(VERDE + "----------------------------------------------");
+                                                                System.out.println("\t\tELIMINAR UBICACIÓN");
+                                                                System.out.println("----------------------------------------------" + RESET);
+
+                                                                do {
+                                                                    try {
+                                                                        System.out.print(VERDE + "\n Introduce el ID de la ubicación que quieres eliminar: " + RESET);
+                                                                        // int idUbicacion = Integer.parseInt(sc.nextLine());
+
+                                                                        // borrarUbicacion(idUbicacion);
+                                                                        error = false;
+
+                                                                        if(opcion == 0) {
+                                                                            nuevaPantalla();
+                                                                        } else {
+                                                                            System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
+                                                                            sc.nextLine();
+                                                                        }
+                                                                    } catch (Exception e) {
+                                                                        System.out.println(ROJO + "\n\tError, se necesita un ID numérico" + RESET);
+                                                                        error = true;
+                                                                    }
+                                                                } while(error);
+                                                                break;
+
+                                                            case 6:
+                                                                salir();
+
+                                                            default:
+                                                                break;
+                                                        }
+                                                    }
+                                                } catch(Exception e) {
+                                                    nuevaPantalla();
+                                                    System.out.println(ROJO + "\n\tError, introduce un número [1-6]" + RESET);
+                                                }
+                                                if(opcion == 0) break;
+                                            } while(opcion > 0 || opcion < 7);
+                                            break;
+                                    
+                                        case 3:
+                                            do {
+                                                nuevaPantalla();
+                                                System.out.println(VERDE + "==============================================");
+                                                System.out.println("\t\tMODIFICAR ELEMENTOS");
+                                                System.out.println("==============================================");
+
+                                                try {
+                                                    System.out.println(VERDE + "\n\t1-MODIFICAR ZONA");
+                                                    System.out.println("\n\t2-MODIFICAR PASILLO");
+                                                    System.out.println("\n\t3-MODIFICAR RACK");
+                                                    System.out.println("\n\t4-MODIFICAR UBICACIÓN");
+                                                    System.out.println("\n\t5-SALIR");
+                                                    System.out.println("\n <- Volver [0]");
+                                                    System.out.println("==============================================");
+
+                                                    System.out.print("\n Introduce una opción: " + RESET);
+                                                    
+                                                    opcion = Integer.parseInt(sc.nextLine());
+
+                                                    if(opcion < 1 || opcion > 5) {
+                                                        if(opcion == 0) {
+                                                            nuevaPantalla();
+                                                            break;
+                                                        } else {
+                                                            nuevaPantalla();
+                                                            System.out.println(ROJO + "\n\tError, introduce una opción válida" + RESET);
+                                                        }
+                                                        
+                                                    } else {
+                                                        switch (opcion) {
+                                                            case 1:
+                                                                nuevaPantalla();
+                                                                System.out.println(VERDE + "----------------------------------------------");
+                                                                System.out.println("\t\tMODIFICAR ZONA");
+                                                                System.out.println("----------------------------------------------" + RESET);
+
+                                                                do {
+                                                                    try {
+                                                                        System.out.print(VERDE + "\n ID de la zona a modificar: " + RESET);
+                                                                        // int idZona = Integer.parseInt(sc.nextLine());
+
+                                                                        // modificarZona(idZona);
+                                                                        error = false;
+
+                                                                        System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
+                                                                        sc.nextLine();
+
+                                                                    } catch (Exception e) {
+                                                                        System.out.println(ROJO + "\n\tError, se necesita un ID numérico" + RESET);
+                                                                        error = true;
+                                                                    }
+                                                                } while(error);
+                                                                break;
+
+                                                            case 2:
+                                                                
+                                                                nuevaPantalla();
+                                                                System.out.println(VERDE + "----------------------------------------------");
+                                                                System.out.println("\t\tMODIFICAR PASILLO");
+                                                                System.out.println("----------------------------------------------" + RESET);
+
+                                                                do {
+                                                                    try {
+                                                                        System.out.print(VERDE + "\n ID del pasillo a modificar: " + RESET);
+                                                                        // int idPasillo = Integer.parseInt(sc.nextLine());
+
+                                                                        // modificarPasillo(idPasillo);
+                                                                        error = false;
+
+                                                                        System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
+                                                                        sc.nextLine();
+
+                                                                    } catch (Exception e) {
+                                                                        System.out.println(ROJO + "\n\tError, se necesita un ID numérico" + RESET);
+                                                                        error = true;
+                                                                    }
+                                                                } while(error);
+                                                                break;
+                                                        
+                                                            case 3:
+                                                                nuevaPantalla();
+                                                                System.out.println(VERDE + "----------------------------------------------");
+                                                                System.out.println("\t\tMODIFICAR RACK");
+                                                                System.out.println("----------------------------------------------" + RESET);
+
+                                                                do {
+                                                                    try {
+                                                                        System.out.print(VERDE + "\n ID del rack a modificar: " + RESET);
+                                                                        // int idRack = Integer.parseInt(sc.nextLine());
+
+                                                                        // modificarRack(idRack);
+                                                                        error = false;
+
+                                                                        System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
+                                                                        sc.nextLine();
+
+                                                                    } catch (Exception e) {
+                                                                        System.out.println(ROJO + "\n\tError, se necesita un ID numérico" + RESET);
+                                                                        error = true;
+                                                                    }
+                                                                } while(error);
+                                                                break;
+
+                                                            case 4: 
+                                                                nuevaPantalla();
+                                                                System.out.println(VERDE + "----------------------------------------------");
+                                                                System.out.println("\t\tMODIFICAR UBICACIÓN");
+                                                                System.out.println("----------------------------------------------" + RESET);
+
+                                                                do {
+                                                                    try {
+                                                                        System.out.print(VERDE + "\n ID de la ubicación a modificar: " + RESET);
+                                                                        // int idUbicación = Integer.parseInt(sc.nextLine());
+
+                                                                        // modificarUbicacion(idUbicacion);
+                                                                        error = false;
+
+                                                                        System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
+                                                                        sc.nextLine();
+
+                                                                    } catch (Exception e) {
+                                                                        System.out.println(ROJO + "\n\tError, se necesita un ID numérico" + RESET);
+                                                                        error = true;
+                                                                    }
+                                                                } while(error);
+                                                                break;
+
+                                                            case 5:
+                                                                salir();
+
+                                                            default:
+                                                                break;
+                                                        }
+                                                    }
+                                                } catch(Exception e) {
+                                                    nuevaPantalla();
+                                                    System.out.println(ROJO + "\n\tError, introduce un número [1-5]" + RESET);
+                                                }
+                                                if(opcion == 0) break;
+                                            } while(opcion > 0 || opcion < 6);
+                                            break;
+
+                                        case 4: 
+                                            do {
+                                                nuevaPantalla();
+                                                System.out.println(VERDE + "==============================================");
+                                                System.out.println("\t\tVER ALMACÉN");
+                                                System.out.println("==============================================");
+
+                                                try {
+                                                    System.out.println(VERDE + "\n\t1-VER ESTRUCTURA COMPLETA");
+                                                    System.out.println("\n\t2-VER ESTRUCTURA DE ZONA");
+                                                    System.out.println("\n\t3-VER ESTRUCTURA DE PASILLO");
+                                                    System.out.println("\n\t4-VER ESTRUCTURA DE RACK");
+                                                    System.out.println("\n\t5-SALIR");
+                                                    System.out.println("\n <- Volver [0]");
+                                                    System.out.println("==============================================");
+
+                                                    System.out.print("\n Introduce una opción: " + RESET);
+                                                    
+                                                    opcion = Integer.parseInt(sc.nextLine());
+
+                                                    if(opcion < 1 || opcion > 5) {
+                                                        if(opcion == 0) {
+                                                            nuevaPantalla();
+                                                            break;
+                                                        } else {
+                                                            nuevaPantalla();
+                                                            System.out.println(ROJO + "\n\tError, introduce una opción válida" + RESET);
+                                                        }
+                                                        
+                                                    } else {
+                                                        switch (opcion) {
+                                                            case 1:
+                                                                nuevaPantalla();
+                                                                System.out.println(VERDE + "----------------------------------------------");
+                                                                System.out.println("\t\tVER ESTRUCTURA COMPLETA");
+                                                                System.out.println("----------------------------------------------" + RESET);
+
+                                                                do {
+                                                                    try {
+                                                                        System.out.print(VERDE + "\n ID del almacén: " + RESET);
+                                                                        // int idAlmacen = Integer.parseInt(sc.nextLine());
+
+                                                                        // mostrarAlmacen(idAlmacen);
+                                                                        error = false;
+
+                                                                        System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
+                                                                        sc.nextLine();
+
+                                                                    } catch (Exception e) {
+                                                                        System.out.println(ROJO + "\n\tError, se necesita un ID numérico" + RESET);
+                                                                        error = true;
+                                                                    }
+                                                                } while(error);
+                                                                break;
+
+                                                            case 2:
+                                                                
+                                                                nuevaPantalla();
+                                                                System.out.println(VERDE + "----------------------------------------------");
+                                                                System.out.println("\t\tVER ESTRUCTURA DE ZONA");
+                                                                System.out.println("----------------------------------------------" + RESET);
+
+                                                                do {
+                                                                    try {
+                                                                        System.out.print(VERDE + "\n ID de la zona: " + RESET);
+                                                                        // int idZona = Integer.parseInt(sc.nextLine());
+
+                                                                        // mostrarZona(idZona);
+                                                                        error = false;
+
+                                                                        System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
+                                                                        sc.nextLine();
+
+                                                                    } catch (Exception e) {
+                                                                        System.out.println(ROJO + "\n\tError, se necesita un ID numérico" + RESET);
+                                                                        error = true;
+                                                                    }
+                                                                } while(error);
+                                                                break;
+                                                        
+                                                            case 3:
+                                                                nuevaPantalla();
+                                                                System.out.println(VERDE + "----------------------------------------------");
+                                                                System.out.println("\t\tVER ESTRUCTURA DE PASILLO");
+                                                                System.out.println("----------------------------------------------" + RESET);
+
+                                                                do {
+                                                                    try {
+                                                                        System.out.print(VERDE + "\n ID del pasillo: " + RESET);
+                                                                        // int idPasillo = Integer.parseInt(sc.nextLine());
+
+                                                                        // mostrarPasillo(idPasillo);
+                                                                        error = false;
+
+                                                                        System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
+                                                                        sc.nextLine();
+
+                                                                    } catch (Exception e) {
+                                                                        System.out.println(ROJO + "\n\tError, se necesita un ID numérico" + RESET);
+                                                                        error = true;
+                                                                    }
+                                                                } while(error);
+                                                                break;
+
+                                                            case 4: 
+                                                                nuevaPantalla();
+                                                                System.out.println(VERDE + "----------------------------------------------");
+                                                                System.out.println("\t\tVER ESTRUCTURA DE RACK");
+                                                                System.out.println("----------------------------------------------" + RESET);
+
+                                                                do {
+                                                                    try {
+                                                                        System.out.print(VERDE + "\n ID del rack: " + RESET);
+                                                                        // int idRack = Integer.parseInt(sc.nextLine());
+
+                                                                        // mostrarRack(idRack);
+                                                                        error = false;
+
+                                                                        System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
+                                                                        sc.nextLine();
+
+                                                                    } catch (Exception e) {
+                                                                        System.out.println(ROJO + "\n\tError, se necesita un ID numérico" + RESET);
+                                                                        error = true;
+                                                                    }
+                                                                } while(error);
+                                                                break;
+
+                                                            case 5:
+                                                                salir();
+
+                                                            default:
+                                                                break;
+                                                        }
+                                                    }
+                                                } catch(Exception e) {
+                                                    nuevaPantalla();
+                                                    System.out.println(ROJO + "\n\tError, introduce un número [1-5]" + RESET);
+                                                }
+                                                if(opcion == 0) break;
+                                            } while(opcion > 0 || opcion < 6);
+                                            break;
+
+                                        case 5:
+                                            salir();
+
+                                        default:
+                                            break;
+                                    }
+                                }
+                            } catch(Exception e) {
+                                nuevaPantalla();
+                                System.out.println(ROJO + "\n\tError, introduce un número [1-5]" + RESET);
+                            }
+                            if(opcion == 0) break;
+                        } while(opcion > 0 || opcion < 6);
+                        break;
+
+                    case 5:
+
+                        do {
+                            nuevaPantalla();
+                            System.out.println(VERDE + "==============================================");
+                            System.out.println("\t\tPRODUCTOS");
+                            System.out.println("==============================================");
+
+                            try {
+                                System.out.println(VERDE + "\n\t1-INTRODUCIR PRODUCTO");
+                                System.out.println("\n\t2-ELIMINAR PRODUCTO");
+                                System.out.println("\n\t3-MODIFICAR PRODUCTO");
+                                System.out.println("\n\t4-VER PRODUCTO");
+                                System.out.println("\n\t5-SALIR");
+                                System.out.println("\n <- Volver [0]");
+                                System.out.println("==============================================");
+
+                                System.out.print("\n Introduce una opción: " + RESET);
+                                
+                                opcion = Integer.parseInt(sc.nextLine());
+
+                                if(opcion < 1 || opcion > 5) {
+                                    if(opcion == 0) {
+                                        nuevaPantalla();
+                                        break;
+                                    } else {
+                                        nuevaPantalla();
+                                        System.out.println(ROJO + "\n\tError, introduce una opción válida" + RESET);
+                                    }
+                                    
+                                } else {
+                                    switch (opcion) {
+                                        case 1:
+                                            nuevaPantalla();
+                                            System.out.println(VERDE + "----------------------------------------------");
+                                            System.out.println("\t\tINTRODUCIR PRODUCTO");
+                                            System.out.println("----------------------------------------------" + RESET);
+                                            
+                                            do {
+                                                try {
+                                                    introducirProducto();
+                                                    error = false;
+
+                                                    System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
+                                                    sc.nextLine();
+
+                                                } catch (Exception e) {
+                                                    System.out.println(ROJO + "\n\tError, introduce una opción válida" + RESET);
+                                                    error = true;
+                                                }
+                                            } while(error);
+                                            break;
+
+                                        case 2:
+                                            
+                                            nuevaPantalla();
+                                            System.out.println(VERDE + "----------------------------------------------");
+                                            System.out.println("\t\tELIMINAR PRODUCTO");
+                                            System.out.println("----------------------------------------------" + RESET);
+
+                                            do {
+                                                try {
+                                                    System.out.print(VERDE + "\n ID del producto que quieres eliminar: " + RESET);
+                                                    int idProducto = Integer.parseInt(sc.nextLine());
+
+                                                    borrarProducto(idProducto);
+                                                    error = false;
+
+                                                    if(opcion == 0) {
+                                                        nuevaPantalla();
+                                                    } else {
+                                                        System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
+                                                        sc.nextLine();
+                                                    }
+                                                } catch (Exception e) {
+                                                    System.out.println(ROJO + "\n\tError, se necesita un ID numérico" + RESET);
+                                                    error = true;
+                                                }
+                                            } while(error);
+                                            break;
+                                    
+                                        case 3:
+                                            nuevaPantalla();
+                                            System.out.println(VERDE + "----------------------------------------------");
+                                            System.out.println("\t\tMODIFICAR PRODUCTO");
+                                            System.out.println("----------------------------------------------" + RESET);
+
+                                            do {
+                                                try {
+                                                    System.out.print(VERDE + "\n ID del producto a modificar: " + RESET);
+                                                    int idProducto = Integer.parseInt(sc.nextLine());
+
+                                                    modificarProducto(idProducto);
+                                                    error = false;
+
+                                                    System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
+                                                    sc.nextLine();
+
+                                                } catch (Exception e) {
+                                                    System.out.println(ROJO + "\n\tError, se necesita un ID numérico" + RESET);
+                                                    error = true;
+                                                }
+                                            } while(error);
+                                            break;
+
+                                        case 4: 
+                                            nuevaPantalla();
+                                            System.out.println(VERDE + "----------------------------------------------");
+                                            System.out.println("\t\tVER PRODUCTO");
+                                            System.out.println("----------------------------------------------" + RESET);
+
+                                            do {
+                                                try {
+                                                    System.out.print(VERDE + "\n ID del producto: " + RESET);
+                                                    int idProducto = Integer.parseInt(sc.nextLine());
+
+                                                    mostrarProducto(idProducto);
+                                                    error = false;
+
+                                                    System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
+                                                    sc.nextLine();
+
+                                                } catch (Exception e) {
+                                                    System.out.println(ROJO + "\n\tError, se necesita un ID numérico" + RESET);
+                                                    error = true;
+                                                }
+                                            } while(error);
+                                            break;
+
+                                        case 5:
+                                            salir();
+
+                                        default:
+                                            break;
+                                    }
+                                }
+                            } catch(Exception e) {
+                                nuevaPantalla();
+                                System.out.println(ROJO + "\n\tError, introduce un número [1-5]" + RESET);
+                            }
+                            if(opcion == 0) break;
+                        } while(opcion > 0 || opcion < 6);
+                        break;
+
+                    case 6:
+                        opcion = 0;
+                        break;
+
+                    case 7:
+                        nuevaPantalla();
+                        do {
+                            System.out.println(VERDE + "==============================================");
+                            System.out.println("\t\tADMINISTRADOR");
+                            System.out.println("==============================================");
+
+                            try {
+                                System.out.println(VERDE + "\n\t1-PERFIL");
+                                System.out.println("\n\t2-CAMBIAR CONTRASEÑA");
+                                if(esGestor) {
+                                    System.out.println("\n\t3-GESTIONAR USUARIOS");
+                                } else {
+                                    System.out.println(GRIS_OSCURO + "\n\t3-GESTIONAR USUARIOS" + VERDE);
+                                }
+                                System.out.println("\n\t4-SALIR ");
+                                System.out.println("\n <- Volver [0]");
+                                System.out.println("==============================================");
+
+                                System.out.print("\n Introduce una opción: " + RESET);
+
+                                opcion = Integer.parseInt(sc.nextLine());
+
+                                if(opcion < 1 || opcion > 4) {
+                                    if(opcion == 0) {
+                                        nuevaPantalla();
+                                        break;
+                                    } else {
+                                        nuevaPantalla();
+                                        System.out.println(ROJO + "\tError, opción no válida\n" + RESET);
+                                    }
+                                } else {
+                                    switch (opcion) {
+                                        case 1:
+                                            nuevaPantalla();
+                                            System.out.println(VERDE + "----------------------------------------------");
+                                            System.out.println("\t\tPERFIL");
+                                            System.out.println("----------------------------------------------" + RESET);
+                                            
+                                            do {
+                                                try {
+                                                    mostrarUsuario(idUsuario);
+                                                    error = false;
+
+                                                    System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
+                                                    sc.nextLine();
+                                                    
+                                                } catch (Exception e) {
+                                                    System.out.println(ROJO + "\n\tError, introduce una opción válida" + RESET);
+                                                    error = true;
+                                                }
+                                            } while(error);
+                                            break;
+
+                                        case 2:
+                                            nuevaPantalla();
+                                            System.out.println(VERDE + "----------------------------------------------");
+                                            System.out.println("\t\tCAMBIAR CONTRASEÑA");
+                                            System.out.println("----------------------------------------------" + RESET);
+                                            
+                                            do {
+                                                try {
+                                                    modificarContrasenya(idUsuario);
+                                                    error = false;
+
+                                                    System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
+                                                    sc.nextLine();
+
+                                                } catch (Exception e) {
+                                                    System.out.println(ROJO + "\n\tError, introduce una opción válida" + RESET);
+                                                    error = true;
+                                                }
+                                            } while(error);
+                                            break;
+                                    
+                                        case 3:
+                                            if(esGestor) {
+                                                gestionarUsuarios();
+                                                break;
+                                            } else {
+                                                opcion = 0;
+                                                nuevaPantalla();
+                                                System.out.println(ROJO + "\tError, opción no disponible\n" + RESET);
+                                            }
+                                            break;
+
+                                        case 4: 
+                                            salir();
+
+                                        default:
+                                            break;
+                                    }
+                                }
+                            } catch(Exception e) {
+                                nuevaPantalla();
+                                System.out.println(ROJO + "\n\tError, introduce un número [1-4]" + RESET);
+                            }  
+                        } while(opcion > 0 || opcion < 5);
+                        break;
+                    case 8:
+                        salir();
+
+                    default:
+                        break;
+                }
             } catch(Exception e) {
 
                 nuevaPantalla();
                 System.out.println(ROJO + "\tError, introduce un número [1-8]\n" + RESET);
             }
-            switch (opcion) {
-                case 1:
-                    break;
-
-                case 2:
-                    break;
             
-                case 3:
-                    break;
-
-                case 4:
-                    break;
-
-                case 5:
-
-                    do {
-                        nuevaPantalla();
-                        System.out.println(VERDE + "==============================================");
-                        System.out.println("\t\tPRODUCTOS");
-                        System.out.println("==============================================");
-
-                        try {
-                            System.out.println(VERDE + "\n\t1-INTRODUCIR PRODUCTO");
-                            System.out.println("\n\t2-ELIMINAR PRODUCTO");
-                            System.out.println("\n\t3-MODIFICAR PRODUCTO");
-                            System.out.println("\n\t4-VER PRODUCTO");
-                            System.out.println("\n\t5-SALIR");
-                            System.out.println("\n <- Volver [0]");
-                            System.out.println("==============================================");
-
-                            System.out.print("\n Introduce una opción: " + RESET);
-                            
-                            opcion = Integer.parseInt(sc.nextLine());
-
-                            if(opcion < 1 || opcion > 5) {
-                                if(opcion == 0) {
-                                    nuevaPantalla();
-                                    break;
-                                } else {
-                                    nuevaPantalla();
-                                    System.out.println(ROJO + "\n\tError, introduce una opción válida" + RESET);
-                                }
-                                
-                            } else {
-                                switch (opcion) {
-                                    case 1:
-                                        nuevaPantalla();
-                                        System.out.println(VERDE + "\n\tINTRODUCIR PRODUCTO");
-                                        
-                                        do {
-                                            try {
-                                                introducirProducto();
-                                                error = false;
-
-                                                System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
-                                                sc.nextLine();
-
-                                            } catch (Exception e) {
-                                                System.out.println(ROJO + "\n\tError, introduce una opción válida" + RESET);
-                                                error = true;
-                                            }
-                                        } while(error);
-                                        break;
-
-                                    case 2:
-                                        
-                                        nuevaPantalla();
-                                        System.out.println(VERDE + "\n\tELIMINAR PRODUCTO");
-
-                                        do {
-                                            try {
-                                                System.out.print(VERDE + "\n Introduce el ID del producto que quieres eliminar: " + RESET);
-                                                int idProducto = Integer.parseInt(sc.nextLine());
-
-                                                borrarProducto(idProducto);
-                                                error = false;
-
-                                                if(opcion == 0) {
-                                                    nuevaPantalla();
-                                                } else {
-                                                    System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
-                                                    sc.nextLine();
-                                                }
-                                            } catch (Exception e) {
-                                                System.out.println(ROJO + "\n\tError, se necesita un ID numérico" + RESET);
-                                                error = true;
-                                            }
-                                        } while(error);
-                                        break;
-                                
-                                    case 3:
-                                        nuevaPantalla();
-                                        System.out.println(VERDE + "\n\tMODIFICAR PRODUCTO");
-
-                                        do {
-                                            try {
-                                                System.out.print(VERDE + "\n Introduce el ID del producto que quieres eliminar: " + RESET);
-                                                int idProducto = Integer.parseInt(sc.nextLine());
-
-                                                modificarProducto(idProducto);
-                                                error = false;
-
-                                                System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
-                                                sc.nextLine();
-
-                                            } catch (Exception e) {
-                                                System.out.println(ROJO + "\n\tError, se necesita un ID numérico" + RESET);
-                                                error = true;
-                                            }
-                                        } while(error);
-                                        break;
-
-                                    case 4: 
-                                        nuevaPantalla();
-                                        System.out.println(VERDE + "\n\tVER PRODUCTO");
-
-                                        do {
-                                            try {
-                                                System.out.print(VERDE + "\n Introduce el ID del producto que quieres eliminar: " + RESET);
-                                                int idProducto = Integer.parseInt(sc.nextLine());
-
-                                                mostrarProducto(idProducto);
-                                                error = false;
-
-                                                System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
-                                                sc.nextLine();
-
-                                            } catch (Exception e) {
-                                                System.out.println(ROJO + "\n\tError, se necesita un ID numérico" + RESET);
-                                                error = true;
-                                            }
-                                        } while(error);
-                                        break;
-
-                                    case 5:
-                                        salir();
-
-                                    default:
-                                        break;
-                                }
-                            }
-                        } catch(Exception e) {
-                            nuevaPantalla();
-                            System.out.println(ROJO + "\n\tError, introduce un número [1-5]" + RESET);
-                        }
-                        if(opcion == 0) break;
-                    } while(opcion > 0 || opcion < 6);
-                    break;
-
-                case 6:
-                    break;
-
-                case 7:
-
-                    do {
-                        nuevaPantalla();
-                        System.out.println(VERDE + "==============================================");
-                        System.out.println("\t\tADMINISTRADOR");
-                        System.out.println("==============================================");
-
-                        try {
-                            System.out.println(VERDE + "\n\t1-PERFIL");
-                            System.out.println("\n\t2-CAMBIAR CONTRASEÑA");
-                            if(esGestor) {
-                                System.out.println("\n\t3-GESTIONAR USUARIOS");
-                            } else {
-                                System.out.println(GRIS_OSCURO + "\n\t3-GESTIONAR USUARIOS" + VERDE);
-                            }
-                            System.out.println("\n\t4-SALIR ");
-                            System.out.println("\n <- Volver [0]");
-                            System.out.println("==============================================");
-
-                            System.out.print("\n Introduce una opción: " + RESET);
-
-                            opcion = Integer.parseInt(sc.nextLine());
-
-                            if(opcion < 1 || opcion > 4) {
-                                if(opcion == 0) {
-                                    nuevaPantalla();
-                                    break;
-                                } else {
-                                    nuevaPantalla();
-                                    System.out.println(ROJO + "\n\tError, introduce una opción válida" + RESET);
-                                }
-                            } else {
-                                switch (opcion) {
-                                    case 1:
-                                        nuevaPantalla();
-                                        System.out.println(VERDE + "\n\tPERFIL");
-                                        
-                                        do {
-                                            try {
-                                                mostrarUsuario(idUsuario);
-                                                error = false;
-
-                                                System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
-                                                sc.nextLine();
-                                                
-                                            } catch (Exception e) {
-                                                System.out.println(ROJO + "\n\tError, introduce una opción válida" + RESET);
-                                                error = true;
-                                            }
-                                        } while(error);
-                                        break;
-
-                                    case 2:
-                                        nuevaPantalla();
-                                        System.out.println(VERDE + "\n\tCAMBIAR CONTRASEÑA");
-                                        
-                                        do {
-                                            try {
-                                                modificarContrasenya(idUsuario);
-                                                error = false;
-
-                                                System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
-                                                sc.nextLine();
-
-                                            } catch (Exception e) {
-                                                System.out.println(ROJO + "\n\tError, introduce una opción válida" + RESET);
-                                                error = true;
-                                            }
-                                        } while(error);
-                                        break;
-                                
-                                    case 3:
-                                        if(esGestor) {
-                                            gestionarUsuarios();
-                                            break;
-                                        } else {
-                                            opcion = 0;
-                                        }
-                                        break;
-
-                                    case 4: 
-                                        salir();
-
-                                    default:
-                                        break;
-                                }
-                            }
-                        } catch(Exception e) {
-                            nuevaPantalla();
-                            System.out.println(ROJO + "\n\tError, introduce un número [1-4]" + RESET);
-                        }  
-                        if(opcion == 0) break;
-                    } while(opcion > 0 || opcion < 5);
-                    break;
-                case 8:
-                    salir();
-
-                default:
-                    break;
-            }
         } while(opcion < 1 || opcion > 7);
 
         sc.close();
