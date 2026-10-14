@@ -46,11 +46,6 @@ public class Stockerty {
     public static final String GRIS_NEGRITA = "\u001B[1;90m";
     public static final String RESET = "\u001B[0m";
 
-    // Variable para diferenciar privilegios
-
-    public static int idUsuario; 
-    public static boolean esGestor = false;
-
     // Variables para opcion de menú
 
     public static int opcion;
@@ -59,84 +54,6 @@ public class Stockerty {
     //============================================
     //                  Métodos
     //============================================
-
-    /**
-     * Método para conectar con la base de datos
-     */
-    public static int conectar() {
-
-        Scanner sc = new Scanner(System.in);
-
-        boolean existe = false;
-        String nombre = "";
-        int id = 0;
-
-        try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE)) {
-
-            do {
-                System.out.print(VERDE + "\n usuario: " + RESET);
-                String usuario = sc.nextLine();
-
-                String sql = "SELECT id, nombre FROM empleado";
-                
-                try (PreparedStatement ps = conexion.prepareStatement(sql);
-                    ResultSet rs = ps.executeQuery()) {
-                        
-                    while (rs.next()) {
-                        
-                        if(Integer.parseInt(usuario) == rs.getInt("id")) {
-                            
-                            nombre = rs.getString("nombre").toUpperCase();
-                            id = Integer.parseInt(usuario);
-                            existe = true;
-                            
-                            do {
-                                System.out.print(VERDE + "\n contraseña: " + RESET);
-                                String clave = sc.nextLine();
-
-                                String sql2 = "SELECT contrasenya, tipo FROM empleado WHERE id = ?";
-
-                                try (PreparedStatement pst = conexion.prepareStatement(sql2)) {
-
-                                    pst.setInt(1, id);
-                                    
-                                    ResultSet rst = pst.executeQuery();
-
-                                    while (rst.next()) {
-                                        
-                                        if(clave.equals(rst.getString("contrasenya"))) {
-                                            
-                                            existe = true;
-                                            String tipo = rst.getString("tipo");
-                                            
-                                            if(tipo.equals("gestor")) {
-                                                esGestor = true;
-                                            }
-                                        } else {
-                                            existe = false;
-                                        }   
-                                    }
-                                } 
-                            } while (!existe);
-                        } else {
-                            ;
-                        }   
-                    }
-                } 
-            } while (!existe);
-
-            nuevaPantalla();
-            System.out.println(VERDE + "\tHOLA " + nombre + "\n" + RESET);
-
-            return id;
-        
-        } catch(SQLException e) {
-
-            System.out.println(" Error de conexión a la base de datos: " + e.getMessage());
-            System.exit(0);
-        }
-        return id;
-    }
 
     /**
      * Método para limpiar la pantalla
@@ -166,352 +83,6 @@ public class Stockerty {
             opcion = 0;
             nuevaPantalla();
         }
-    }
-
-    /**
-     * Método para mostrar los datos de un usuario mediante la introducción de su número ID
-     * @param id
-     */
-    public static void mostrarUsuario(int id) {
-
-        String sql = "SELECT * FROM empleado WHERE id = " + id;
-
-        try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
-            PreparedStatement ps = conexion.prepareStatement(sql)) {
-
-            String[] columnas = {"id", "contrasenya", "nif", "nombre", "apellidos", "puesto", "direccion", "email", "telefono", "id_departamento", "tipo"};
-            
-            System.out.println(VERDE + "\n-----------------------------------------------------------------------" + RESET);
-
-            ResultSet rs = ps.executeQuery();
-
-            if(!rs.next()) {
-                System.out.println(ROJO + "\n\tNo se ha encontrado un usuario con este ID\n" + RESET);
-                error = true;
-            } else {
-                for (String columna : columnas) {
-
-                    rs = ps.executeQuery();
-
-                    while(rs.next()) {
-                        System.out.print(VERDE + " " + columna.toUpperCase() + "\t" + RESET);
-
-                        for (String column : columnas) {
-
-                            if(columna.equals(column)) {
-
-                                if(columna.length() < 8) {
-                                    System.out.println(VERDE + "\t\t->\t" + RESET + rs.getString(column));
-                                } else if(columna.length() == 8 || columna.length() < 15) {
-                                    System.out.println(VERDE + "\t->\t" + RESET + rs.getString(column));
-                                } else {
-                                    System.out.println(VERDE + "->\t" + RESET + rs.getString(column));
-                                }
-                            } else {
-                                ;
-                            }
-                        }
-                    }  
-                }
-            }
-            
-            System.out.println(VERDE + "-----------------------------------------------------------------------" + RESET);
-
-        } catch(SQLException e) {
-            System.out.println(ROJO + "\n\tError en la conexión de la base de datos: " + e.getMessage() + RESET);
-        }
-    }
-
-    /**
-     * Método para crear un usuario nuevo en la base de datos
-     */
-    public static void crearUsuario() {
-
-        try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE)) {
-
-            do {
-                try {
-                    System.out.print(VERDE + "\n NUEVO EMPLEADO ");
-                    Scanner sc = new Scanner(System.in);
-
-                    System.out.print("\n Nombre: " + RESET);
-                    String nombreEmpleado = sc.nextLine();
-
-                    System.out.print(VERDE + "\n Apellidos: " + RESET);
-                    String apellidosEmpleado = sc.nextLine();
-
-                    System.out.print(VERDE + "\n NIF/DNI: " + RESET);
-                    String nifEmpleado = sc.nextLine();
-
-                    System.out.print(VERDE + "\n Dirección: " + RESET);
-                    String direccionEmpleado = sc.nextLine();
-
-                    System.out.print(VERDE + "\n Email: " + RESET);
-                    String emailEmpleado = sc.nextLine();
-
-                    System.out.print(VERDE + "\n Teléfono: " + RESET);
-                    String telefonoEmpleado = sc.nextLine();
-
-                    System.out.print(VERDE + "\n Puesto: " + RESET);
-                    String puestoEmpleado = sc.nextLine();
-
-                    System.out.print(VERDE + "\n Departamento: " + RESET);
-                    int departamentoEmpleado = Integer.parseInt(sc.nextLine());
-
-                    System.out.print(VERDE + "\n Privilegios (gestor/operario): " + RESET);
-                    String tipoEmpleado = sc.nextLine();
-
-                    String sql = "INSERT INTO empleado (contrasenya, nif, nombre, apellidos, puesto, direccion, email, telefono, id_departamento, tipo) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
-
-                    try (PreparedStatement ps = conexion.prepareStatement(sql)) {
-
-                        ps.setString(1, apellidosEmpleado.replaceAll("\\s+", ""));
-                        ps.setString(2, nifEmpleado);
-                        ps.setString(3, nombreEmpleado);
-                        ps.setString(4, apellidosEmpleado);
-                        ps.setString(5, puestoEmpleado);
-                        ps.setString(6, direccionEmpleado);
-                        ps.setString(7, emailEmpleado);
-                        ps.setString(8, telefonoEmpleado);
-                        ps.setInt(9, departamentoEmpleado);
-                        ps.setString(10, tipoEmpleado);
-
-                        int filas = ps.executeUpdate();
-
-                        int idEmpleado = 0;
-
-                        sql = "SELECT id FROM empleado WHERE nif = ?";
-
-                        try (PreparedStatement pst = conexion.prepareStatement(sql)) {
-
-                            pst.setString(1, nifEmpleado);
-
-                            ResultSet rs = pst.executeQuery();
-
-                            while (rs.next()) {
-
-                            idEmpleado = rs.getInt("id");
-                            }
-                        }
-                        if(filas > 0) {
-                            System.out.println(VERDE + "\n\t¡Nuevo empleado creado!");
-                            System.out.println("\n---------------------------------------------------");
-                            System.out.println(" ID   ->  " + RESET + idEmpleado);
-                            System.out.println(VERDE + " Clave   ->  " + RESET + apellidosEmpleado.replaceAll("\\s+", ""));
-                            System.out.println(VERDE + "---------------------------------------------------");
-                            System.out.println("\n Pulsa ENTER para continuar..." + RESET);
-                            sc.nextLine();
-
-                        } else {
-                            System.out.println(ROJO + "\n\tError al crear el empleado" + RESET);
-                        }
-                    } 
-                } catch(Exception e) {
-                    System.out.println(ROJO + "\n\tError en la introducción de datos" + e.getMessage() + RESET);
-                    error = true;
-                }
-            } while(error);
-        
-        } catch(SQLException e) {
-
-            System.out.println(" Error de conexión a la base de datos: " + e.getMessage());
-        }
-    }
-
-    /**
-     * Método para borrar un usuario introduciendo su número ID
-     * @param id
-     */
-    public static void borrarUsuario(int id) {
-
-        mostrarUsuario(id);
-
-        if(error) {
-            ;
-        } else {
-            System.out.print(VERDE + "\n ¿Estas seguro de eliminar al usuario " + id + "? s/n: " + RESET);
-            Scanner sc = new Scanner(System.in);
-            String validar = sc.nextLine();
-
-            if(validar.toLowerCase().equals("s")) {
-
-                String sql = "DELETE FROM empleado WHERE id = " + id;
-            
-                try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
-                    PreparedStatement ps = conexion.prepareStatement(sql)) {
-
-                    int filas = ps.executeUpdate();
-
-                    if (filas > 0) {
-                        System.out.println(VERDE + "\n ¡Usuario eliminado con éxito!" + RESET);
-                    } else {
-                        System.out.println(ROJO + "\n El id no pertenece a ningún usuario" + RESET);
-                    }
-                } catch(SQLException e) {
-                    System.out.println(ROJO + "\n\tError de conexión con la base de datos: " + e.getMessage() + RESET);
-                }
-            } else {
-                opcion = 0;
-            }
-        }
-        error = false;
-    }
-
-    /**
-     * Método para modificar uno de los datos del usuario introduciendo su número ID
-     * @param id
-     */
-    public static void modificarUsuario(int id) {
-
-        mostrarUsuario(id);
-
-        if(error) {
-            ;
-        } else {
-            do {
-                try {
-                    System.out.print(VERDE + "\n ¿Qué dato quieres modificar?: " + RESET);
-                    Scanner sc = new Scanner(System.in);
-                    String dato = sc.nextLine().toLowerCase();
-                    
-                    String[] columnas = {"id", "contrasenya", "nif", "nombre", "apellidos", "puesto", "direccion", "email", "telefono", "id_departamento", "tipo"};
-                    
-                    for(String column : columnas) {
-
-                        if(dato.equals(column)) {
-
-                            if(dato.equals("id")) {
-
-                                System.out.println(ROJO + "\n\tNo se puede modificar el ID del usuario" + RESET);
-                                error = true;
-
-                            } else if(dato.equals("id_departamento")) {
-
-                                System.out.print(VERDE + "\n Nuevo " + dato + ": " + RESET);
-                                int valor = Integer.parseInt(sc.nextLine());
-
-                                String sql = "UPDATE empleado SET " + dato + " = " + valor + " WHERE id = " + id;
-
-                                try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
-                                    PreparedStatement ps = conexion.prepareStatement(sql)) {
-
-                                    int filas = ps.executeUpdate();
-
-                                    if (filas > 0) {
-                                        System.out.println(VERDE + "\n ¡Dato modificado con éxito!" + RESET);
-                                        error = false;
-                                    } else {
-                                        System.out.println(ROJO + "\n Error al modificar el dato" + RESET);
-                                        error = true;
-                                    }
-                                } catch(SQLException e) {
-                                    System.out.println(ROJO + "\n\tError de conexión con la base de datos: " + e.getMessage() + RESET);
-                                }
-                            } else {
-                                System.out.print(VERDE + "\n Nuevo " + dato + ": " + RESET);
-                                String info = sc.nextLine();
-
-                                String sql = "UPDATE empleado SET " + dato + " = ? WHERE id = " + id;
-
-                                try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
-                                    PreparedStatement ps = conexion.prepareStatement(sql)) {
-
-                                    ps.setString(1, info);
-                                    int filas = ps.executeUpdate();
-
-                                    if (filas > 0) {
-                                        System.out.println(VERDE + "\n ¡Dato modificado con éxito!" + RESET);
-                                        error = false;
-                                    } else {
-                                        System.out.println(ROJO + "\n Error al modificar el dato" + RESET);
-                                        error = true;
-                                    }
-                                } catch(SQLException e) {
-                                    System.out.println(ROJO + "\n\tError de conexión con la base de datos: " + e.getMessage() + RESET);
-                                    error = true;
-                                    break;
-                                }
-                            }
-                            break;
-                        } else {
-                            ;
-                        }
-                    }
-                    if(!Arrays.asList(columnas).contains(dato)) {
-                        System.out.println(ROJO + "\n\tDato no encontrado" + RESET);
-                        error = true;
-                    } 
-                } catch(Exception e) {
-                    System.out.println(ROJO + "\n\tError, introduce una opción válida" + RESET);
-                    error = true;
-                }
-            } while(error);
-        }
-        error = false;
-    }
-
-    /**
-     * Método para modificar la contrasenya del usuario introduciendo su número ID
-     * @param id
-     */
-    public static void modificarContrasenya(int id) {
-
-        do {
-            try {
-                Scanner sc = new Scanner(System.in);
-                
-                System.out.print(VERDE + "\n Contraseña actual: " + RESET);
-                String claveActual = sc.nextLine();
-
-                String sql = "SELECT contrasenya FROM empleado WHERE id = ?";
-
-                try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
-                    PreparedStatement ps = conexion.prepareStatement(sql)) {
-
-                    ps.setInt(1, id);
-                    
-                    ResultSet rst = ps.executeQuery();
-
-                    while (rst.next()) {
-                        
-                        if(claveActual.equals(rst.getString("contrasenya"))) {
-                            
-                            error = false;
-                        } else {
-                            error = true;;
-                        }   
-                    }
-                }
-                if(!error) {
-                    System.out.print(VERDE + "\n Nueva contraseña: " + RESET);
-                    String nuevaClave = sc.nextLine();
-
-                    String sql2 = "UPDATE empleado SET contrasenya = ? WHERE id = " + id;
-
-                    try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
-                        PreparedStatement ps = conexion.prepareStatement(sql2)) {
-
-                        ps.setString(1, nuevaClave);
-                        int filas = ps.executeUpdate();
-
-                        if (filas > 0) {
-                            System.out.println(VERDE + "\n ¡Contrasenya modificada con éxito!" + RESET);
-                            error = false;
-                        } else {
-                            System.out.println(ROJO + "\n Error al modificar la contrasenya" + RESET);
-                            error = true;
-                        }
-                    } catch(SQLException e) {
-                        System.out.println(ROJO + "\n\tError de conexión con la base de datos: " + e.getMessage() + RESET);
-                        error = true;
-                        break;
-                    }
-                }    
-            } catch(Exception e) {
-                System.out.println(ROJO + "\n\tError, introduce una opción válida" + RESET);
-                error = true;
-            }
-        } while(error);
     }
 
     /**
@@ -553,9 +124,27 @@ public class Stockerty {
                             nuevaPantalla();
                             System.out.println(VERDE + "----------------------------------------------");
                             System.out.println("\t\tCREAR USUARIO");
-                            System.out.println("----------------------------------------------" + RESET);
+                            System.out.println("----------------------------------------------");
 
-                            crearUsuario();
+                            Empleado nuevoEmpleado = new Empleado("00000000X", "X", "X", "X", "X","x@x.xx", "700000000", 0, "operario");
+
+                            do{
+                                try {
+
+                                    System.out.println("\n Introduce los datos del nuevo usuario");
+                                    System.out.println("\n NIF o DNI: " + RESET);
+                                    nuevoEmpleado.setNif(sc.nextLine());
+
+                                    error = false;
+
+                                } catch(Exception e) {
+                                    System.out.println(ROJO + e.getMessage() + RESET);
+                                    error = true;
+                                }
+                            } while(error);
+                            
+
+                            BD.insertarEmpleado(nuevoEmpleado);
                             break;
 
                         case 2:
@@ -569,7 +158,7 @@ public class Stockerty {
                                     System.out.print(VERDE + "\n Introduce el ID del usuario que quieres borrar: " + RESET);
                                     int id = Integer.parseInt(sc.nextLine());
 
-                                    borrarUsuario(id);
+                                    // borrarUsuario(id);
                                     error = false;
 
                                     if(opcion == 0) {
@@ -596,7 +185,7 @@ public class Stockerty {
                                     System.out.print(VERDE + "\n Introduce el ID del usuario que quieres modificar: " + RESET);
                                     int id = Integer.parseInt(sc.nextLine());
 
-                                    modificarUsuario(id);
+                                    // modificarUsuario(id);
                                     error = false;
 
                                     System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
@@ -620,7 +209,7 @@ public class Stockerty {
                                     System.out.print(VERDE + "\n Introduce el ID del usuario que quieres mostrar: " + RESET);
                                     int id = Integer.parseInt(sc.nextLine());
 
-                                    mostrarUsuario(id);
+                                    // mostrarUsuario(id);
                                     error = false;
 
                                     System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
@@ -957,14 +546,18 @@ public class Stockerty {
     public static void main(String[] args) { 
         
         nuevaPantalla();
-        System.out.println(VERDE_NEGRITA + "\t\tSTOCKERTY" + RESET);
-        System.out.println(VERDE + "\n\n Pulsa ENTER para acceder al programa..." + RESET);
+        System.out.println(VERDE_NEGRITA + "\t\t\tSTOCKERTY" + RESET);
+        System.out.println(VERDE + "\n\n\t\tPulsa ENTER para acceder al programa..." + RESET);
 
         Scanner sc = new Scanner(System.in);
         sc.nextLine();
 
         nuevaPantalla();
-        idUsuario = conectar();
+        
+        System.out.print(VERDE + "\n\t\tUsuario: " + RESET);
+        int idUsuario = Integer.parseInt(sc.nextLine());
+        
+        Empleado usuarioActual = BD.conectar(idUsuario);
 
         do {
             try {
@@ -1806,7 +1399,7 @@ public class Stockerty {
                             try {
                                 System.out.println(VERDE + "\n\t1-PERFIL");
                                 System.out.println("\n\t2-CAMBIAR CONTRASEÑA");
-                                if(esGestor) {
+                                if(usuarioActual.getTipo().equals("gestor")) {
                                     System.out.println("\n\t3-GESTIONAR USUARIOS");
                                 } else {
                                     System.out.println(GRIS_OSCURO + "\n\t3-GESTIONAR USUARIOS" + VERDE);
@@ -1837,7 +1430,7 @@ public class Stockerty {
                                             
                                             do {
                                                 try {
-                                                    mostrarUsuario(idUsuario);
+                                                    // mostrarUsuario(idUsuario);
                                                     error = false;
 
                                                     System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
@@ -1858,7 +1451,7 @@ public class Stockerty {
                                             
                                             do {
                                                 try {
-                                                    modificarContrasenya(idUsuario);
+                                                    // modificarContrasenya(idUsuario);
                                                     error = false;
 
                                                     System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);

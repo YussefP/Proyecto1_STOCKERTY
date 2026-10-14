@@ -1,0 +1,322 @@
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.Scanner;
+import java.sql.ResultSet;
+
+public class BD {
+    
+    // OPCIÓN 1 (ACTIVA): Conexión a la base de datos de la nube (aiven.io)
+
+    private static final String HOST_NUBE = "stockerty-yusep-0335.e.aivencloud.com";
+    private static final String PUERTO_NUBE = "13210";
+    private static final String BD_NUBE = "defaultdb";
+
+    private static final String URL = "jdbc:mysql://" + HOST_NUBE + ":" + PUERTO_NUBE + "/" + BD_NUBE + "?useSSL=true";
+    private static final String USUARIO = "usuario_stockerty";
+    private static final String CLAVE = "stockerty5";
+
+    // OPCIÓN 2 (INACTIVA): Conexión local (Importando el script stockerty.sql)
+    
+        // stockerty.sql incluye la creación de la estructura de la base de datos y la creación del usuario, contraseña y privilegios.
+        // Para usar la opción 2, descomenta las 3 variables siguientes y comenta las 6 variables de la opción 1.
+    /* 
+    private static final String URL = "jdbc:mysql://localhost:3306/stockerty";
+    private static final String USUARIO = "usuario_stockerty";
+    private static final String CLAVE = "stockerty5";
+    */
+
+    // Comandos ANSI para el diseño de la consola
+
+    public static final String NEGRITA = "\u001B[1m";
+    public static final String NARANJA = "\u001B[1;38;5:208m";
+    public static final String VERDE = "\u001B[32m";
+    public static final String VERDE_NEGRITA = "\u001B[1;32m";
+    public static final String ROJO = "\u001B[31m";
+    public static final String ROJO_NEGRITA = "\u001B[1;31m";
+    public static final String GRIS_OSCURO = "\u001B[90m";
+    public static final String GRIS_NEGRITA = "\u001B[1;90m";
+    public static final String RESET = "\u001B[0m";
+
+    // Métodos de la clase
+
+    /**
+     * Método para acceder al programa principal, conectar con la base de datos y comprobar que el usuario y contraseña existen en la base de datos
+     * @param usuario
+     * @return
+     */
+    public static Empleado conectar(int id) {
+
+        Scanner sc = new Scanner(System.in);
+
+        Empleado usuario = null;
+        boolean existe = false;
+
+        String sql = "SELECT id FROM empleado";
+
+        try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+            PreparedStatement ps = conexion.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery()) {
+                    
+            while (rs.next()) {
+                
+                if(id == rs.getInt("id")) {
+                    
+                    existe = true;
+                    
+                    do {
+                        System.out.print(VERDE + "\n contraseña: " + RESET);
+                        String clave = sc.nextLine();
+
+                        String sql2 = "SELECT contrasenya FROM empleado WHERE id = " + id;
+
+                        try (PreparedStatement pst = conexion.prepareStatement(sql2);
+                            ResultSet rst = pst.executeQuery()) {
+
+                            while (rst.next()) {
+                                
+                                if(clave.equals(rst.getString("contrasenya"))) {
+                                    
+                                    existe = true;
+
+                                    String sql3 = "SELECT * FROM empleado WHERE id = " + id;
+
+                                    try (PreparedStatement pstm = conexion.prepareStatement(sql3);
+                                        ResultSet rsts = pstm.executeQuery()) {
+
+                                        int idUsuario = 0, idDepartamento = 0;
+                                        String contrasenya = "", nif = "", nombre = "", apellidos = "", puesto = "", direccion = "", email = "", telefono = "", tipo = "";
+
+                                        while (rsts.next()) {
+                                            
+                                            idUsuario = rsts.getInt("id");
+                                            contrasenya = rsts.getString("contrasenya");
+                                            nif = rsts.getString("nif");
+                                            nombre = rsts.getString("nombre");
+                                            apellidos = rsts.getString("apellidos");
+                                            puesto = rsts.getString("puesto");
+                                            direccion = rsts.getString("direccion");
+                                            email = rsts.getString("email");
+                                            telefono = rsts.getString("telefono");
+                                            idDepartamento = rsts.getInt("id_departamento");
+                                            tipo = rsts.getString("tipo");
+                                        }
+                                        usuario = new Empleado(idUsuario, contrasenya, nif, nombre, apellidos, puesto, direccion, email, telefono, idDepartamento, tipo);
+                                    }
+                                } else {
+                                    existe = false;
+                                }   
+                            }
+                        } 
+                    } while (!existe);
+
+                } else {
+                    System.out.println(ROJO + "\n\tEl ID de usuario no existe" + RESET);
+                    
+                }   
+            }
+        } catch(SQLException e) {
+            System.out.println(ROJO + "\n\tError de conexión a la base de datos: " + e.getMessage() + RESET);
+        }
+        return usuario;
+    }
+
+    /**
+     * Método para insertar un nuevo empleado en la base de datos
+     * @param empleado
+     */
+    public static void insertarEmpleado(Empleado empleado) {
+
+        String sql = "INSERT INTO empleado (contrasenya, nif, nombre, apellidos, puesto, direccion, email, telefono, id_departamento, tipo) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+
+        try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+            PreparedStatement ps = conexion.prepareStatement(sql)) {
+
+            ps.setString(1, empleado.getApellidos().toLowerCase().replaceAll("\\s+", ""));
+            ps.setString(2, empleado.getNif());
+            ps.setString(3, empleado.getNombre());
+            ps.setString(4, empleado.getApellidos());
+            ps.setString(5, empleado.getPuesto());
+            ps.setString(6, empleado.getDireccion());
+            ps.setString(7, empleado.getEmail());
+            ps.setString(8, empleado.getTelefono());
+            ps.setInt(9, empleado.getIdDepartamento());
+            ps.setString(10, empleado.getTipo());
+
+            int filas = ps.executeUpdate();
+
+            if(filas > 0) {
+                System.out.println(VERDE + "\n\t¡Nuevo empleado creado!");
+            } else {
+                System.out.println(ROJO + "\n\tError al crear el empleado" + RESET);
+            }
+        } catch(SQLException e) {
+            System.out.println(ROJO + "\n\tError de conexión a la base de datos: " + e.getMessage() + RESET);
+        }
+    }
+
+    /**
+     * Método para borrar un empleado existente en la base de datos
+     * @param id
+     */
+    public static void borrarEmpleado(Empleado empleado) {
+
+        String sql = "DELETE FROM empleado WHERE id = " + empleado.getId();
+            
+        try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+            PreparedStatement ps = conexion.prepareStatement(sql)) {
+
+            int filas = ps.executeUpdate();
+
+            if (filas > 0) {
+                System.out.println(VERDE + "\n\t¡Usuario eliminado con éxito!" + RESET);
+            } else {
+                System.out.println(ROJO + "\n\tEl id no pertenece a ningún usuario" + RESET);
+            }
+        } catch(SQLException e) {
+            System.out.println(ROJO + "\n\tError de conexión con la base de datos: " + e.getMessage() + RESET);
+        }    
+    }
+
+    /**
+     * Método para modificar un empleado de la base de datos
+     * @param id
+     */
+    public static Empleado modificarEmpleado(Empleado empleado, String dato) {
+
+        String sql = "UPDATE empleado SET " + dato + " = ? WHERE id = " + empleado.getId();
+            
+        try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+            PreparedStatement ps = conexion.prepareStatement(sql)) {
+
+            System.out.print(VERDE + "\n Nuevo " + dato + ": " + RESET);
+            Scanner sc = new Scanner(System.in);
+
+            String info = sc.nextLine();
+            
+            switch(dato) {
+                case "contrasenya":
+                    empleado.setContrasenya(info);
+                    ps.setString(1, info);
+                    break;
+
+                case "nif":
+                    empleado.setNif(info);
+                    ps.setString(1, info);
+                    break;
+
+                case "nombre":
+                    empleado.setNombre(info);
+                    ps.setString(1, info);
+                    break;
+
+                case "apellidos":
+                    empleado.setApellidos(info);
+                    ps.setString(1, info);
+                    break;
+
+                case "puesto":
+                    empleado.setPuesto(info);
+                    ps.setString(1, info);
+                    break;
+
+                case "direccion":
+                    empleado.setDireccion(info);
+                    ps.setString(1, info);
+                    break;
+
+                case "email":
+                    empleado.setEmail(info);
+                    ps.setString(1, info);
+                    break;
+
+                case "telefono":
+                    empleado.setTelefono(info);
+                    ps.setString(1, info);
+                    break;
+
+                case "id_departamento":
+                    empleado.setIdDepartamento(Integer.parseInt(info));
+                    ps.setString(1, info);
+                    break;
+
+                case "tipo":
+                    empleado.setTipo(info);
+                    ps.setString(1, info);
+                    break;
+
+                default:
+                    break;
+            }
+            int filas = ps.executeUpdate();
+
+            if (filas > 0) {
+                System.out.println(VERDE + "\n\t¡Dato modificado con éxito!" + RESET);
+            } else {
+                System.out.println(ROJO + "\n\tError al modificar el dato" + RESET);
+            }
+        } catch(SQLException e) {
+            System.out.println(ROJO + "\n\tError de conexión con la base de datos: " + e.getMessage() + RESET);
+        } catch(Exception ex) {
+            System.out.println(ROJO + ex.getMessage() + RESET);
+        }
+        return empleado;
+    }
+
+    /**
+     * Método para mostrar cualquier empleado de la base de datos mediante su número ID
+     * @param id
+     */
+    public static void mostrarEmpleado(int id) {
+
+        String sql = "SELECT * FROM empleado WHERE id = " + id;
+
+        try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+            PreparedStatement ps = conexion.prepareStatement(sql)) {
+
+            String[] columnas = {"id", "contrasenya", "nif", "nombre", "apellidos", "puesto", "direccion", "email", "telefono", "id_departamento", "tipo"};
+            
+            System.out.println(VERDE + "\n-----------------------------------------------------------------------" + RESET);
+
+            ResultSet rs = ps.executeQuery();
+                    
+            while (rs.next()) {
+                
+                if(!rs.next()) {
+                System.out.println(ROJO + "\n\tNo se ha encontrado un usuario con este ID\n" + RESET);
+
+                } else {
+                    for (String columna : columnas) {
+
+                        rs = ps.executeQuery();
+
+                        while(rs.next()) {
+                            System.out.print(VERDE + " " + columna.toUpperCase() + "\t" + RESET);
+
+                            for (String column : columnas) {
+
+                                if(columna.equals(column)) {
+
+                                    if(columna.length() < 8) {
+                                        System.out.println(VERDE + "\t\t->\t" + RESET + rs.getString(column));
+                                    } else if(columna.length() == 8 || columna.length() < 15) {
+                                        System.out.println(VERDE + "\t->\t" + RESET + rs.getString(column));
+                                    } else {
+                                        System.out.println(VERDE + "->\t" + RESET + rs.getString(column));
+                                    }
+                                } else {
+                                    ;
+                                }
+                            }
+                        }  
+                    }
+                }
+            System.out.println(VERDE + "-----------------------------------------------------------------------" + RESET);   
+            }
+        } catch(SQLException e) {
+            System.out.println(ROJO + "\n\tError de conexión a la base de datos: " + e.getMessage() + RESET);
+        }
+    }
+}
