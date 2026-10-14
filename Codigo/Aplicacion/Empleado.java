@@ -17,7 +17,7 @@ public class Empleado {
 
     // Constructores
 
-    // Constructor 1 - Para crear empleados omitiendo el ID y la contrasenya
+    // Constructor 1 - Para crear un empleado omitiendo el ID y la contrasenya
     public Empleado(String nif, String nombre, String apellidos, String puesto, String direccion, String email, String telefono, int idDepartamento, String tipo) {
 
         if(nif==null || nif.isEmpty() || nif.isBlank()) {
@@ -73,7 +73,7 @@ public class Empleado {
         this.tipo = tipo;
     }
 
-    // Constructor 2 - Para leer empleados
+    // Constructor 2 - Para leer un empleado
     public Empleado(int id, String contrasenya, String nif, String nombre, String apellidos, String puesto, String direccion, String email, String telefono, int idDepartamento, String tipo) {
 
         if(contrasenya==null || contrasenya.isEmpty() || contrasenya.isBlank()) {
@@ -146,6 +146,11 @@ public class Empleado {
     public String getTelefono() { return telefono; }
     public int getIdDepartamento() { return idDepartamento; }
     public String getTipo() { return tipo; } 
+
+    public void setId(int id) {
+
+        this.id = id;
+    }
 
     public void setContrasenya(String contrasenya) {
 
@@ -228,7 +233,7 @@ public class Empleado {
 
         if(tipo==null || tipo.isEmpty() || tipo.isBlank()) {
             throw new IllegalArgumentException("Tipo de empleado obligatorio");
-        } else if(!tipo.toLowerCase().equals("gestor") || !tipo.toLowerCase().equals("operario")) {
+        } else if(!tipo.toLowerCase().equals("gestor") && !tipo.toLowerCase().equals("operario")) {
             throw new IllegalArgumentException("Tipo de empleado incorrecto, introduce uno de los siguientes valores: operario o gestor");
         }
         this.tipo = tipo;
