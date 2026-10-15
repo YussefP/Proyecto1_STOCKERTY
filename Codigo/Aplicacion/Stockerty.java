@@ -359,12 +359,26 @@ public class Stockerty {
 
         nuevaPantalla();
         
-        System.out.print(VERDE + "\n\t\tUsuario: " + RESET);
-        int idUsuario = Integer.parseInt(sc.nextLine());
-        
-        Empleado usuarioActual = BD.conectar(idUsuario);
+        Empleado usuarioActual = null;
 
-        // ERROR al crear usuario actual (tipo de empleado incorrecto)
+        do {
+            try {
+                System.out.print(VERDE + "\n\t\tUsuario: " + RESET);
+                int idUsuario = Integer.parseInt(sc.nextLine());
+                
+                usuarioActual = BD.conectar(idUsuario);
+
+                if(usuarioActual == null) {
+                    error = true;
+                } else {
+                    error = false;
+                    nuevaPantalla();
+                }
+            } catch(Exception e) {
+                System.out.println(e.getMessage());
+                error = true;
+            }
+        } while(error);
 
         do {
             try {

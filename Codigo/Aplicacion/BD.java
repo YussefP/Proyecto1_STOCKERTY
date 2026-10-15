@@ -54,11 +54,13 @@ public class BD {
         Empleado usuario = null;
         boolean existe = false;
 
-        String sql = "SELECT id FROM empleado WHERE id = " + id;
+        String sql = "SELECT * FROM empleado WHERE id = ?";
 
         try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
-            PreparedStatement ps = conexion.prepareStatement(sql);
-            ResultSet rs = ps.executeQuery()) {
+            PreparedStatement ps = conexion.prepareStatement(sql)) {
+
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
                     
             while (rs.next()) {
                 
@@ -69,47 +71,31 @@ public class BD {
                     do {
                         System.out.print(VERDE + "\n\t\tContraseña: " + RESET);
                         String clave = sc.nextLine();
+                            
+                        if(clave.equals(rs.getString("contrasenya"))) {
+                            
+                            existe = true;
 
-                        String sql2 = "SELECT contrasenya FROM empleado WHERE id = " + id;
-
-                        try (PreparedStatement pst = conexion.prepareStatement(sql2);
-                            ResultSet rst = pst.executeQuery()) {
-
-                            while (rst.next()) {
+                            int idUsuario = 0, idDepartamento = 0;
+                            String contrasenya = "", nif = "", nombre = "", apellidos = "", puesto = "", direccion = "", email = "", telefono = "", tipo = "";
                                 
-                                if(clave.equals(rst.getString("contrasenya"))) {
-                                    
-                                    existe = true;
+                            idUsuario = rs.getInt("id");
+                            contrasenya = rs.getString("contrasenya");
+                            nif = rs.getString("nif");
+                            nombre = rs.getString("nombre");
+                            apellidos = rs.getString("apellidos");
+                            puesto = rs.getString("puesto");
+                            direccion = rs.getString("direccion");
+                            email = rs.getString("email");
+                            telefono = rs.getString("telefono");
+                            idDepartamento = rs.getInt("id_departamento");
+                            tipo = rs.getString("tipo");
 
-                                    String sql3 = "SELECT * FROM empleado WHERE id = " + id;
+                            usuario = new Empleado(idUsuario, contrasenya, nif, nombre, apellidos, puesto, direccion, email, telefono, idDepartamento, tipo);
 
-                                    try (PreparedStatement pstm = conexion.prepareStatement(sql3);
-                                        ResultSet rsts = pstm.executeQuery()) {
-
-                                        int idUsuario = 0, idDepartamento = 0;
-                                        String contrasenya = "", nif = "", nombre = "", apellidos = "", puesto = "", direccion = "", email = "", telefono = "", tipo = "";
-
-                                        while (rsts.next()) {
-                                            
-                                            idUsuario = rsts.getInt("id");
-                                            contrasenya = rsts.getString("contrasenya");
-                                            nif = rsts.getString("nif");
-                                            nombre = rsts.getString("nombre");
-                                            apellidos = rsts.getString("apellidos");
-                                            puesto = rsts.getString("puesto");
-                                            direccion = rsts.getString("direccion");
-                                            email = rsts.getString("email");
-                                            telefono = rsts.getString("telefono");
-                                            idDepartamento = rsts.getInt("id_departamento");
-                                            tipo = rsts.getString("tipo");
-                                        }
-                                        usuario = new Empleado(idUsuario, contrasenya, nif, nombre, apellidos, puesto, direccion, email, telefono, idDepartamento, tipo);
-                                    }
-                                } else {
-                                    existe = false;
-                                }   
-                            }
-                        } 
+                        } else {
+                            existe = false;
+                        }   
                     } while (!existe);
 
                 } else {
@@ -154,7 +140,7 @@ public class BD {
         } catch(SQLException e) {
             System.out.println(ROJO + "\n\tError de conexión a la base de datos: " + e.getMessage() + RESET);
         }
-    }
+    }    
 
     /**
      * Método para borrar un empleado existente en la base de datos
@@ -162,11 +148,13 @@ public class BD {
      */
     public static void borrarEmpleado(int id) {
 
-        String sql = "DELETE FROM empleado WHERE id = " + id;
+        String sql = "DELETE FROM empleado WHERE id = ?";
             
         try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
             PreparedStatement ps = conexion.prepareStatement(sql)) {
 
+            ps.setInt(1, id);
+            
             int filas = ps.executeUpdate();
 
             if (filas > 0) {
@@ -185,10 +173,12 @@ public class BD {
      */
     public static Empleado modificarEmpleado(Empleado empleado, String dato) {
 
-        String sql = "UPDATE empleado SET " + dato + " = ? WHERE id = " + empleado.getId();
+        String sql = "UPDATE empleado SET " + dato + " = ? WHERE id = ?";
             
         try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
             PreparedStatement ps = conexion.prepareStatement(sql)) {
+
+            ps.setInt(2, empleado.getId());
 
             System.out.print(VERDE + "\n Nuevo " + dato + ": " + RESET);
             Scanner sc = new Scanner(System.in);
@@ -270,7 +260,7 @@ public class BD {
      */
     public static Empleado mostrarEmpleado(int id) {
 
-        String sql = "SELECT * FROM empleado WHERE id = " + id;
+        String sql = "SELECT * FROM empleado WHERE id = ?";
 
         Empleado empleado = null;
 
@@ -281,92 +271,77 @@ public class BD {
             
             System.out.println(VERDE + "\n-----------------------------------------------------------------------" + RESET);
 
+            ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
                     
             while (rs.next()) {
                 
-                if(!rs.next()) {
-                System.out.println(ROJO + "\n\tNo se ha encontrado un empleado con este ID\n" + RESET);
+                empleado = new Empleado(0, "X", "00000000X", "X", "X", "X", "X","x@x.xx", "700000000", 0, "operario");
 
-                } else {
-                    empleado = new Empleado(0, "X", "00000000X", "X", "X", "X", "X","x@x.xx", "700000000", 0, "operario");
-                    
-                    for (String columna : columnas) {
+                for (String columna : columnas) {
 
-                        rs = ps.executeQuery();
+                    System.out.print(VERDE + " " + columna.toUpperCase() + "\t" + RESET);
 
-                        while(rs.next()) {
-                            System.out.print(VERDE + " " + columna.toUpperCase() + "\t" + RESET);
+                    if(columna.length() < 8) {
+                        System.out.println(VERDE + "\t\t->\t" + RESET + rs.getString(columna));
+                    } else if(columna.length() == 8 || columna.length() < 15) {
+                        System.out.println(VERDE + "\t->\t" + RESET + rs.getString(columna));
+                    } else {
+                        System.out.println(VERDE + "->\t" + RESET + rs.getString(columna));
+                    }
 
-                            for (String column : columnas) {
+                    switch(columna) {
+                        case "id":
+                            empleado.setId(rs.getInt(columna));
+                            break;
 
-                                if(columna.equals(column)) {
+                        case "contrasenya":
+                            empleado.setContrasenya(rs.getString(columna));
+                            break;
 
-                                    if(columna.length() < 8) {
-                                        System.out.println(VERDE + "\t\t->\t" + RESET + rs.getString(column));
-                                    } else if(columna.length() == 8 || columna.length() < 15) {
-                                        System.out.println(VERDE + "\t->\t" + RESET + rs.getString(column));
-                                    } else {
-                                        System.out.println(VERDE + "->\t" + RESET + rs.getString(column));
-                                    }
+                        case "nif":
+                            empleado.setNif(rs.getString(columna));
+                            break;
 
-                                    switch(column) {
-                                        case "id":
-                                            empleado.setId(rs.getInt(column));
-                                            break;
+                        case "nombre":
+                            empleado.setNombre(rs.getString(columna));
+                            break;
 
-                                        case "contrasenya":
-                                            empleado.setContrasenya(rs.getString(column));
-                                            break;
+                        case "apellidos":
+                            empleado.setApellidos(rs.getString(columna));
+                            break;
 
-                                        case "nif":
-                                            empleado.setNif(rs.getString(column));
-                                            break;
+                        case "puesto":
+                            empleado.setPuesto(rs.getString(columna));
+                            break;
 
-                                        case "nombre":
-                                            empleado.setNombre(rs.getString(column));
-                                            break;
+                        case "direccion":
+                            empleado.setDireccion(rs.getString(columna));
+                            break;
 
-                                        case "apellidos":
-                                            empleado.setApellidos(rs.getString(column));
-                                            break;
+                        case "email":
+                            empleado.setEmail(rs.getString(columna));
+                            break;
 
-                                        case "puesto":
-                                            empleado.setPuesto(rs.getString(column));
-                                            break;
+                        case "telefono":
+                            empleado.setTelefono(rs.getString(columna));
+                            break;
 
-                                        case "direccion":
-                                            empleado.setDireccion(rs.getString(column));
-                                            break;
+                        case "id_departamento":
+                            empleado.setIdDepartamento(rs.getInt(columna));
+                            break;
 
-                                        case "email":
-                                            empleado.setEmail(rs.getString(column));
-                                            break;
+                        case "tipo":
+                            empleado.setTipo(rs.getString(columna));
+                            break;
 
-                                        case "telefono":
-                                            empleado.setTelefono(rs.getString(column));
-                                            break;
-
-                                        case "id_departamento":
-                                            empleado.setIdDepartamento(rs.getInt(column));
-                                            break;
-
-                                        case "tipo":
-                                            empleado.setTipo(rs.getString(column));
-                                            break;
-
-                                        default:
-                                            break;
-                                    }
-                                } else {
-                                    ;
-                                }
-                            }
-                        }  
+                        default:
+                            break;
                     }
                 }
-            System.out.println(VERDE + "-----------------------------------------------------------------------" + RESET);   
             }
+            System.out.println(VERDE + "-----------------------------------------------------------------------" + RESET);   
+            
         } catch(SQLException e) {
             System.out.println(ROJO + "\n\tError de conexión a la base de datos: " + e.getMessage() + RESET);
         }
@@ -409,10 +384,12 @@ public class BD {
      */
     public static void borrarProducto(int id) {
 
-        String sql = "DELETE FROM producto WHERE id = " + id;
+        String sql = "DELETE FROM producto WHERE id = ?";
             
         try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
             PreparedStatement ps = conexion.prepareStatement(sql)) {
+
+            ps.setInt(1, id);
 
             int filas = ps.executeUpdate();
 
@@ -428,10 +405,12 @@ public class BD {
 
     public static Producto modificarProducto(Producto producto, String dato) {
 
-        String sql = "UPDATE empleado SET " + dato + " = ? WHERE id = " + producto.getId();
+        String sql = "UPDATE empleado SET " + dato + " = ? WHERE id = ?";
             
         try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
             PreparedStatement ps = conexion.prepareStatement(sql)) {
+
+            ps.setInt(2, producto.getId());
 
             System.out.print(VERDE + "\n Nuevo " + dato + ": " + RESET);
             Scanner sc = new Scanner(System.in);
@@ -493,7 +472,7 @@ public class BD {
      */
     public static Producto mostrarProducto(int id) {
 
-        String sql = "SELECT * FROM producto WHERE id = " + id;
+        String sql = "SELECT * FROM producto WHERE id = ?";
 
         Producto producto = null;
 
@@ -504,72 +483,56 @@ public class BD {
             
             System.out.println(VERDE + "\n-----------------------------------------------------------------------" + RESET);
 
+            ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
                     
             while (rs.next()) {
                 
-                if(!rs.next()) {
-                System.out.println(ROJO + "\n\tNo se ha encontrado un producto con este ID\n" + RESET);
+                producto = new Producto(0, "0000000000000", "X", "X", "0.00", 0, 0);
+                
+                for (String columna : columnas) {
 
-                } else {
-                    producto = new Producto(0, "0000000000000", "X", "X", "0.00", 0, 0);
-                    
-                    for (String columna : columnas) {
+                    System.out.print(VERDE + " " + columna.toUpperCase() + "\t" + RESET);
 
-                        rs = ps.executeQuery();
+                    if(columna.length() < 8) {
+                        System.out.println(VERDE + "\t\t->\t" + RESET + rs.getString(columna));
+                    } else if(columna.length() == 8 || columna.length() < 15) {
+                        System.out.println(VERDE + "\t->\t" + RESET + rs.getString(columna));
+                    } else {
+                        System.out.println(VERDE + "->\t" + RESET + rs.getString(columna));
+                    }
 
-                        while(rs.next()) {
-                            System.out.print(VERDE + " " + columna.toUpperCase() + "\t" + RESET);
+                    switch(columna) {
+                        case "id":
+                            producto.setId(rs.getInt(columna));
+                            break;
 
-                            for (String column : columnas) {
+                        case "ean":
+                            producto.setEan(rs.getString(columna));
+                            break;
 
-                                if(columna.equals(column)) {
+                        case "nombre":
+                            producto.setNombre(rs.getString(columna));
+                            break;
 
-                                    if(columna.length() < 8) {
-                                        System.out.println(VERDE + "\t\t->\t" + RESET + rs.getString(column));
-                                    } else if(columna.length() == 8 || columna.length() < 15) {
-                                        System.out.println(VERDE + "\t->\t" + RESET + rs.getString(column));
-                                    } else {
-                                        System.out.println(VERDE + "->\t" + RESET + rs.getString(column));
-                                    }
+                        case "descripcion":
+                            producto.setNombre(rs.getString(columna));
+                            break;
 
-                                    switch(column) {
-                                        case "id":
-                                            producto.setId(rs.getInt(column));
-                                            break;
+                        case "precio":
+                            producto.setPrecio(rs.getString(columna));
+                            break;
 
-                                        case "ean":
-                                            producto.setEan(rs.getString(column));
-                                            break;
+                        case "stock":
+                            producto.setStock(rs.getInt(columna));
+                            break;
 
-                                        case "nombre":
-                                            producto.setNombre(rs.getString(column));
-                                            break;
+                        case "stock_minimo":
+                            producto.setStockMinimo(rs.getInt(columna));
+                            break;
 
-                                        case "descripcion":
-                                            producto.setNombre(rs.getString(column));
-                                            break;
-
-                                        case "precio":
-                                            producto.setPrecio(rs.getString(column));
-                                            break;
-
-                                        case "stock":
-                                            producto.setStock(rs.getInt(column));
-                                            break;
-
-                                        case "stock_minimo":
-                                            producto.setStockMinimo(rs.getInt(column));
-                                            break;
-
-                                        default:
-                                            break;
-                                    }
-                                } else {
-                                    ;
-                                }
-                            }
-                        }  
+                        default:
+                            break;
                     }
                 }
             System.out.println(VERDE + "-----------------------------------------------------------------------" + RESET);   

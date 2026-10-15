@@ -56,7 +56,7 @@ public class Empleado {
 
         if(tipo==null || tipo.isEmpty() || tipo.isBlank()) {
             throw new IllegalArgumentException("Tipo de empleado obligatorio");
-        } else if(!tipo.toLowerCase().equals("gestor") || !tipo.toLowerCase().equals("operario")) {
+        } else if(!tipo.toLowerCase().equals("gestor") && !tipo.toLowerCase().equals("operario")) {
             throw new IllegalArgumentException("Tipo de empleado incorrecto, introduce uno de los siguientes valores: operario o gestor");
         }
 
@@ -91,11 +91,11 @@ public class Empleado {
         }
 
         if(apellidos==null || apellidos.isEmpty() || apellidos.isBlank()) {
-            throw new IllegalArgumentException("Nombre obligatorio");
+            throw new IllegalArgumentException("Apellidos obligatorios");
         }
 
         if(puesto==null || puesto.isEmpty() || puesto.isBlank()) {
-            throw new IllegalArgumentException("Nombre obligatorio");
+            throw new IllegalArgumentException("Puesto obligatorio");
         }
 
         if(email==null || email.isEmpty() || email.isBlank()) {
@@ -116,7 +116,7 @@ public class Empleado {
 
         if(tipo==null || tipo.isEmpty() || tipo.isBlank()) {
             throw new IllegalArgumentException("Tipo de empleado obligatorio");
-        } else if(!tipo.toLowerCase().equals("gestor") || !tipo.toLowerCase().equals("operario")) {
+        } else if(!tipo.toLowerCase().equals("gestor") && !tipo.toLowerCase().equals("operario")) {
             throw new IllegalArgumentException("Tipo de empleado incorrecto, introduce uno de los siguientes valores: operario o gestor");
         }
 
@@ -156,7 +156,7 @@ public class Empleado {
 
         if(contrasenya==null || contrasenya.isEmpty() || contrasenya.isBlank()) {
             throw new IllegalArgumentException("Contraseña obligatoria");
-        } else if(!contrasenya.matches(".*[ \\sáéíóúÁÉÍÓÚüÜñÑ].*")) {
+        } else if(contrasenya.matches(".*[ \\sáéíóúÁÉÍÓÚüÜñÑ].*")) {
             throw new IllegalArgumentException("La contraseña no puede contener espacios, tildes, diéresis o virgulillas");
         }
         this.contrasenya = contrasenya;
