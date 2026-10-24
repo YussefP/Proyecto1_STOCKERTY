@@ -42,6 +42,7 @@ public class BD {
 
     // Métodos de la clase
 
+    // Empleado ==========================================================================================================================================================
     /**
      * Método para acceder al programa principal, conectar con la base de datos y comprobar que el usuario y contraseña existen en la base de datos
      * @param usuario
@@ -348,6 +349,8 @@ public class BD {
         return empleado;
     }
 
+    // Producto ==========================================================================================================================================================
+
     /**
      * Método para insertar un nuevo producto en la base de datos
      * @param producto
@@ -542,4 +545,6 @@ public class BD {
         }
         return producto;
     }
+
+    // Soporte ==========================================================================================================================================================
 }
