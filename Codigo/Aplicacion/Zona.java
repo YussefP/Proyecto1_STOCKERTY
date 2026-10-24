@@ -6,8 +6,16 @@ public class Zona {
     private String nombre;
     private int idAlmacen;
 
-    // Constructor 
+    // Constructores
 
+    // Constructor 1 - Para crear una zona omitiendo el ID
+    public Zona(String nombre, int idAlmacen) {
+
+        this.nombre = nombre;
+        this.idAlmacen = idAlmacen;
+    }
+
+    // Constructor 2 - Para leer una zona
     public Zona(int id, String nombre, int idAlmacen) {
 
         this.id = id;

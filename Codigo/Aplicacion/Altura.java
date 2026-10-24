@@ -26,7 +26,7 @@ public class Altura {
         this.id = id;
     }
 
-    public void setNombre(int nivel) {
+    public void setNivel(int nivel) {
 
         this.nivel = nivel;
     }
