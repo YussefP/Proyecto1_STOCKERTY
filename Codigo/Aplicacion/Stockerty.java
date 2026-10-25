@@ -6,6 +6,7 @@ Aplicación para la gestión logística
 
 import java.util.ArrayList;
 import java.util.List;
+import java.time.LocalDateTime;
 import java.util.Scanner;
 
 public class Stockerty {
@@ -502,6 +503,9 @@ public class Stockerty {
                                                                         System.out.println(VERDE + "\n ¿Qué tipo de soporte quieres crear? Bulto/Palet: " + RESET);
                                                                         String tipoSoporte = sc.nextLine().toLowerCase();
 
+                                                                        Soporte soporte = new Soporte(tipoSoporte, LocalDateTime.now(), usuarioActual.getId());
+                                                                        long idSoporte = BD.insertarSoporte(soporte);
+
                                                                         List<Producto> contenido = new ArrayList<>();
 
                                                                         opcion = 1;
@@ -509,19 +513,37 @@ public class Stockerty {
                                                                         do {
                                                                             try {
 
+                                                                                nuevaPantalla();
                                                                                 System.out.println(VERDE + "\n Productos");
-                                                                                System.out.println("\n ID producto: " + RESET);
-                                                                                int producto = Integer.parseInt(sc.nextLine());
+                                                                                System.out.println("Introduce 0 para cerrar soporte");
+
+                                                                                System.out.print("\n ID producto: " + RESET);
+                                                                                int idProducto = Integer.parseInt(sc.nextLine());
+
+                                                                                if (idProducto == 0) {
+
+                                                                                    opcion = 0;
+                                                                                } else {
+
+                                                                                    System.out.print(VERDE + "\n cantidad: " + RESET);
+                                                                                    int cantidad = Integer.parseInt(sc.nextLine());
+
+                                                                                    Producto producto = BD.mostrarProducto(idProducto);
+                                                                                    producto.setStock(cantidad);
+
+                                                                                    contenido.add(producto);
+
+                                                                                    contenido.forEach(System.out::println);
+
+                                                                                    LlenaSoporte accion = new LlenaSoporte(usuarioActual.getId(), idSoporte, idProducto, cantidad, LocalDateTime.now());
+                                                                                    BD.insertarLlenaSoporte(accion);
+                                                                                }
+
                                                                             } catch(Exception e) {
                                                                                 System.out.println(e.getMessage());
-                                                                                error = true;
                                                                             }
-                                                                        } while(error);
+                                                                        } while(opcion == 1);
 
-                                                                        System.out.println(VERDE + "\n Introduce mercancía");
-                                                                        System.out.println("\n ID producto: ");
-
-                                                                        // crearZona();
                                                                         error = false;
 
                                                                         System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
