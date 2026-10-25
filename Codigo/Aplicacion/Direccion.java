@@ -6,8 +6,16 @@ public class Direccion {
     private String posicion;
     private int idAltura;
 
-    // Constructor 
+    // Constructores
 
+    // Constructores 1 - Para crear una dirección omitiendo el ID
+    public Direccion(String posicion, int idAltura) {
+
+        this.posicion = posicion;
+        this.idAltura = idAltura;
+    }
+
+    // Constructores 2 - Para leer una dirección
     public Direccion(int id, String posicion, int idAltura) {
 
         this.id = id;

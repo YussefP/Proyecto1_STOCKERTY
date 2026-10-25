@@ -7,15 +7,23 @@ public class Departamento {
     private String responsable;
     private int idTienda;
 
-    // Constructor
+    // Constructores
 
+    // Constructor 1 - Para crear un departamento omitiendo el ID
+    public Departamento(String nombre, String responsable, int idTienda) {
+
+        this.nombre = nombre;
+        this.responsable = responsable;
+        this.idTienda = idTienda;
+    }
+
+    // Constructor 2 - Para leer un departamento
     public Departamento(int id, String nombre, String responsable, int idTienda) {
 
         this.id = id;
         this.nombre = nombre;
         this.responsable = responsable;
         this.idTienda = idTienda;
-
     }
 
     // Getters y Setters

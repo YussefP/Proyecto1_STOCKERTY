@@ -6,8 +6,16 @@ public class Altura {
     private int nivel;
     private int idRack;
 
-    // Constructor 
+    // Constructores
 
+    // Constructor 1 - Para crear una altura omitiendo el ID
+    public Altura(int nivel, int idRack) {
+
+        this.nivel = nivel;
+        this.idRack = idRack;
+    }
+
+    // Constructor 2 - Para leer una altura
     public Altura(int id, int nivel, int idRack) {
 
         this.id = id;

@@ -6,8 +6,16 @@ public class Pasillo {
     private String nombre;
     private int idZona;
 
-    // Constructor 
+    // Constructores 
 
+    // Constructor 1 - Para crear un pasillo omitiendo el ID
+    public Pasillo(String nombre, int idZona) {
+
+        this.nombre = nombre;
+        this.idZona = idZona;
+    }
+
+    // Constructor 2 - Para leer un pasillo
     public Pasillo(int id, String nombre, int idZona) {
 
         this.id = id;

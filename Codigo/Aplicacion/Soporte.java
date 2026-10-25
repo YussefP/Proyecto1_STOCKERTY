@@ -26,7 +26,6 @@ public class Soporte {
         this.tipo = tipo;
         this.fecha = fecha;
         this.idEmpleado = idEmpleado;
-        this.abreviatura = (int)(id % 100000);
     }
 
     // Constructor 1 - Para crear un soporte omitiendo Id y abreviatura
@@ -41,7 +40,6 @@ public class Soporte {
         this.fecha = fecha;
         this.idEmpleado = idEmpleado;
         this.contenido = contenido;
-        this.abreviatura = (int)(id % 100000);
     }
 
     // constructor 2 - Para leer un soporte sin ubicación
@@ -93,7 +91,7 @@ public class Soporte {
 
     public void setAbreviatura(int abreviatura) {
 
-        this.abreviatura = (int)(id % 100000);
+        this.abreviatura = abreviatura;
     }
 
     public void setTipo(String tipo) {

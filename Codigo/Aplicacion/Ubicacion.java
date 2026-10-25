@@ -8,8 +8,18 @@ public class Ubicacion {
     private int idAltura;
     private int idDireccion;
 
-    // Constructor 
+    // Constructores
 
+    // Constructor 1 - Para crear una ubicación omitiendo el ID
+    public Ubicacion(String nombre, int idRack, int idAltura, int idDireccion) {
+
+        this.nombre = nombre;
+        this.idRack = idRack;
+        this.idAltura = idAltura;
+        this.idDireccion = idDireccion;
+    }
+
+    // Constructor 2 - Para leer una ubicación
     public Ubicacion(int id, String nombre, int idRack, int idAltura, int idDireccion) {
 
         this.id = id;

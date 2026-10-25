@@ -398,16 +398,17 @@ public class Stockerty {
                 } else {
                     System.out.println(GRIS_OSCURO + "\n\t5-PRODUCTOS");
                 }
-                System.out.println(GRIS_OSCURO + "\n\t6-HISTÓRICO");
-                System.out.println(VERDE + "\n\t7-ADMINISTRADOR");
-                System.out.println("\n\t8-SALIR");
+                System.out.println(VERDE + "\n\t6-CLIENTES");
+                System.out.println(GRIS_OSCURO + "\n\t7-HISTÓRICO");
+                System.out.println(VERDE + "\n\t8-ADMINISTRADOR");
+                System.out.println("\n\t9-SALIR");
                 System.out.println("==============================================");
 
                 System.out.print("\n Introduce una opción: " + RESET);
                 
                 opcion = Integer.parseInt(sc.nextLine());
 
-                if(opcion < 1 || opcion > 8) {
+                if(opcion < 1 || opcion > 9) {
                     nuevaPantalla();
                     System.out.println(ROJO + "\tError, opción no válida\n" + RESET); 
                 }
@@ -433,15 +434,15 @@ public class Stockerty {
 
                             try {
                                 System.out.println(VERDE + "\n\t1-GESTIONAR SOPORTES");
-                                System.out.println("\n\t2-UBICAR MERCANCÍA");
+                                System.out.println(GRIS_OSCURO + "\n\t2-UBICAR MERCANCÍA");
                                 System.out.println("\n\t3-GESTIÓN ALMACÉN");
                                 
                                 if(usuarioActual.getTipo().equals("gestor")) {
                                     System.out.println(VERDE + "\n\t4-ESTRUCTURA ALMACÉN");
                                 } else {
-                                    System.out.println(GRIS_OSCURO + "\n\t4-ESTRUCTURA ALMACÉN");
+                                    System.out.println(GRIS_OSCURO + "\n\t4-ESTRUCTURA ALMACÉN" + RESET);
                                 }
-                                System.out.println("\n\t5-SALIR");
+                                System.out.println(VERDE + "\n\t5-SALIR");
                                 System.out.println("\n <- Volver [0]");
                                 System.out.println("==============================================");
 
@@ -500,11 +501,14 @@ public class Stockerty {
                                                                 
                                                                 do {
                                                                     try {
-                                                                        System.out.println(VERDE + "\n ¿Qué tipo de soporte quieres crear? Bulto/Palet: " + RESET);
+                                                                        System.out.print(VERDE + "\n ¿Qué tipo de soporte quieres crear? Bulto/Palet: " + RESET);
                                                                         String tipoSoporte = sc.nextLine().toLowerCase();
 
                                                                         Soporte soporte = new Soporte(tipoSoporte, LocalDateTime.now(), usuarioActual.getId());
                                                                         long idSoporte = BD.insertarSoporte(soporte);
+                                                                        soporte.setId(idSoporte);
+                                                                        soporte = BD.modificarSoporte(soporte, "abreviatura");
+                                                                        nuevaPantalla();
 
                                                                         List<Producto> contenido = new ArrayList<>();
 
@@ -513,8 +517,7 @@ public class Stockerty {
                                                                         do {
                                                                             try {
 
-                                                                                nuevaPantalla();
-                                                                                System.out.println(VERDE + "\n Productos");
+                                                                                System.out.println(VERDE + "\n Añade productos");
                                                                                 System.out.println("Introduce 0 para cerrar soporte");
 
                                                                                 System.out.print("\n ID producto: " + RESET);
@@ -525,20 +528,23 @@ public class Stockerty {
                                                                                     opcion = 0;
                                                                                 } else {
 
+                                                                                    Producto producto = BD.mostrarProducto(idProducto);
+
                                                                                     System.out.print(VERDE + "\n cantidad: " + RESET);
                                                                                     int cantidad = Integer.parseInt(sc.nextLine());
-
-                                                                                    Producto producto = BD.mostrarProducto(idProducto);
+                                                                                    
                                                                                     producto.setStock(cantidad);
 
                                                                                     contenido.add(producto);
 
-                                                                                    contenido.forEach(System.out::println);
+                                                                                    nuevaPantalla();
+                                                                                    System.out.println(VERDE + "\nSoporte: " + RESET + soporte.getAbreviatura());
+
+                                                                                    contenido.forEach(p -> System.out.println(" " + p.getId() + "\t" + p.getNombre() + "\t" + p.getStock() + " unidades"));
 
                                                                                     LlenaSoporte accion = new LlenaSoporte(usuarioActual.getId(), idSoporte, idProducto, cantidad, LocalDateTime.now());
                                                                                     BD.insertarLlenaSoporte(accion);
                                                                                 }
-
                                                                             } catch(Exception e) {
                                                                                 System.out.println(e.getMessage());
                                                                             }
@@ -565,14 +571,25 @@ public class Stockerty {
 
                                                                 do {
                                                                     try {
-                                                                        // crearPasillo();
-                                                                        error = false;
+                                                                        System.out.print(VERDE + "\n Introduce el nº de soporte que quieres modificar: " + RESET);
+                                                                        int id = Integer.parseInt(sc.nextLine());
 
-                                                                        System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
-                                                                        sc.nextLine();
+                                                                        Soporte soporte1 = BD.mostrarSoporte(id);
+
+                                                                        do {
+                                                                            System.out.print(VERDE + "\n ¿Qué dato quieres modificar?: " + RESET);
+                                                                            String dato = sc.nextLine().toLowerCase();
+                                                                            
+                                                                            soporte1 = BD.modificarSoporte(soporte1, dato);
+                                                                            error = false;
+
+                                                                            System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
+                                                                            sc.nextLine();
+
+                                                                        } while(error);
 
                                                                     } catch (Exception e) {
-                                                                        System.out.println(ROJO + "\n\tError, introduce una opción válida" + RESET);
+                                                                        System.out.println(ROJO + "\n\tError, se necesita un ID numérico" + RESET);
                                                                         error = true;
                                                                     }
                                                                 } while(error);
@@ -586,14 +603,30 @@ public class Stockerty {
 
                                                                 do {
                                                                     try {
-                                                                        // crearRack();
-                                                                        error = false;
+                                                                        System.out.print(VERDE + "\n Introduce el nº de soporte que quieres borrar: " + RESET);
+                                                                        int id = Integer.parseInt(sc.nextLine());
 
-                                                                        System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
-                                                                        sc.nextLine();
+                                                                        Soporte soporte1 = BD.mostrarSoporte(id);
 
+                                                                        System.out.print(VERDE + "\n ¿Borrar el soporte " + soporte1.getAbreviatura() + " de la base de datos? s/n: " + RESET);
+                                                                        String validar = sc.nextLine().toLowerCase();
+
+                                                                        if(validar.equals("s")) {
+                                                                            BD.borrarSoporte(id);
+                                                                            error = false;
+
+                                                                            if(opcion == 0) {
+                                                                                nuevaPantalla();
+                                                                            } else {
+                                                                                System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
+                                                                                sc.nextLine();
+                                                                            }
+                                                                        } else {
+                                                                            opcion = 0;
+                                                                            nuevaPantalla();
+                                                                        }
                                                                     } catch (Exception e) {
-                                                                        System.out.println(ROJO + "\n\tError, introduce una opción válida" + RESET);
+                                                                        System.out.println(ROJO + "\n\tError, se necesita un ID numérico" + RESET);
                                                                         error = true;
                                                                     }
                                                                 } while(error);
@@ -607,14 +640,21 @@ public class Stockerty {
 
                                                                 do {
                                                                     try {
-                                                                        // crearUbicacion();
+                                                                        System.out.print(VERDE + "\n Introduce el nº de soporte que quieres mostrar: " + RESET);
+                                                                        int id = Integer.parseInt(sc.nextLine());
+
+                                                                        List<LlenaSoporte> lista;
+                                                                        lista = BD.mostrarContenido(id);
+
+                                                                        lista.forEach(p -> System.out.println(" " + p.getIdProducto() + "\t" + p.getCantidad() + " unidades"));
+
                                                                         error = false;
 
                                                                         System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
                                                                         sc.nextLine();
 
                                                                     } catch (Exception e) {
-                                                                        System.out.println(ROJO + "\n\tError, introduce una opción válida" + RESET);
+                                                                        System.out.println(ROJO + "\n\tError, se necesita un ID numérico" + e.getMessage() + RESET);
                                                                         error = true;
                                                                     }
                                                                 } while(error);
@@ -643,12 +683,12 @@ public class Stockerty {
                                                 System.out.println("==============================================");
 
                                                 try {
-                                                    System.out.println(VERDE + "\n\t1-UBICAR SOPORTE");
+                                                    System.out.println(GRIS_OSCURO + "\n\t1-UBICAR SOPORTE");
                                                     System.out.println("\n\t2-UBICAR PRODUCTOS");
                                                     System.out.println("\n\t3-MODIFICAR UBICACIÓN");
                                                     System.out.println("\n\t4-LIBERAR UBICACIÓN");
                                                     System.out.println("\n\t5-MOSTRAR UBICACIÓN");
-                                                    System.out.println("\n\t6-SALIR");
+                                                    System.out.println(VERDE + "\n\t6-SALIR");
                                                     System.out.println("\n <- Volver [0]");
                                                     System.out.println("==============================================");
 
@@ -825,11 +865,11 @@ public class Stockerty {
                                                 System.out.println("==============================================");
 
                                                 try {
-                                                    System.out.println(VERDE + "\n\t1-LISTAR UBICACIONES");
+                                                    System.out.println(GRIS_OSCURO + "\n\t1-LISTAR UBICACIONES");
                                                     System.out.println("\n\t2-LISTAR SOPORTES");
                                                     System.out.println("\n\t3-LISTAR PRODUCTOS");
                                                     System.out.println("\n\t4-LISTAR FECHAS");
-                                                    System.out.println("\n\t5-SALIR");
+                                                    System.out.println(VERDE + "\n\t5-SALIR");
                                                     System.out.println("\n <- Volver [0]");
                                                     System.out.println("==============================================");
 
@@ -971,8 +1011,8 @@ public class Stockerty {
                                                     System.out.println(VERDE + "\n\t1-CREAR ELEMENTOS");
                                                     System.out.println("\n\t2-MODIFICAR ELEMENTOS");
                                                     System.out.println("\n\t3-ELIMINAR ELEMENTOS");
-                                                    System.out.println("\n\t4-VER ESTRUCTURA");
-                                                    System.out.println("\n\t5-SALIR");
+                                                    System.out.println(GRIS_OSCURO + "\n\t4-VER ESTRUCTURA");
+                                                    System.out.println(VERDE + "\n\t5-SALIR");
                                                     System.out.println("\n <- Volver [0]");
                                                     System.out.println("==============================================");
 
@@ -999,17 +1039,118 @@ public class Stockerty {
 
                                                                 do {
                                                                     try {
-                                                                        System.out.print(VERDE + "\n ID del almacén: " + RESET);
-                                                                        // int idAlmacen = Integer.parseInt(sc.nextLine());
+                                                                        System.out.print(VERDE + "\n ¿Qué elemento quieres crear? Zona/Pasillo/Rack: " + RESET);
+                                                                        String elemento = sc.nextLine().toLowerCase();
 
-                                                                        // mostrarAlmacen(idAlmacen);
+                                                                        switch (elemento) {
+                                                                            case "zona":
+                                                                                System.out.print(VERDE + "\n Nombre de la nueva zona: " + RESET);
+                                                                                String nombreZona = sc.nextLine();
+
+                                                                                System.out.print(VERDE + "\n ID del almacén al que pertenece: " + RESET);
+                                                                                int idAlmacen = Integer.parseInt(sc.nextLine());
+
+                                                                                Zona zona = new Zona(nombreZona, idAlmacen);
+                                                                                BD.insertarZona(zona);
+
+                                                                                break;
+
+                                                                            case "pasillo":
+                                                                                System.out.print(VERDE + "\n Nombre del nuevo pasillo: " + RESET);
+                                                                                String nombrePasillo = sc.nextLine();
+
+                                                                                System.out.print(VERDE + "\n ID de la zona a la que pertenece: " + RESET);
+                                                                                int idZona = Integer.parseInt(sc.nextLine());
+
+                                                                                Pasillo pasillo = new Pasillo(nombrePasillo, idZona);
+                                                                                BD.insertarPasillo(pasillo);
+
+                                                                                break;
+
+                                                                            case "rack":
+                                                                                System.out.print(VERDE + "\n Nombre del nuevo rack: " + RESET);
+                                                                                String nombreRack = sc.nextLine();
+
+                                                                                System.out.print(VERDE + "\n ID del pasillo al que pertenece: " + RESET);
+                                                                                int idPasillo = Integer.parseInt(sc.nextLine());
+
+                                                                                System.out.print(VERDE + "\n Nº de alturas: " + RESET);
+                                                                                int alturasRack = Integer.parseInt(sc.nextLine());
+
+                                                                                System.out.print(VERDE + "\n Nº de direcciones por altura: " + RESET);
+                                                                                int direccionesAltura = Integer.parseInt(sc.nextLine());
+
+                                                                                Rack rack = new Rack(nombreRack, idPasillo);
+                                                                                int idRack = BD.insertarRack(rack);
+
+                                                                                int nivelesAltura = alturasRack;
+                                                                                int contador = 0;
+
+                                                                                do {
+                                                                                    Altura altura = new Altura(contador, idRack);
+                                                                                    int idAltura = BD.insertarAltura(altura);
+
+                                                                                    int posicionDireccion = direccionesAltura;
+                                                                                    int contador2 = 1;
+
+                                                                                    do {
+                                                                                        String posicion = null;
+                                                                                        switch(contador2) {
+                                                                                            case 1:
+                                                                                                posicion = "A";
+                                                                                                break;
+
+                                                                                            case 2:
+                                                                                                posicion = "B";
+                                                                                                break;
+
+                                                                                            case 3:
+                                                                                                posicion = "C";
+                                                                                                break;
+
+                                                                                            case 4:
+                                                                                                posicion = "D";
+                                                                                                break;
+
+                                                                                            case 5:
+                                                                                                posicion = "E";
+                                                                                                break;
+
+                                                                                            case 6:
+                                                                                                posicion = "F";
+                                                                                                break;
+
+                                                                                            case 7:
+                                                                                                posicion = "G";
+                                                                                                break;
+
+                                                                                            default:
+                                                                                                break;
+                                                                                        }
+                                                                                        Direccion direccion = new Direccion(posicion, idAltura);
+                                                                                        int idDireccion = BD.insertarDireccion(direccion);
+
+                                                                                        if(contador2 != posicionDireccion) {
+                                                                                            contador2++;
+                                                                                        }
+                                                                                    } while(contador2 != posicionDireccion);
+
+                                                                                    contador++;
+
+                                                                                } while(contador != nivelesAltura);
+
+                                                                                break;
+
+                                                                            default:
+                                                                                break;
+                                                                        }
                                                                         error = false;
 
                                                                         System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
                                                                         sc.nextLine();
 
                                                                     } catch (Exception e) {
-                                                                        System.out.println(ROJO + "\n\tError, se necesita un ID numérico" + RESET);
+                                                                        System.out.println(ROJO + "\n\tError, introduce una opción válida" + RESET);
                                                                         error = true;
                                                                     }
                                                                 } while(error);
@@ -1024,17 +1165,82 @@ public class Stockerty {
 
                                                                 do {
                                                                     try {
-                                                                        System.out.print(VERDE + "\n ID de la zona: " + RESET);
-                                                                        // int idZona = Integer.parseInt(sc.nextLine());
+                                                                        System.out.print(VERDE + "\n ¿Qué elemento quieres modificar? Zona/Pasillo/Rack: " + RESET);
+                                                                        String elemento = sc.nextLine().toLowerCase();
 
-                                                                        // mostrarZona(idZona);
+                                                                        switch (elemento) {
+                                                                            case "zona":
+                                                                                System.out.print(VERDE + "\n ID zona: " + RESET);
+                                                                                int idZona = Integer.parseInt(sc.nextLine());
+
+                                                                                Zona zona1 = BD.mostrarZona(idZona);
+
+                                                                                System.out.print(VERDE + "\n ¿Qué dato quieres modificar?: " + RESET);
+                                                                                String datoZona = sc.nextLine().toLowerCase();
+
+                                                                                BD.modificarZona(zona1, datoZona);
+                                                                                error = false;
+
+                                                                                if(opcion == 0) {
+                                                                                    nuevaPantalla();
+                                                                                } else {
+                                                                                    System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
+                                                                                    sc.nextLine();
+                                                                                }
+                                                                                
+                                                                                break;
+
+                                                                            case "pasillo":
+                                                                                System.out.print(VERDE + "\n ID pasillo: " + RESET);
+                                                                                int idPasillo = Integer.parseInt(sc.nextLine());
+
+                                                                                Pasillo pasillo1 = BD.mostrarPasillo(idPasillo);
+
+                                                                                System.out.print(VERDE + "\n ¿Qué dato quieres modificar?: " + RESET);
+                                                                                String datoPasillo = sc.nextLine().toLowerCase();
+
+                                                                                BD.modificarPasillo(pasillo1, datoPasillo);
+                                                                                error = false;
+
+                                                                                if(opcion == 0) {
+                                                                                    nuevaPantalla();
+                                                                                } else {
+                                                                                    System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
+                                                                                    sc.nextLine();
+                                                                                }
+                                                                                break;
+
+                                                                            case "rack":
+                                                                                System.out.print(VERDE + "\n ID rack: " + RESET);
+                                                                                int idRack = Integer.parseInt(sc.nextLine());
+
+                                                                                Rack rack1 = BD.mostrarRack(idRack);
+
+                                                                                System.out.print(VERDE + "\n ¿Qué dato quieres modificar?: " + RESET);
+                                                                                String datoRack = sc.nextLine().toLowerCase();
+
+                                                                                BD.modificarRack(rack1, datoRack);
+                                                                                error = false;
+
+                                                                                if(opcion == 0) {
+                                                                                    nuevaPantalla();
+                                                                                } else {
+                                                                                    System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
+                                                                                    sc.nextLine();
+                                                                                }
+                                                                                break;
+
+                                                                            default:
+                                                                                break;
+                                                                        }
+
                                                                         error = false;
 
                                                                         System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
                                                                         sc.nextLine();
 
                                                                     } catch (Exception e) {
-                                                                        System.out.println(ROJO + "\n\tError, se necesita un ID numérico" + RESET);
+                                                                        System.out.println(ROJO + "\n\tError, introduce una opción válida" + RESET);
                                                                         error = true;
                                                                     }
                                                                 } while(error);
@@ -1048,17 +1254,96 @@ public class Stockerty {
 
                                                                 do {
                                                                     try {
-                                                                        System.out.print(VERDE + "\n ID del pasillo: " + RESET);
-                                                                        // int idPasillo = Integer.parseInt(sc.nextLine());
+                                                                        System.out.print(VERDE + "\n ¿Qué elemento quieres modificar? Zona/Pasillo/Rack: " + RESET);
+                                                                        String elemento = sc.nextLine().toLowerCase();
 
-                                                                        // mostrarPasillo(idPasillo);
+                                                                        switch (elemento) {
+                                                                            case "zona":
+                                                                                System.out.print(VERDE + "\n ID zona: " + RESET);
+                                                                                int idZona = Integer.parseInt(sc.nextLine());
+
+                                                                                Zona zona1 = BD.mostrarZona(idZona);
+
+                                                                                System.out.print(VERDE + "\n ¿Borrar la zona " + zona1.getId() + " " + zona1.getNombre() + " de la base de datos? s/n: " + RESET);
+                                                                                String validarZona = sc.nextLine().toLowerCase();
+
+                                                                                if(validarZona.equals("s")) {
+                                                                                    BD.borrarZona(zona1.getId());
+                                                                                    error = false;
+
+                                                                                    if(opcion == 0) {
+                                                                                        nuevaPantalla();
+                                                                                    } else {
+                                                                                        System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
+                                                                                        sc.nextLine();
+                                                                                    }
+                                                                                } else {
+                                                                                    opcion = 0;
+                                                                                    nuevaPantalla();
+                                                                                }
+                                                                                break;
+
+                                                                            case "pasillo":
+                                                                                System.out.print(VERDE + "\n ID pasillo: " + RESET);
+                                                                                int idPasillo = Integer.parseInt(sc.nextLine());
+
+                                                                                Pasillo pasillo1 = BD.mostrarPasillo(idPasillo);
+
+                                                                                System.out.print(VERDE + "\n ¿Borrar el pasillo " + pasillo1.getId() + " " + pasillo1.getNombre() + " de la base de datos? s/n: " + RESET);
+                                                                                String validarPasillo = sc.nextLine().toLowerCase();
+
+                                                                                if(validarPasillo.equals("s")) {
+                                                                                    BD.borrarPasillo(pasillo1.getId());
+                                                                                    error = false;
+
+                                                                                    if(opcion == 0) {
+                                                                                        nuevaPantalla();
+                                                                                    } else {
+                                                                                        System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
+                                                                                        sc.nextLine();
+                                                                                    }
+                                                                                } else {
+                                                                                    opcion = 0;
+                                                                                    nuevaPantalla();
+                                                                                }
+                                                                                break;
+
+                                                                            case "rack":
+                                                                                System.out.print(VERDE + "\n ID rack: " + RESET);
+                                                                                int idRack = Integer.parseInt(sc.nextLine());
+
+                                                                                Rack rack1 = BD.mostrarRack(idRack);
+
+                                                                                System.out.print(VERDE + "\n ¿Borrar el rack " + rack1.getId() + " " + rack1.getNombre() + " de la base de datos? s/n: " + RESET);
+                                                                                String validarRack = sc.nextLine().toLowerCase();
+
+                                                                                if(validarRack.equals("s")) {
+                                                                                    BD.borrarRack(rack1.getId());
+                                                                                    error = false;
+
+                                                                                    if(opcion == 0) {
+                                                                                        nuevaPantalla();
+                                                                                    } else {
+                                                                                        System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
+                                                                                        sc.nextLine();
+                                                                                    }
+                                                                                } else {
+                                                                                    opcion = 0;
+                                                                                    nuevaPantalla();
+                                                                                }
+                                                                                break;
+
+                                                                            default:
+                                                                                break;
+                                                                        }
+
                                                                         error = false;
 
                                                                         System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
                                                                         sc.nextLine();
 
                                                                     } catch (Exception e) {
-                                                                        System.out.println(ROJO + "\n\tError, se necesita un ID numérico" + RESET);
+                                                                        System.out.println(ROJO + "\n\tError, introduce una opción válida" + RESET);
                                                                         error = true;
                                                                     }
                                                                 } while(error);
@@ -1072,10 +1357,10 @@ public class Stockerty {
 
                                                                 do {
                                                                     try {
-                                                                        System.out.print(VERDE + "\n ID del rack: " + RESET);
-                                                                        // int idRack = Integer.parseInt(sc.nextLine());
+                                                                        System.out.print(VERDE + "\n ID del almacén: " + RESET);
+                                                                        // int idAlmacen = Integer.parseInt(sc.nextLine());
 
-                                                                        // mostrarRack(idRack);
+                                                                        // BD.verEstructura(idAlmacen);
                                                                         error = false;
 
                                                                         System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
@@ -1360,10 +1645,242 @@ public class Stockerty {
                         break;
 
                     case 6:
-                        opcion = 0;
+
+                        do {
+                            nuevaPantalla();
+                            System.out.println(VERDE + "==============================================");
+                            System.out.println("\t\tCLIENTES");
+                            System.out.println("==============================================");
+
+                            try {
+                                System.out.println(VERDE + "\n\t1-INTRODUCIR CLIENTE");
+                                System.out.println("\n\t2-ELIMINAR CLIENTE");
+                                System.out.println("\n\t3-MODIFICAR CLIENTE");
+                                System.out.println("\n\t4-DATOS CLIENTE");
+                                System.out.println("\n\t5-SALIR");
+                                System.out.println("\n <- Volver [0]");
+                                System.out.println("==============================================");
+
+                                System.out.print("\n Introduce una opción: " + RESET);
+                                
+                                opcion = Integer.parseInt(sc.nextLine());
+
+                                if(opcion < 1 || opcion > 5) {
+                                    if(opcion == 0) {
+                                        nuevaPantalla();
+                                        break;
+                                    } else {
+                                        nuevaPantalla();
+                                        System.out.println(ROJO + "\n\tError, introduce una opción válida" + RESET);
+                                    }
+                                    
+                                } else {
+                                    switch (opcion) {
+                                        case 1:
+                                            nuevaPantalla();
+                                            System.out.println(VERDE + "----------------------------------------------");
+                                            System.out.println("\t\tINTRODUCIR CLIENTE");
+                                            System.out.println("----------------------------------------------");
+
+                                            Cliente cliente = new Cliente("00000000X", "X", "X", "X","x@x.xx", "700000000");
+
+                                            do{
+                                                try {
+                                                    System.out.println("\n Introduce los datos del nuevo cliente");
+                                                    System.out.println("\n NIF o DNI: " + RESET);
+                                                    cliente.setNif(sc.nextLine());
+
+                                                    error = false;
+
+                                                    do{
+                                                        try {
+                                                            System.out.println(VERDE + "\n Nombre: " + RESET);
+                                                            cliente.setNombre(sc.nextLine());
+
+                                                            error = false;
+
+                                                            do{
+                                                                try {
+                                                                    System.out.println(VERDE + "\n Apellidos: " + RESET);
+                                                                    cliente.setApellidos(sc.nextLine());
+
+                                                                    error = false;
+
+                                                                    do{
+                                                                        try {
+                                                                            System.out.println(VERDE + "\n Dirección: " + RESET);
+                                                                            cliente.setDireccion(sc.nextLine());
+
+                                                                            error = false;
+
+                                                                            do{
+                                                                                try {
+                                                                                    System.out.println(VERDE + "\n Email: " + RESET);
+                                                                                    cliente.setEmail(sc.nextLine());
+
+                                                                                    error = false;
+
+                                                                                    do{
+                                                                                        try {
+                                                                                            System.out.println(VERDE + "\n Teléfono: " + RESET);
+                                                                                            cliente.setTelefono(sc.nextLine());
+
+                                                                                            error = false;
+
+                                                                                        } catch(Exception e) {
+                                                                                            System.out.println(ROJO + e.getMessage() + RESET);
+                                                                                            error = true;
+                                                                                        }
+                                                                                    } while(error);
+
+                                                                                } catch(Exception e) {
+                                                                                    System.out.println(ROJO + e.getMessage() + RESET);
+                                                                                    error = true;
+                                                                                }
+                                                                            } while(error);
+
+                                                                        } catch(Exception e) {
+                                                                            System.out.println(ROJO + e.getMessage() + RESET);
+                                                                            error = true;
+                                                                        }
+                                                                    } while(error);
+
+                                                                } catch(Exception e) {
+                                                                    System.out.println(ROJO + e.getMessage() + RESET);
+                                                                    error = true;
+                                                                }
+                                                            } while(error);
+
+                                                        } catch(Exception e) {
+                                                            System.out.println(ROJO + e.getMessage() + RESET);
+                                                            error = true;
+                                                        }
+                                                    } while(error);
+
+                                                } catch(Exception e) {
+                                                    System.out.println(ROJO + e.getMessage() + RESET);
+                                                    error = true;
+                                                }
+                                            } while(error);
+
+                                            BD.insertarCliente(cliente);
+                                            break;
+
+                                        case 2:
+                                            nuevaPantalla();
+                                            System.out.println(VERDE + "----------------------------------------------");
+                                            System.out.println("\t\tELIMINAR CLIENTE");
+                                            System.out.println("----------------------------------------------" + RESET);
+
+                                            do {
+                                                try {
+                                                    System.out.print(VERDE + "\n Introduce el NIF del cliente que quieres borrar: " + RESET);
+                                                    String nifCliente = sc.nextLine();
+
+                                                    Cliente cliente1 = BD.mostrarCliente(nifCliente);
+
+                                                    System.out.print(VERDE + "\n ¿Borrar al cliente " + cliente1.getNombre() + " " + cliente1.getApellidos() + " " + cliente1.getNif() + " de la base de datos? s/n: " + RESET);
+                                                    String validar = sc.nextLine().toLowerCase();
+
+                                                    if(validar.equals("s")) {
+                                                        BD.borrarCliente(nifCliente);
+                                                        error = false;
+
+                                                        if(opcion == 0) {
+                                                            nuevaPantalla();
+                                                        } else {
+                                                            System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
+                                                            sc.nextLine();
+                                                        }
+                                                    } else {
+                                                        opcion = 0;
+                                                        nuevaPantalla();
+                                                    }
+                                                } catch (Exception e) {
+                                                    System.out.println(ROJO + "\n\t" + e.getMessage() + RESET);
+                                                    error = true;
+                                                }
+                                            } while(error);
+                                            break;
+                                    
+                                        case 3:
+                                            nuevaPantalla();
+                                            System.out.println(VERDE + "----------------------------------------------");
+                                            System.out.println("\t\tMODIFICAR CLIENTE");
+                                            System.out.println("----------------------------------------------" + RESET);
+
+                                            do {
+                                                try {
+                                                    System.out.print(VERDE + "\n Introduce el NIF del cliente que quieres modificar: " + RESET);
+                                                    String nifCliente = sc.nextLine();
+
+                                                    Cliente cliente1 = BD.mostrarCliente(nifCliente);
+
+                                                    do {
+                                                        System.out.print(VERDE + "\n ¿Qué dato quieres modificar?: " + RESET);
+                                                        String dato = sc.nextLine().toLowerCase();
+                                                        
+                                                        cliente1 = BD.modificarCliente(cliente1, dato);
+                                                        error = false;
+
+                                                        System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
+                                                        sc.nextLine();
+
+                                                    } while(error);
+
+                                                } catch (Exception e) {
+                                                    System.out.println(ROJO + "\n\tError, se necesita un ID numérico" + RESET);
+                                                    error = true;
+                                                }
+                                            } while(error);
+                                            break;
+
+                                        case 4:
+                                            nuevaPantalla();
+                                            System.out.println(VERDE + "----------------------------------------------");
+                                            System.out.println("\t\tDATOS CLIENTE");
+                                            System.out.println("----------------------------------------------" + RESET);
+
+                                            do {
+                                                try {
+                                                    System.out.print(VERDE + "\n Introduce el NIF del cliente que quieres mostrar: " + RESET);
+                                                    String nifCliente = sc.nextLine();
+
+                                                    Cliente cliente1 = BD.mostrarCliente(nifCliente);
+
+                                                    error = false;
+
+                                                    System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
+                                                    sc.nextLine();
+
+                                                } catch (Exception e) {
+                                                    System.out.println(ROJO + "\n\tError, se necesita un ID numérico" + RESET);
+                                                    error = true;
+                                                }
+                                            } while(error);
+                                            break;
+
+                                        case 5:
+                                            salir();
+
+                                        default:
+                                            break;
+                                    }
+                                }
+                            } catch(Exception e) {
+                                nuevaPantalla();
+                                System.out.println(ROJO + "\n\tError, introduce un número [1-5]" + RESET);
+                            }
+                            if(opcion == 0) break;
+                        } while(opcion > 0 || opcion < 6);
+
                         break;
 
                     case 7:
+                        opcion = 0;
+                        break;
+
+                    case 8:
                         nuevaPantalla();
                         do {
                             System.out.println(VERDE + "==============================================");
@@ -1462,7 +1979,7 @@ public class Stockerty {
                             }  
                         } while(opcion > 0 || opcion < 5);
                         break;
-                    case 8:
+                    case 9:
                         salir();
 
                     default:
@@ -1471,10 +1988,10 @@ public class Stockerty {
             } catch(Exception e) {
 
                 nuevaPantalla();
-                System.out.println(ROJO + "\tError, introduce un número [1-8]\n" + RESET);
+                System.out.println(ROJO + "\tError, introduce un número [1-9]\n" + RESET);
             }
             
-        } while(opcion < 1 || opcion > 7);
+        } while(opcion < 1 || opcion > 8);
 
         sc.close();
     }

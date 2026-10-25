@@ -115,10 +115,15 @@ public class BD {
     /**
      * Método para insertar un nuevo empleado en la base de datos
      * @param empleado
+     * @return
      */
-    public static void insertarEmpleado(Empleado empleado) {
+    public static String insertarEmpleado(Empleado empleado) {
 
         String sql = "INSERT INTO empleado (contrasenya, nif, nombre, apellidos, puesto, direccion, email, telefono, id_departamento, tipo) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+
+        String infoEmpleado = "";
+
+        String sql2 = "SELECT id, contrasenya FROM empleado ORDER BY id DESC LIMIT 1";
 
         try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
             PreparedStatement ps = conexion.prepareStatement(sql)) {
@@ -138,12 +143,22 @@ public class BD {
 
             if(filas > 0) {
                 System.out.println(VERDE + "\n\t¡Nuevo empleado creado!");
+
+                try (PreparedStatement pst = conexion.prepareStatement(sql2);
+                    ResultSet rs = pst.executeQuery()) {
+
+                    while (rs.next()) {
+
+                        infoEmpleado = rs.getString("id" + " " + "contrasenya");
+                    }
+                }
             } else {
                 System.out.println(ROJO + "\n\tError al crear el empleado" + RESET);
             }
         } catch(SQLException e) {
             System.out.println(ROJO + "\n\tError de conexión a la base de datos: " + e.getMessage() + RESET);
         }
+        return infoEmpleado;
     }    
 
     /**
@@ -173,7 +188,9 @@ public class BD {
 
     /**
      * Método para modificar un empleado de la base de datos
-     * @param id
+     * @param empleado
+     * @param dato
+     * @return
      */
     public static Empleado modificarEmpleado(Empleado empleado, String dato) {
 
@@ -887,9 +904,11 @@ public class BD {
      * Método para insertar un nuevo rack en la base de datos
      * @param rack
      */
-    public static void insertarRack(Rack rack) {
+    public static int insertarRack(Rack rack) {
 
         String sql = "INSERT INTO rack (nombre, id_pasillo) VALUES (?, ?);";
+
+        int idRack = 0;
 
         try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
             PreparedStatement ps = conexion.prepareStatement(sql)) {
@@ -901,12 +920,25 @@ public class BD {
 
             if(filas > 0) {
                 System.out.println(VERDE + "\n\t¡Nuevo rack creado!");
+
+                String sql2 = "SELECT id FROM rack ORDER BY id DESC LIMIT 1";
+
+                try (PreparedStatement pst = conexion.prepareStatement(sql2);
+                    ResultSet rs = pst.executeQuery()) {
+                    
+                    while (rs.next()) {
+
+                        idRack = rs.getInt("id");
+                    }
+                }
             } else {
                 System.out.println(ROJO + "\n\tError al crear el rack" + RESET);
             }
         } catch(SQLException e) {
             System.out.println(ROJO + "\n\tError de conexión a la base de datos: " + e.getMessage() + RESET);
         }
+
+        return idRack;
     }
 
     /**
@@ -1050,9 +1082,11 @@ public class BD {
      * Método para insertar un nueva altura en la base de datos
      * @param altura
      */
-    public static void insertarAltura(Altura altura) {
+    public static int insertarAltura(Altura altura) {
 
         String sql = "INSERT INTO altura (nivel, id_rack) VALUES (?, ?);";
+
+        int idAltura = 0;
 
         try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
             PreparedStatement ps = conexion.prepareStatement(sql)) {
@@ -1064,12 +1098,24 @@ public class BD {
 
             if(filas > 0) {
                 System.out.println(VERDE + "\n\t¡Nueva altura creada!");
+
+                String sql2 = "SELECT id FROM altura ORDER BY id DESC LIMIT 1";
+
+                try (PreparedStatement pst = conexion.prepareStatement(sql2);
+                    ResultSet rs = pst.executeQuery()) {
+                    
+                    while (rs.next()) {
+
+                        idAltura = rs.getInt("id");
+                    }
+                }
             } else {
                 System.out.println(ROJO + "\n\tError al crear la altura" + RESET);
             }
         } catch(SQLException e) {
             System.out.println(ROJO + "\n\tError de conexión a la base de datos: " + e.getMessage() + RESET);
         }
+        return idAltura;
     }
 
     /**
@@ -1213,9 +1259,11 @@ public class BD {
      * Método para insertar una nueva dirección en la base de datos
      * @param direccion
      */
-    public static void insertarDireccion(Direccion direccion) {
+    public static int insertarDireccion(Direccion direccion) {
 
         String sql = "INSERT INTO direccion (posicion, id_altura) VALUES (?, ?);";
+
+        int idDireccion = 0;
 
         try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
             PreparedStatement ps = conexion.prepareStatement(sql)) {
@@ -1227,12 +1275,24 @@ public class BD {
 
             if(filas > 0) {
                 System.out.println(VERDE + "\n\t¡Nueva direccion creada!");
+
+                 String sql2 = "SELECT id FROM direccion ORDER BY id DESC LIMIT 1";
+
+                try (PreparedStatement pst = conexion.prepareStatement(sql2);
+                    ResultSet rs = pst.executeQuery()) {
+                    
+                    while (rs.next()) {
+
+                        idDireccion = rs.getInt("id");
+                    }
+                }
             } else {
                 System.out.println(ROJO + "\n\tError al crear la direccion" + RESET);
             }
         } catch(SQLException e) {
             System.out.println(ROJO + "\n\tError de conexión a la base de datos: " + e.getMessage() + RESET);
         }
+        return idDireccion;
     }
 
     /**
@@ -1556,8 +1616,9 @@ public class BD {
     // Soporte ==========================================================================================================================================================
 
     /**
-     * Método para insertar un nuevo soporte en la base de datos
+     * Método para insertar un nuevo soporte en la base de datos, devuelve el nº ID creado
      * @param soporte
+     * @return
      */
     public static long insertarSoporte(Soporte soporte) {
 
@@ -1637,29 +1698,37 @@ public class BD {
 
             ps.setLong(2, soporte.getId());
 
-            System.out.print(VERDE + "\n Nuevo " + dato + ": " + RESET);
-            Scanner sc = new Scanner(System.in);
+            if (dato.equals("abreviatura")) {
 
-            String info = sc.nextLine();
-            
-            switch(dato) {
-                case "tipo":
-                    soporte.setTipo(info);
-                    ps.setString(1, info);
-                    break;
+                int abrev = (int)(soporte.getId() % 100000);
+                soporte.setAbreviatura(abrev);
+                ps.setInt(1, soporte.getAbreviatura());
+                
+            } else {
+                System.out.print(VERDE + "\n Nuevo " + dato + ": " + RESET);
+                Scanner sc = new Scanner(System.in);
 
-                case "id_ubicacion":
-                    soporte.setIdUbicacion(Integer.parseInt(info));
-                    ps.setString(1, info);
-                    break;
+                String info = sc.nextLine();
+                
+                switch(dato) {
+                    case "tipo":
+                        soporte.setTipo(info);
+                        ps.setString(1, info);
+                        break;
 
-                case "id_empleado":
-                    soporte.setIdEmpleado(Integer.parseInt(info));
-                    ps.setString(1, info);
-                    break;
+                    case "id_ubicacion":
+                        soporte.setIdUbicacion(Integer.parseInt(info));
+                        ps.setString(1, info);
+                        break;
 
-                default:
-                    break;
+                    case "id_empleado":
+                        soporte.setIdEmpleado(Integer.parseInt(info));
+                        ps.setString(1, info);
+                        break;
+
+                    default:
+                        break;
+                }
             }
             int filas = ps.executeUpdate();
 
@@ -1737,6 +1806,7 @@ public class BD {
 
                         case "id_empleado":
                             soporte.setIdEmpleado(rs.getInt(columna));
+                            break;
 
                         default:
                             break;
@@ -1748,6 +1818,75 @@ public class BD {
             System.out.println(ROJO + "\n\tError de conexión a la base de datos: " + e.getMessage() + RESET);
         }
         return soporte;
+    }
+
+    /**
+     * Método para mostrar el contenido de un soporte de la base de datos
+     * @param abreviatura
+     * @return
+     */
+    public static List<LlenaSoporte> mostrarContenido(int abreviatura) {
+
+        String sql = "SELECT * FROM llena_soporte WHERE id_soporte = ?";
+
+        LlenaSoporte acciones = null;
+        long idSoporte = 10002026000000000L + abreviatura;
+        List<LlenaSoporte> lista = new ArrayList<>();
+
+        try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+            PreparedStatement ps = conexion.prepareStatement(sql)) {
+
+            String[] columnas = {"id", "id_empleado", "id_soporte", "id_producto", "cantidad", "fecha"};
+            LocalDateTime fecha = LocalDateTime.now();
+            
+            System.out.println(VERDE + "\n-------------------------------------------------------------------" + RESET);
+
+            ps.setLong(1, idSoporte);
+            ResultSet rs = ps.executeQuery();
+                    
+            while (rs.next()) {
+                
+                acciones = new LlenaSoporte(4L, 0, 0, 0, 0, fecha);
+                
+                for (String columna : columnas) {
+
+                    switch(columna) {
+                        case "id":
+                            acciones.setId(rs.getLong(columna));
+                            break;
+
+                        case "id_empleado":
+                            acciones.setIdEmpleado(rs.getInt(columna));
+                            break;
+
+                        case "id_soporte":
+                            acciones.setIdSoporte(rs.getLong(columna));
+                            break;
+
+                        case "id_producto":
+                            acciones.setIdProducto(rs.getInt(columna));
+                            break;
+
+                        case "cantidad":
+                            acciones.setCantidad(rs.getInt(columna));
+                            break;
+
+                        case "fecha":
+                            acciones.setFecha(LocalDateTime.parse(rs.getString(columna).replace(" ", "T")));
+                            break;
+
+                        default:
+                            break;
+                    }
+                }
+                lista.add(acciones);
+
+            System.out.println(VERDE + "-------------------------------------------------------------------" + RESET);   
+            }
+        } catch(SQLException e) {
+            System.out.println(ROJO + "\n\tError de conexión a la base de datos: " + e.getMessage() + RESET);
+        }
+        return lista;
     }
 
     // LlenaSoporte ==========================================================================================================================================================
@@ -1772,7 +1911,7 @@ public class BD {
             int filas = ps.executeUpdate();
 
             if(filas > 0) {
-                System.out.println(VERDE + "\n\t¡Nueva acción de llenado creada!");
+                System.out.println(VERDE + "\n\t¡Añadido!");
             } else {
                 System.out.println(ROJO + "\n\tError al crear la acción de llenado" + RESET);
             }
@@ -1877,5 +2016,215 @@ public class BD {
             System.out.println(ROJO + "\n\tError de conexión a la base de datos: " + e.getMessage() + RESET);
         }
         return accion;
+    }
+
+    /*
+    public void verEstructura(int idAlmacen) {
+
+        String sql = "SELECT * FROM almacen WHERE id_almacen = ?";
+    }
+    */
+
+    // Cliente ==========================================================================================================================================================
+
+    /**
+     * Método para insertar un nuevo cliente en la base de datos
+     * @param cliente
+     */
+    public static void insertarCliente(Cliente cliente) {
+
+        String sql = "INSERT INTO cliente (nif, nombre, apellidos, direccion, email, telefono) VALUES (?, ?, ?, ?, ?, ?);";
+
+        try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+            PreparedStatement ps = conexion.prepareStatement(sql)) {
+
+            ps.setString(1, cliente.getNif());
+            ps.setString(2, cliente.getNombre());
+            ps.setString(3, cliente.getApellidos());
+            ps.setString(4, cliente.getDireccion());
+            ps.setString(5, cliente.getEmail());
+            ps.setString(6, cliente.getTelefono());
+
+            int filas = ps.executeUpdate();
+
+            if(filas > 0) {
+                System.out.println(VERDE + "\n\t¡Nuevo cliente creado!");
+            } else {
+                System.out.println(ROJO + "\n\tError al crear el cliente" + RESET);
+            }
+        } catch(SQLException e) {
+            System.out.println(ROJO + "\n\tError de conexión a la base de datos: " + e.getMessage() + RESET);
+        }
+    }    
+
+    /**
+     * Método para borrar un cliente existente en la base de datos
+     * @param id
+     */
+    public static void borrarCliente(String nif) {
+
+        String sql = "DELETE FROM cliente WHERE nif = ?";
+            
+        try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+            PreparedStatement ps = conexion.prepareStatement(sql)) {
+
+            ps.setString(1, nif);
+            
+            int filas = ps.executeUpdate();
+
+            if (filas > 0) {
+                System.out.println(VERDE + "\n\t¡Cliente eliminado con éxito!" + RESET);
+            } else {
+                System.out.println(ROJO + "\n\tEl nif no pertenece a ningún cliente" + RESET);
+            }
+        } catch(SQLException e) {
+            System.out.println(ROJO + "\n\tError de conexión con la base de datos: " + e.getMessage() + RESET);
+        }    
+    }
+
+    /**
+     * Método para modificar un empleado de la base de datos
+     * @param empleado
+     * @param dato
+     * @return
+     */
+    public static Cliente modificarCliente(Cliente cliente, String dato) {
+
+        String sql = "UPDATE cliente SET " + dato + " = ? WHERE nif = ?";
+            
+        try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+            PreparedStatement ps = conexion.prepareStatement(sql)) {
+
+            ps.setString(2, cliente.getNif());
+
+            System.out.print(VERDE + "\n Nuevo " + dato + ": " + RESET);
+            Scanner sc = new Scanner(System.in);
+
+            String info = sc.nextLine();
+            
+            switch(dato) {
+
+                case "nif":
+                    cliente.setNif(info);
+                    ps.setString(1, info);
+                    break;
+
+                case "nombre":
+                    cliente.setNombre(info);
+                    ps.setString(1, info);
+                    break;
+
+                case "apellidos":
+                    cliente.setApellidos(info);
+                    ps.setString(1, info);
+                    break;
+
+                case "direccion":
+                    cliente.setDireccion(info);
+                    ps.setString(1, info);
+                    break;
+
+                case "email":
+                    cliente.setEmail(info);
+                    ps.setString(1, info);
+                    break;
+
+                case "telefono":
+                    cliente.setTelefono(info);
+                    ps.setString(1, info);
+                    break;
+
+                default:
+                    break;
+            }
+            int filas = ps.executeUpdate();
+
+            if (filas > 0) {
+                System.out.println(VERDE + "\n\t¡Dato modificado con éxito!" + RESET);
+            } else {
+                System.out.println(ROJO + "\n\tError al modificar el dato" + RESET);
+            }
+        } catch(SQLException e) {
+            System.out.println(ROJO + "\n\tError de conexión con la base de datos: " + e.getMessage() + RESET);
+        } catch(Exception ex) {
+            System.out.println(ROJO + ex.getMessage() + RESET);
+        }
+        return cliente;
+    }
+
+    /**
+     * Método para mostrar cualquier empleado de la base de datos mediante su número ID
+     * @param id
+     * @return
+     */
+    public static Cliente mostrarCliente(String nif) {
+
+        String sql = "SELECT * FROM cliente WHERE nif = ?";
+
+        Cliente cliente = null;
+
+        try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+            PreparedStatement ps = conexion.prepareStatement(sql)) {
+
+            String[] columnas = {"nif", "nombre", "apellidos", "direccion", "email", "telefono"};
+            
+            System.out.println(VERDE + "\n-----------------------------------------------------------------------" + RESET);
+
+            ps.setString(1, nif);
+            ResultSet rs = ps.executeQuery();
+                    
+            while (rs.next()) {
+                
+                cliente = new Cliente("00000000X", "X", "X", "X","x@x.xx", "700000000");
+
+                for (String columna : columnas) {
+
+                    System.out.print(VERDE + " " + columna.toUpperCase() + "\t" + RESET);
+
+                    if(columna.length() < 8) {
+                        System.out.println(VERDE + "\t\t->\t" + RESET + rs.getString(columna));
+                    } else if(columna.length() == 8 || columna.length() < 15) {
+                        System.out.println(VERDE + "\t->\t" + RESET + rs.getString(columna));
+                    } else {
+                        System.out.println(VERDE + "->\t" + RESET + rs.getString(columna));
+                    }
+
+                    switch(columna) {
+
+                        case "nif":
+                            cliente.setNif(rs.getString(columna));
+                            break;
+
+                        case "nombre":
+                            cliente.setNombre(rs.getString(columna));
+                            break;
+
+                        case "apellidos":
+                            cliente.setApellidos(rs.getString(columna));
+                            break;
+
+                        case "direccion":
+                            cliente.setDireccion(rs.getString(columna));
+                            break;
+
+                        case "email":
+                            cliente.setEmail(rs.getString(columna));
+                            break;
+
+                        case "telefono":
+                            cliente.setTelefono(rs.getString(columna));
+                            break;
+
+                        default:
+                            break;
+                    }
+                }
+            }
+            System.out.println(VERDE + "-----------------------------------------------------------------------" + RESET);   
+            
+        } catch(SQLException e) {
+            System.out.println(ROJO + "\n\tError de conexión a la base de datos: " + e.getMessage() + RESET);
+        }
+        return cliente;
     }
 }

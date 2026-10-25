@@ -6,12 +6,21 @@ public class Rack {
     private String nombre;
     private int idPasillo;
 
-    // Constructor 
+    // Constructores
 
+    // Constructor 1 - Para crear un rack omitiendo el ID
+    public Rack(String nombre, int idPasillo) {
+
+        this.nombre = nombre;
+        this.idPasillo = idPasillo;
+    }
+
+    // Constructor 2 - Para leer un rack
     public Rack(int id, String nombre, int idPasillo) {
 
         this.id = id;
         this.nombre = nombre;
+        this.idPasillo = idPasillo;
     }
 
     // Getters y Setters
