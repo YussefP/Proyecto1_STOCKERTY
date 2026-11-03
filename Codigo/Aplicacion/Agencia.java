@@ -161,5 +161,4 @@ public class Agencia {
         Agencia otro = (Agencia)obj;
         return Objects.equals(cif, otro.cif);
     }
-    
 }
