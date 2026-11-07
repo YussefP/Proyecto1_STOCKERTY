@@ -398,7 +398,7 @@ public class Stockerty {
                 } else {
                     System.out.println(GRIS_OSCURO + "\n\t5-PRODUCTOS");
                 }
-                System.out.println(VERDE + "\n\t6-CLIENTES");
+                System.out.println(VERDE + "\n\t6-CLIENTES/PROVEEDORES");
                 System.out.println(GRIS_OSCURO + "\n\t7-HISTÓRICO");
                 System.out.println(VERDE + "\n\t8-ADMINISTRADOR");
                 System.out.println("\n\t9-SALIR");
@@ -715,10 +715,27 @@ public class Stockerty {
 
                                                                 do {
                                                                     try {
-                                                                        System.out.print(VERDE + "\n Introduce el ID del almacén que quieres eliminar: " + RESET);
-                                                                        // int idAlmacen = Integer.parseInt(sc.nextLine());
+                                                                        System.out.print(VERDE + "\n Introduce el nº del soporte que quieres ubicar: " + RESET);
+                                                                        int numSoporte = Integer.parseInt(sc.nextLine());
+                                                                        Long idSoporte = 10002026000000000L + numSoporte; 
 
-                                                                        // borrarAlmacen(idAlmacen);
+                                                                        System.out.print(VERDE + "\n Introduce la nueva ubicación: " + RESET);
+                                                                        String nombreUbicacion = sc.nextLine();
+
+                                                                        Ubicacion ubicacionSoporte = BD.mostrarUbicacion(nombreUbicacion);
+                                                                        nuevaPantalla();
+
+                                                                        UbicaSoporte ubicaSoporte = new UbicaSoporte(usuarioActual.getId(), ubicacionSoporte.getId(), idSoporte, LocalDateTime.now(), "ubica");
+
+                                                                        Long accion = BD.insertarUbicaSoporte(ubicaSoporte);
+                                                                        System.out.println(VERDE + "\n Nº de Identificación de la acción: " + RESET + accion);
+
+                                                                        Soporte soporte = BD.mostrarSoporte(numSoporte);
+                                                                        nuevaPantalla();
+
+                                                                        BD.modificarSoporte(soporte, "ubicacion", nombreUbicacion);
+                                                                        nuevaPantalla();
+
                                                                         error = false;
 
                                                                         if(opcion == 0) {
@@ -742,10 +759,23 @@ public class Stockerty {
 
                                                                 do {
                                                                     try {
-                                                                        System.out.print(VERDE + "\n Introduce el ID de la zona que quieres eliminar: " + RESET);
-                                                                        // int idZona = Integer.parseInt(sc.nextLine());
+                                                                        System.out.print(VERDE + "\n Introduce el ID del producto que quieres ubicar: " + RESET);
+                                                                        int idProducto = Integer.parseInt(sc.nextLine());
 
-                                                                        // borrarZona(idZona);
+                                                                        System.out.print(VERDE + "\n Introduce cantidad: " + RESET);
+                                                                        int cantidad = Integer.parseInt(sc.nextLine());
+
+                                                                        System.out.print(VERDE + "\n Introduce la nueva ubicación: " + RESET);
+                                                                        String nombreUbicacion = sc.nextLine();
+
+                                                                        Ubicacion ubicacionProducto = BD.mostrarUbicacion(nombreUbicacion);
+                                                                        nuevaPantalla();
+
+                                                                        UbicaProducto ubicaProducto = new UbicaProducto(usuarioActual.getId(), ubicacionProducto.getId(), idProducto, cantidad, LocalDateTime.now(), "ubica");
+
+                                                                        Long accion = BD.insertarUbicaProducto(ubicaProducto);
+                                                                        System.out.println(VERDE + "\n Nº de Identificación de la acción: " + RESET + accion);
+
                                                                         error = false;
 
                                                                         if(opcion == 0) {

@@ -1430,6 +1430,13 @@ public class BD {
         return direccion;
     }
 
+    /*
+    public void verEstructura(int idAlmacen) {
+
+        String sql = "SELECT * FROM almacen WHERE id_almacen = ?";
+    }
+    */
+
     // Ubicación ==========================================================================================================================================================
 
     /**
@@ -1548,9 +1555,9 @@ public class BD {
      * Método para mostrar una ubicación de la base de datos
      * @param id
      */
-    public static Ubicacion mostrarUbicacion(int id) {
+    public static Ubicacion mostrarUbicacion(String nombre) {
 
-        String sql = "SELECT * FROM ubicacion WHERE id = ?";
+        String sql = "SELECT * FROM ubicacion WHERE nombre = ?";
 
         Ubicacion ubicacion = null;
 
@@ -1561,7 +1568,7 @@ public class BD {
             
             System.out.println(VERDE + "\n-------------------------------------------------------------------" + RESET);
 
-            ps.setInt(1, id);
+            ps.setString(1, nombre);
             ResultSet rs = ps.executeQuery();
                     
             while (rs.next()) {
@@ -1717,7 +1724,7 @@ public class BD {
                         break;
 
                     case "id_ubicacion":
-                        soporte.setIdUbicacion(Integer.parseInt(info));
+                        soporte.setUbicacion(info);
                         ps.setString(1, info);
                         break;
 
@@ -1730,6 +1737,37 @@ public class BD {
                         break;
                 }
             }
+            int filas = ps.executeUpdate();
+
+            if (filas > 0) {
+                System.out.println(VERDE + "\n\t¡Dato modificado con éxito!" + RESET);
+            } else {
+                System.out.println(ROJO + "\n\tError al modificar el dato" + RESET);
+            }
+        } catch(SQLException e) {
+            System.out.println(ROJO + "\n\tError de conexión con la base de datos: " + e.getMessage() + RESET);
+        } catch(Exception ex) {
+            System.out.println(ROJO + ex.getMessage() + RESET);
+        }
+        return soporte;
+    }
+
+    /**
+     * Método para modificar la ubicación de un soporte de la base de datos
+     * @param soporte
+     * @param dato
+     * @return
+     */
+    public static Soporte modificarSoporte(Soporte soporte, String dato, String nombre) {
+
+        String sql = "UPDATE soporte SET " + dato + " = ? WHERE id = ?";
+            
+        try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+            PreparedStatement ps = conexion.prepareStatement(sql)) {
+
+            ps.setString(1, nombre);
+            ps.setLong(2, soporte.getId());
+
             int filas = ps.executeUpdate();
 
             if (filas > 0) {
@@ -1769,7 +1807,7 @@ public class BD {
                     
             while (rs.next()) {
                 
-                soporte = new Soporte(4L, 30567, "bulto", 0, fecha, 0, lista);
+                soporte = new Soporte(4L, 30567, "bulto", "X", fecha, 0, lista);
                 
                 for (String columna : columnas) {
 
@@ -1797,7 +1835,7 @@ public class BD {
                             break;
 
                         case "id_ubicacion":
-                            soporte.setIdUbicacion(rs.getInt(columna));
+                            soporte.setUbicacion(rs.getString(columna));
                             break;
 
                         case "fecha":
@@ -2018,12 +2056,234 @@ public class BD {
         return accion;
     }
 
-    /*
-    public void verEstructura(int idAlmacen) {
+    // UbicaSoporte ==========================================================================================================================================================
 
-        String sql = "SELECT * FROM almacen WHERE id_almacen = ?";
+    /**
+     * Método para insertar un nueva acción de ubicar soporte en la base de datos, devuelve el nº ID de la acción
+     * @param ubicaSoporte
+     * @return 
+     */
+    public static long insertarUbicaSoporte(UbicaSoporte ubicaSoporte) {
+
+        String sql = "INSERT INTO ubica_soporte (id_empleado, id_ubicacion, id_soporte, fecha, tipo) VALUES (?, ?, ?, ?, ?);";
+
+        long idUbicaSoporte = 0;
+
+        String sql2 = "SELECT id FROM ubica_soporte ORDER BY id DESC LIMIT 1";
+
+        try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+            PreparedStatement ps = conexion.prepareStatement(sql)) {
+
+            ps.setInt(1, ubicaSoporte.getIdEmpleado());
+            ps.setInt(2, ubicaSoporte.getIdUbicacion());
+            ps.setLong(3, ubicaSoporte.getIdSoporte());
+            ps.setObject(4, ubicaSoporte.getFecha());
+            ps.setString(5, ubicaSoporte.getTipo());
+
+            int filas = ps.executeUpdate();
+
+            if(filas > 0) {
+                System.out.println(VERDE + "\n\t¡Acción de soporte realizada!");
+
+                try (PreparedStatement pst = conexion.prepareStatement(sql2);
+                    ResultSet rs = pst.executeQuery()) {
+
+                    while (rs.next()) {
+
+                        idUbicaSoporte = rs.getLong("id");
+                    }
+                }
+            } else {
+                System.out.println(ROJO + "\n\tError en la acción del soporte" + RESET);
+            }
+        } catch(SQLException e) {
+            System.out.println(ROJO + "\n\tError de conexión a la base de datos: " + e.getMessage() + RESET);
+        }
+
+        return idUbicaSoporte;
     }
-    */
+
+    /**
+     * Método para mostrar las acciones de un soporte de la base de datos
+     * @param abreviatura
+     */
+    public static List<UbicaSoporte> mostrarUbicaSoporte(long idSoporte) {
+
+        String sql = "SELECT * FROM ubica_soporte WHERE id_soporte = ?";
+
+        UbicaSoporte ubicaSoporte;
+        List<UbicaSoporte> listado = new ArrayList<>();
+
+        try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+            PreparedStatement ps = conexion.prepareStatement(sql)) {
+
+            String[] columnas = {"id", "id_empleado", "id_ubicacion", "id_soporte", "fecha", "tipo"};
+            LocalDateTime fecha = LocalDateTime.now();
+
+            ps.setLong(1, idSoporte);
+            ResultSet rs = ps.executeQuery();
+                    
+            while (rs.next()) {
+                
+                ubicaSoporte = new UbicaSoporte(4L, 0, 0, 5L, fecha, "ubica");
+                
+                for (String columna : columnas) {
+
+                    switch(columna) {
+                        case "id":
+                            ubicaSoporte.setId(rs.getLong(columna));
+                            break;
+
+                        case "id_empleado":
+                            ubicaSoporte.setIdEmpleado(rs.getInt(columna));
+                            break;
+
+                        case "id_ubicacion":
+                            ubicaSoporte.setIdUbicacion(rs.getInt(columna));
+                            break;
+
+                        case "id_soporte":
+                            ubicaSoporte.setIdSoporte(rs.getLong(columna));
+                            break;
+
+                        case "fecha":
+                            ubicaSoporte.setFecha(LocalDateTime.parse(rs.getString(columna)));
+                            break;
+
+                        case "tipo":
+                            ubicaSoporte.setTipo(rs.getString(columna));
+
+                        default:
+                            break;
+                    }
+                }
+                listado.add(ubicaSoporte);   
+            }
+            System.out.println(VERDE + "\n\tListado de acciones completado!" + RESET);
+        } catch(SQLException e) {
+            System.out.println(ROJO + "\n\tError de conexión a la base de datos: " + e.getMessage() + RESET);
+        }
+        return listado;
+    }
+
+    // mostrar las acciones de una ubicacion en un listado
+
+    // mostrar las acciones de un empleado en un listado
+
+    // UbicaProducto ==========================================================================================================================================================
+
+    /**
+     * Método para insertar un nueva acción de ubicar producto en la base de datos, devuelve el nº ID de la acción
+     * @param ubicaProducto
+     * @return 
+     */
+    public static long insertarUbicaProducto(UbicaProducto ubicaProducto) {
+
+        String sql = "INSERT INTO ubica_producto (id_empleado, id_ubicacion, id_soporte, cantidad, fecha, tipo) VALUES (?, ?, ?, ?, ?, ?);";
+
+        long idUbicaProducto = 0;
+
+        String sql2 = "SELECT id FROM ubica_producto ORDER BY id DESC LIMIT 1";
+
+        try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+            PreparedStatement ps = conexion.prepareStatement(sql)) {
+
+            ps.setInt(1, ubicaProducto.getIdEmpleado());
+            ps.setInt(2, ubicaProducto.getIdUbicacion());
+            ps.setInt(3, ubicaProducto.getIdProducto());
+            ps.setInt(4, ubicaProducto.getCantidad());
+            ps.setObject(5, ubicaProducto.getFecha());
+            ps.setString(6, ubicaProducto.getTipo());
+
+            int filas = ps.executeUpdate();
+
+            if(filas > 0) {
+                System.out.println(VERDE + "\n\t¡Acción de producto realizada!");
+
+                try (PreparedStatement pst = conexion.prepareStatement(sql2);
+                    ResultSet rs = pst.executeQuery()) {
+
+                    while (rs.next()) {
+
+                        idUbicaProducto = rs.getLong("id");
+                    }
+                }
+            } else {
+                System.out.println(ROJO + "\n\tError en la acción del producto" + RESET);
+            }
+        } catch(SQLException e) {
+            System.out.println(ROJO + "\n\tError de conexión a la base de datos: " + e.getMessage() + RESET);
+        }
+
+        return idUbicaProducto;
+    }
+
+    /**
+     * Método para mostrar las acciones de un producto de la base de datos
+     * @param idProducto
+     */
+    public static List<UbicaProducto> mostrarUbicaProducto(int idProducto) {
+
+        String sql = "SELECT * FROM ubica_producto WHERE id_producto = ?";
+
+        UbicaProducto ubicaProducto;
+        List<UbicaProducto> listado = new ArrayList<>();
+
+        try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+            PreparedStatement ps = conexion.prepareStatement(sql)) {
+
+            String[] columnas = {"id", "id_empleado", "id_ubicacion", "id_producto", "cantidad", "fecha", "tipo"};
+            LocalDateTime fecha = LocalDateTime.now();
+
+            ps.setInt(1, idProducto);
+            ResultSet rs = ps.executeQuery();
+                    
+            while (rs.next()) {
+                
+                ubicaProducto = new UbicaProducto(4L, 0, 0, 0, 0, fecha, "ubica");
+                
+                for (String columna : columnas) {
+
+                    switch(columna) {
+                        case "id":
+                            ubicaProducto.setId(rs.getLong(columna));
+                            break;
+
+                        case "id_empleado":
+                            ubicaProducto.setIdEmpleado(rs.getInt(columna));
+                            break;
+
+                        case "id_ubicacion":
+                            ubicaProducto.setIdUbicacion(rs.getInt(columna));
+                            break;
+
+                        case "id_producto":
+                            ubicaProducto.setIdProducto(rs.getInt(columna));
+                            break;
+
+                        case "fecha":
+                            ubicaProducto.setFecha(LocalDateTime.parse(rs.getString(columna)));
+                            break;
+
+                        case "tipo":
+                            ubicaProducto.setTipo(rs.getString(columna));
+
+                        default:
+                            break;
+                    }
+                }
+                listado.add(ubicaProducto);   
+            }
+            System.out.println(VERDE + "\n\tListado de acciones completado!" + RESET);
+        } catch(SQLException e) {
+            System.out.println(ROJO + "\n\tError de conexión a la base de datos: " + e.getMessage() + RESET);
+        }
+        return listado;
+    }
+
+    // mostrar las acciones de una ubicacion en un listado
+
+    // mostrar las acciones de un empleado en un listado
 
     // Cliente ==========================================================================================================================================================
 
@@ -2227,4 +2487,400 @@ public class BD {
         }
         return cliente;
     }
+
+    // Proveedor ==========================================================================================================================================================
+
+    /**
+     * Método para insertar un nuevo proveedor en la base de datos
+     * @param proveedor
+     */
+    public static void insertarProveedor(Proveedor proveedor) {
+
+        String sql = "INSERT INTO cliente (cif, nombre, telefono, email, direccion) VALUES (?, ?, ?, ?, ?);";
+
+        try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+            PreparedStatement ps = conexion.prepareStatement(sql)) {
+
+            ps.setString(1, proveedor.getCif());
+            ps.setString(2, proveedor.getNombre());
+            ps.setString(3, proveedor.getTelefono());
+            ps.setString(4, proveedor.getEmail());
+            ps.setString(5, proveedor.getDireccion());
+
+            int filas = ps.executeUpdate();
+
+            if(filas > 0) {
+                System.out.println(VERDE + "\n\t¡Nuevo proveedor creado!");
+            } else {
+                System.out.println(ROJO + "\n\tError al crear el proveedor" + RESET);
+            }
+        } catch(SQLException e) {
+            System.out.println(ROJO + "\n\tError de conexión a la base de datos: " + e.getMessage() + RESET);
+        }
+    }    
+
+    /**
+     * Método para borrar un proveedor existente en la base de datos
+     * @param cif
+     */
+    public static void borrarProveedor(String cif) {
+
+        String sql = "DELETE FROM proveedor WHERE cif = ?";
+            
+        try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+            PreparedStatement ps = conexion.prepareStatement(sql)) {
+
+            ps.setString(1, cif);
+            
+            int filas = ps.executeUpdate();
+
+            if (filas > 0) {
+                System.out.println(VERDE + "\n\t¡Proveedor eliminado con éxito!" + RESET);
+            } else {
+                System.out.println(ROJO + "\n\tEl cif no pertenece a ningún proveedor" + RESET);
+            }
+        } catch(SQLException e) {
+            System.out.println(ROJO + "\n\tError de conexión con la base de datos: " + e.getMessage() + RESET);
+        }    
+    }
+
+    /**
+     * Método para modificar un proveedor de la base de datos
+     * @param proveedor
+     * @param dato
+     * @return
+     */
+    public static Proveedor modificarProveedor(Proveedor proveedor, String dato) {
+
+        String sql = "UPDATE proveedor SET " + dato + " = ? WHERE cif = ?";
+            
+        try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+            PreparedStatement ps = conexion.prepareStatement(sql)) {
+
+            ps.setString(2, proveedor.getCif());
+
+            System.out.print(VERDE + "\n Nuevo " + dato + ": " + RESET);
+            Scanner sc = new Scanner(System.in);
+
+            String info = sc.nextLine();
+            
+            switch(dato) {
+
+                case "nif":
+                    proveedor.setCif(info);
+                    ps.setString(1, info);
+                    break;
+
+                case "nombre":
+                    proveedor.setNombre(info);
+                    ps.setString(1, info);
+                    break;
+
+                case "telefono":
+                    proveedor.setTelefono(info);
+                    ps.setString(1, info);
+                    break;
+
+                case "email":
+                    proveedor.setEmail(info);
+                    ps.setString(1, info);
+                    break;
+
+                case "direccion":
+                    proveedor.setDireccion(info);
+                    ps.setString(1, info);
+                    break;
+
+                default:
+                    break;
+            }
+            int filas = ps.executeUpdate();
+
+            if (filas > 0) {
+                System.out.println(VERDE + "\n\t¡Dato modificado con éxito!" + RESET);
+            } else {
+                System.out.println(ROJO + "\n\tError al modificar el dato" + RESET);
+            }
+        } catch(SQLException e) {
+            System.out.println(ROJO + "\n\tError de conexión con la base de datos: " + e.getMessage() + RESET);
+        } catch(Exception ex) {
+            System.out.println(ROJO + ex.getMessage() + RESET);
+        }
+        return proveedor;
+    }
+
+    /**
+     * Método para mostrar cualquier proveedor de la base de datos mediante su número CIF
+     * @param cif
+     * @return
+     */
+    public static Proveedor mostrarProveedor(String cif) {
+
+        String sql = "SELECT * FROM proveedor WHERE nif = ?";
+
+        Proveedor proveedor = null;
+
+        try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+            PreparedStatement ps = conexion.prepareStatement(sql)) {
+
+            String[] columnas = {"id", "cif", "nombre", "telefono", "email", "direccion"};
+            
+            System.out.println(VERDE + "\n-----------------------------------------------------------------------" + RESET);
+
+            ps.setString(1, cif);
+            ResultSet rs = ps.executeQuery();
+                    
+            while (rs.next()) {
+                
+                proveedor = new Proveedor(0, "X00000000", "X", "666999666","x@x.xx", "X");
+
+                for (String columna : columnas) {
+
+                    System.out.print(VERDE + " " + columna.toUpperCase() + "\t" + RESET);
+
+                    if(columna.length() < 8) {
+                        System.out.println(VERDE + "\t\t->\t" + RESET + rs.getString(columna));
+                    } else if(columna.length() == 8 || columna.length() < 15) {
+                        System.out.println(VERDE + "\t->\t" + RESET + rs.getString(columna));
+                    } else {
+                        System.out.println(VERDE + "->\t" + RESET + rs.getString(columna));
+                    }
+
+                    switch(columna) {
+
+                        case "id":
+                            proveedor.setId(rs.getInt(columna));
+                            break;
+
+                        case "nif":
+                            proveedor.setCif(rs.getString(columna));
+                            break;
+
+                        case "nombre":
+                            proveedor.setNombre(rs.getString(columna));
+                            break;
+
+                        case "telefono":
+                            proveedor.setTelefono(rs.getString(columna));
+                            break;
+
+                        case "email":
+                            proveedor.setEmail(rs.getString(columna));
+                            break;
+
+                        case "direccion":
+                            proveedor.setDireccion(rs.getString(columna));
+                            break;
+
+                        default:
+                            break;
+                    }
+                }
+            }
+            System.out.println(VERDE + "-----------------------------------------------------------------------" + RESET);   
+            
+        } catch(SQLException e) {
+            System.out.println(ROJO + "\n\tError de conexión a la base de datos: " + e.getMessage() + RESET);
+        }
+        return proveedor;
+    }
+
+    // Agencia ==========================================================================================================================================================
+
+    /**
+     * Método para insertar un nueva agencia en la base de datos
+     * @param proveedor
+     */
+    public static void insertarAgencia(Agencia agencia) {
+
+        String sql = "INSERT INTO agencia (cif, nombre, telefono, email, direccion) VALUES (?, ?, ?, ?, ?);";
+
+        try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+            PreparedStatement ps = conexion.prepareStatement(sql)) {
+
+            ps.setString(1, agencia.getCif());
+            ps.setString(2, agencia.getNombre());
+            ps.setString(3, agencia.getTelefono());
+            ps.setString(4, agencia.getEmail());
+            ps.setString(5, agencia.getDireccion());
+
+            int filas = ps.executeUpdate();
+
+            if(filas > 0) {
+                System.out.println(VERDE + "\n\t¡Nueva agencia creada!");
+            } else {
+                System.out.println(ROJO + "\n\tError al crear la agencia" + RESET);
+            }
+        } catch(SQLException e) {
+            System.out.println(ROJO + "\n\tError de conexión a la base de datos: " + e.getMessage() + RESET);
+        }
+    }    
+
+    /**
+     * Método para borrar una agencia existente en la base de datos
+     * @param cif
+     */
+    public static void borrarAgencia(String cif) {
+
+        String sql = "DELETE FROM agencia WHERE cif = ?";
+            
+        try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+            PreparedStatement ps = conexion.prepareStatement(sql)) {
+
+            ps.setString(1, cif);
+            
+            int filas = ps.executeUpdate();
+
+            if (filas > 0) {
+                System.out.println(VERDE + "\n\t¡Agencia eliminada con éxito!" + RESET);
+            } else {
+                System.out.println(ROJO + "\n\tEl cif no pertenece a ninguna agencia" + RESET);
+            }
+        } catch(SQLException e) {
+            System.out.println(ROJO + "\n\tError de conexión con la base de datos: " + e.getMessage() + RESET);
+        }    
+    }
+
+    /**
+     * Método para modificar una agencia de la base de datos
+     * @param agencia
+     * @param dato
+     * @return
+     */
+    public static Agencia modificarAgencia(Agencia agencia, String dato) {
+
+        String sql = "UPDATE agencia SET " + dato + " = ? WHERE cif = ?";
+            
+        try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+            PreparedStatement ps = conexion.prepareStatement(sql)) {
+
+            ps.setString(2, agencia.getCif());
+
+            System.out.print(VERDE + "\n Nuevo " + dato + ": " + RESET);
+            Scanner sc = new Scanner(System.in);
+
+            String info = sc.nextLine();
+            
+            switch(dato) {
+
+                case "nif":
+                    agencia.setCif(info);
+                    ps.setString(1, info);
+                    break;
+
+                case "nombre":
+                    agencia.setNombre(info);
+                    ps.setString(1, info);
+                    break;
+
+                case "telefono":
+                    agencia.setTelefono(info);
+                    ps.setString(1, info);
+                    break;
+
+                case "email":
+                    agencia.setEmail(info);
+                    ps.setString(1, info);
+                    break;
+
+                case "direccion":
+                    agencia.setDireccion(info);
+                    ps.setString(1, info);
+                    break;
+
+                default:
+                    break;
+            }
+            int filas = ps.executeUpdate();
+
+            if (filas > 0) {
+                System.out.println(VERDE + "\n\t¡Dato modificado con éxito!" + RESET);
+            } else {
+                System.out.println(ROJO + "\n\tError al modificar el dato" + RESET);
+            }
+        } catch(SQLException e) {
+            System.out.println(ROJO + "\n\tError de conexión con la base de datos: " + e.getMessage() + RESET);
+        } catch(Exception ex) {
+            System.out.println(ROJO + ex.getMessage() + RESET);
+        }
+        return agencia;
+    }
+
+    /**
+     * Método para mostrar cualquier agencia de la base de datos mediante su número CIF
+     * @param cif
+     * @return
+     */
+    public static Agencia mostrarAgencia(String cif) {
+
+        String sql = "SELECT * FROM agencia WHERE nif = ?";
+
+        Agencia agencia = null;
+
+        try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+            PreparedStatement ps = conexion.prepareStatement(sql)) {
+
+            String[] columnas = {"id", "cif", "nombre", "telefono", "email", "direccion"};
+            
+            System.out.println(VERDE + "\n-----------------------------------------------------------------------" + RESET);
+
+            ps.setString(1, cif);
+            ResultSet rs = ps.executeQuery();
+                    
+            while (rs.next()) {
+                
+                agencia = new Agencia(0, "X00000000", "X", "666777888","x@x.xx", "X");
+
+                for (String columna : columnas) {
+
+                    System.out.print(VERDE + " " + columna.toUpperCase() + "\t" + RESET);
+
+                    if(columna.length() < 8) {
+                        System.out.println(VERDE + "\t\t->\t" + RESET + rs.getString(columna));
+                    } else if(columna.length() == 8 || columna.length() < 15) {
+                        System.out.println(VERDE + "\t->\t" + RESET + rs.getString(columna));
+                    } else {
+                        System.out.println(VERDE + "->\t" + RESET + rs.getString(columna));
+                    }
+
+                    switch(columna) {
+
+                        case "id":
+                            agencia.setId(rs.getInt(columna));
+                            break;
+
+                        case "nif":
+                            agencia.setCif(rs.getString(columna));
+                            break;
+
+                        case "nombre":
+                            agencia.setNombre(rs.getString(columna));
+                            break;
+
+                        case "telefono":
+                            agencia.setTelefono(rs.getString(columna));
+                            break;
+
+                        case "email":
+                            agencia.setEmail(rs.getString(columna));
+                            break;
+
+                        case "direccion":
+                            agencia.setDireccion(rs.getString(columna));
+                            break;
+
+                        default:
+                            break;
+                    }
+                }
+            }
+            System.out.println(VERDE + "-----------------------------------------------------------------------" + RESET);   
+            
+        } catch(SQLException e) {
+            System.out.println(ROJO + "\n\tError de conexión a la base de datos: " + e.getMessage() + RESET);
+        }
+        return agencia;
+    }
+
+
 }

@@ -8,7 +8,7 @@ public class Soporte {
     private long id;
     private int abreviatura;
     private String tipo;
-    private int idUbicacion;
+    private String ubicacion;
     private LocalDateTime fecha;
     private int idEmpleado;
     private List<Producto> contenido;
@@ -59,7 +59,7 @@ public class Soporte {
     }
 
     // constructor 3 - Para leer un soporte con ubicación
-    public Soporte(long id, int abreviatura, String tipo, int idUbicacion, LocalDateTime fecha, int idEmpleado, List<Producto> contenido) {
+    public Soporte(long id, int abreviatura, String tipo, String ubicacion, LocalDateTime fecha, int idEmpleado, List<Producto> contenido) {
 
         if(tipo==null || tipo.isEmpty() || tipo.isBlank()) {
             throw new IllegalArgumentException("Tipo de soporte obligatorio");
@@ -69,7 +69,7 @@ public class Soporte {
         this.id = id;
         this.abreviatura = abreviatura;
         this.tipo = tipo;
-        this.idUbicacion = idUbicacion;
+        this.ubicacion = ubicacion;
         this.fecha = fecha;
         this.idEmpleado = idEmpleado;
         this.contenido = contenido;
@@ -80,7 +80,7 @@ public class Soporte {
     public long getId() { return id; }
     public int getAbreviatura() { return abreviatura; }
     public String getTipo() { return tipo; }
-    public int getIdUbicacion() { return idUbicacion; }
+    public String getUbicacion() { return ubicacion; }
     public LocalDateTime getFecha() { return fecha; }
     public int getIdEmpleado() { return idEmpleado; }
     public List<Producto> getContenido() { return contenido; }
@@ -104,9 +104,9 @@ public class Soporte {
         this.tipo = tipo;
     }
 
-    public void setIdUbicacion(int idUbicacion) {
+    public void setUbicacion(String ubicacion) {
 
-        this.idUbicacion = idUbicacion;
+        this.ubicacion = ubicacion;
     }
 
     public void setFecha(LocalDateTime fecha) {
@@ -129,7 +129,7 @@ public class Soporte {
     @Override 
     public String toString() {
 
-        return "ID: " + id + ", Abreviatura: " + abreviatura + ", Tipo: " + tipo + ", ID Ubicación: " + idUbicacion + ", Fecha: " + fecha + ", ID Empleado: " + idEmpleado + ", Contenido: " + contenido; 
+        return "ID: " + id + ", Abreviatura: " + abreviatura + ", Tipo: " + tipo + ", Ubicación: " + ubicacion + ", Fecha: " + fecha + ", ID Empleado: " + idEmpleado + ", Contenido: " + contenido; 
     }
 
     @Override 

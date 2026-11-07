@@ -1,3 +1,4 @@
+import java.util.List;
 import java.util.Objects;
 
 public class Ubicacion {
@@ -7,6 +8,8 @@ public class Ubicacion {
     private int idRack;
     private int idAltura;
     private int idDireccion;
+    private List<Soporte> listadoSoportes;
+    private List<Producto> listadoProductos;
 
     // Constructores
 
@@ -36,6 +39,10 @@ public class Ubicacion {
     public int getIdRack() { return idRack; }
     public int getIdAltura() { return idAltura; }
     public int getIdDireccion() { return idDireccion; }
+    public List<Soporte> getListadoSoportes() { return listadoSoportes; }
+    public Soporte getSoporte(int i) { return listadoSoportes.get(i); }
+    public List<Producto> getListadoProductos() { return listadoProductos; }
+    public Producto getProducto(int i) { return listadoProductos.get(i); }
 
     public void setId(int id) {
 
@@ -60,6 +67,28 @@ public class Ubicacion {
     public void setIdDireccion(int idDireccion) {
 
         this.idDireccion = idDireccion;
+    }
+
+    public void setListadoSoportes(String accion, Soporte soporte) {
+
+        if(accion.equals("insertar")) {
+            listadoSoportes.add(soporte);
+        } else if(accion.equals("eliminar")) {
+            listadoSoportes.remove(soporte);
+        } else {
+            throw new IllegalArgumentException("Acción incorrecta, insertar o eliminar soporte"); 
+        }
+    }
+
+    public void setListadoProductos(String accion, Producto producto) {
+
+        if(accion.equals("insertar")) {
+            listadoProductos.add(producto);
+        } else if(accion.equals("eliminar")) {
+            listadoProductos.remove(producto);
+        } else {
+            throw new IllegalArgumentException("Acción incorrecta, insertar o eliminar producto"); 
+        }
     }
 
     // Sobreescritura de métodos

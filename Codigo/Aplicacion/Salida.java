@@ -21,7 +21,7 @@ public class Salida {
         this.idPedido = idPedido;
         this.idAgencia = idAgencia;
         this.numAlbaran = numAlbaran;
-        this. numExpedicion = numExpedicion;
+        this.numExpedicion = numExpedicion;
         this.bultos = bultos;
         this.palets = palets;
         this.observaciones = observaciones;
@@ -35,7 +35,7 @@ public class Salida {
         this.idPedido = idPedido;
         this.idAgencia = idAgencia;
         this.numAlbaran = numAlbaran;
-        this. numExpedicion = numExpedicion;
+        this.numExpedicion = numExpedicion;
         this.bultos = bultos;
         this.palets = palets;
         this.observaciones = observaciones;
@@ -53,6 +53,51 @@ public class Salida {
     public int getPalets() { return palets; }
     public String getObservaciones() { return observaciones; }
     public LocalDateTime getFecha() { return fecha; }
+
+    public void setId(int id) {
+
+        this.id = id;
+    }
+
+    public void setIdPedido(int idPedido) {
+
+        this.idPedido = idPedido;
+    }
+
+    public void setIdAgencia(int idAgencia) {
+
+        this.idAgencia = idAgencia;
+    }
+
+    public void setNumAlbaran(int numAlbaran) {
+
+        this.numAlbaran = numAlbaran;
+    }
+
+    public void setNumExpedicion(int numExpedicion) {
+
+        this.numExpedicion = numExpedicion;
+    }
+
+    public void setBultos(int bultos) {
+
+        this.bultos = bultos;
+    }
+
+    public void setPalets(int palets) {
+
+        this.palets = palets;
+    }
+
+    public void setObservaciones(String observaciones) {
+
+        this.observaciones = observaciones;
+    }
+
+    public void setFecha(LocalDateTime fecha) {
+
+        this.fecha = fecha;
+    }
 
     // Sobreescritura de métodos
     
