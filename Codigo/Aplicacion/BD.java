@@ -3,6 +3,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -2319,7 +2320,7 @@ public class BD {
 
     /**
      * Método para borrar un cliente existente en la base de datos
-     * @param id
+     * @param nif
      */
     public static void borrarCliente(String nif) {
 
@@ -2343,8 +2344,8 @@ public class BD {
     }
 
     /**
-     * Método para modificar un empleado de la base de datos
-     * @param empleado
+     * Método para modificar un cliente de la base de datos
+     * @param cliente
      * @param dato
      * @return
      */
@@ -2413,8 +2414,8 @@ public class BD {
     }
 
     /**
-     * Método para mostrar cualquier empleado de la base de datos mediante su número ID
-     * @param id
+     * Método para mostrar cualquier cliente de la base de datos mediante su número ID
+     * @param nif
      * @return
      */
     public static Cliente mostrarCliente(String nif) {
@@ -2688,7 +2689,7 @@ public class BD {
     // Agencia ==========================================================================================================================================================
 
     /**
-     * Método para insertar un nueva agencia en la base de datos
+     * Método para insertar una nueva agencia en la base de datos
      * @param proveedor
      */
     public static void insertarAgencia(Agencia agencia) {
@@ -2882,5 +2883,402 @@ public class BD {
         return agencia;
     }
 
+    // Pedido ==========================================================================================================================================================
 
+    /**
+     * Método para insertar un nuevo pedido en la base de datos
+     * @param pedido
+     */
+    public static int insertarPedido(Pedido pedido) {
+
+        String sql = "INSERT INTO pedido (tipo, fecha_creacion, fecha_estimada, id_empleado, estado) VALUES (?, ?, ?, ?, ?);";
+
+        int idPedido = 0;
+
+        String sql2 = "SELECT id FROM pedido ORDER BY id DESC LIMIT 1";
+
+        try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+            PreparedStatement ps = conexion.prepareStatement(sql)) {
+
+            ps.setString(1, pedido.getTipo());
+            ps.setObject(2, pedido.getFechaCreacion());
+            ps.setObject(3, pedido.getFechaEstimada());
+            ps.setInt(4, pedido.getIdEmpleado());
+            ps.setString(5, pedido.getEstado());
+
+            int filas = ps.executeUpdate();
+
+            if(filas > 0) {
+                System.out.println(VERDE + "\n\t¡Nuevo pedido creado!");
+
+                try (PreparedStatement pst = conexion.prepareStatement(sql2);
+                    ResultSet rs = pst.executeQuery()) {
+
+                    while (rs.next()) {
+
+                        idPedido = rs.getInt("id");
+                    }
+                }
+            } else {
+                System.out.println(ROJO + "\n\tError al crear el pedido" + RESET);
+            }
+        } catch(SQLException e) {
+            System.out.println(ROJO + "\n\tError de conexión a la base de datos: " + e.getMessage() + RESET);
+        }
+        return idPedido;
+    }    
+
+    /**
+     * Método para anular un pedido de la base de datos
+     * @param pedido
+     * @return
+     */
+    public static Pedido anularPedido(Pedido pedido) {
+
+        String sql = "UPDATE pedido SET estado = ? WHERE id = ?";
+            
+        try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+            PreparedStatement ps = conexion.prepareStatement(sql)) {
+
+            ps.setInt(2, pedido.getId());
+
+            pedido.setEstado("anulado");
+            ps.setString(1, "anulado");
+                   
+            int filas = ps.executeUpdate();
+
+            if (filas > 0) {
+                System.out.println(VERDE + "\n\t¡Pedido anulado!" + RESET);
+            } else {
+                System.out.println(ROJO + "\n\tError al anular el pedido" + RESET);
+            }
+        } catch(SQLException e) {
+            System.out.println(ROJO + "\n\tError de conexión con la base de datos: " + e.getMessage() + RESET);
+        } catch(Exception ex) {
+            System.out.println(ROJO + ex.getMessage() + RESET);
+        }
+        return pedido;
+    }
+
+    /**
+     * Método para modificar un pedido de la base de datos
+     * @param pedido
+     * @param dato
+     * @return
+     */
+    public static Pedido modificarPedido(Pedido pedido, String dato) {
+
+        String sql = "UPDATE pedido SET " + dato + " = ? WHERE id = ?";
+            
+        try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+            PreparedStatement ps = conexion.prepareStatement(sql)) {
+
+            ps.setInt(2, pedido.getId());
+
+            System.out.print(VERDE + "\n Nuevo " + dato + ": " + RESET);
+            Scanner sc = new Scanner(System.in);
+
+            String info = sc.nextLine();
+            
+            switch(dato) {
+
+                case "id":
+                    pedido.setId(Integer.parseInt(info));
+                    ps.setString(1, info);
+                    break;
+
+                case "tipo":
+                    pedido.setTipo(info);
+                    ps.setString(1, info);
+                    break;
+
+                case "fecha_estimada":
+                    pedido.setFechaEstimada(LocalDate.parse(info));
+                    ps.setString(1, info);
+                    break;
+
+                case "estado":
+                    pedido.setEstado(info);
+                    ps.setString(1, info);
+                    break;
+
+                default:
+                    break;
+            }
+            int filas = ps.executeUpdate();
+
+            if (filas > 0) {
+                System.out.println(VERDE + "\n\t¡Dato modificado con éxito!" + RESET);
+            } else {
+                System.out.println(ROJO + "\n\tError al modificar el dato" + RESET);
+            }
+        } catch(SQLException e) {
+            System.out.println(ROJO + "\n\tError de conexión con la base de datos: " + e.getMessage() + RESET);
+        } catch(Exception ex) {
+            System.out.println(ROJO + ex.getMessage() + RESET);
+        }
+        return pedido;
+    }
+
+    /**
+     * Método para mostrar cualquier pedido de la base de datos mediante su número ID
+     * @param id
+     * @return
+     */
+    public static Pedido mostrarPedido(int id) {
+
+        String sql = "SELECT * FROM pedido WHERE id = ?";
+
+        Pedido pedido = null;
+        LocalDateTime fechaCreacion = LocalDateTime.now();
+        LocalDate fechaEstimada = LocalDate.now();
+
+        try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+            PreparedStatement ps = conexion.prepareStatement(sql)) {
+
+            String[] columnas = {"id", "tipo", "fecha_creacion", "fecha_estimada", "id_empleado", "estado"};
+            
+            System.out.println(VERDE + "\n-----------------------------------------------------------------------" + RESET);
+
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+                    
+            while (rs.next()) {
+                
+                pedido = new Pedido(0, "ls", fechaCreacion, fechaEstimada, 0, "pendiente");
+
+                for (String columna : columnas) {
+
+                    System.out.print(VERDE + " " + columna.toUpperCase() + "\t" + RESET);
+
+                    if(columna.length() < 8) {
+                        System.out.println(VERDE + "\t\t->\t" + RESET + rs.getString(columna));
+                    } else if(columna.length() == 8 || columna.length() < 15) {
+                        System.out.println(VERDE + "\t->\t" + RESET + rs.getString(columna));
+                    } else {
+                        System.out.println(VERDE + "->\t" + RESET + rs.getString(columna));
+                    }
+
+                    switch(columna) {
+
+                        case "id":
+                            pedido.setId(rs.getInt(columna));
+                            break;
+
+                        case "tipo":
+                            pedido.setTipo(rs.getString(columna));
+                            break;
+
+                        case "fecha_creacion":
+                            pedido.setFechaCreacion(LocalDateTime.parse(rs.getString(columna)));
+                            break;
+
+                        case "fecha_estimada":
+                            pedido.setFechaEstimada(LocalDate.parse(rs.getString(columna)));
+                            break;
+
+                        case "id_empleado":
+                            pedido.setIdEmpleado(rs.getInt(columna));
+                            break;
+
+                        case "estado":
+                            pedido.setEstado(rs.getString(columna));
+                            break;
+
+                        default:
+                            break;
+                    }
+                }
+            }
+            System.out.println(VERDE + "-----------------------------------------------------------------------" + RESET);   
+            
+        } catch(SQLException e) {
+            System.out.println(ROJO + "\n\tError de conexión a la base de datos: " + e.getMessage() + RESET);
+        }
+        return pedido;
+    }
+
+    // LineaPedido ==========================================================================================================================================================
+
+    /**
+     * Método para insertar las líneas de un pedido de la base de datos
+     * @param lineaPedido
+     * @return
+     */
+    public static long insertarLineaPedido(LineaPedido lineaPedido) {
+
+        String sql = "INSERT INTO linea_pedido (id_pedido, id_producto, cantidad, fecha) VALUES (?, ?, ?, ?);";
+
+        long idLineaPedido = 1L;
+
+        String sql2 = "SELECT id FROM linea_pedido ORDER BY id DESC LIMIT 1";
+
+        try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+            PreparedStatement ps = conexion.prepareStatement(sql)) {
+
+            ps.setInt(1, lineaPedido.getIdPedido());
+            ps.setInt(2, lineaPedido.getIdProducto());
+            ps.setInt(3, lineaPedido.getCantidad());
+            ps.setObject(4, lineaPedido.getFecha());
+
+            int filas = ps.executeUpdate();
+
+            if(filas > 0) {
+                System.out.println(VERDE + "\n\t¡Nuevo línea de pedido creada!");
+
+                try (PreparedStatement pst = conexion.prepareStatement(sql2);
+                    ResultSet rs = pst.executeQuery()) {
+
+                    while (rs.next()) {
+
+                        idLineaPedido = rs.getLong("id");
+                    }
+                }
+            } else {
+                System.out.println(ROJO + "\n\tError al crear la línea de pedido" + RESET);
+            }
+        } catch(SQLException e) {
+            System.out.println(ROJO + "\n\tError de conexión a la base de datos: " + e.getMessage() + RESET);
+        }
+        return idLineaPedido;
+    }
+    
+    /**
+     * Método para eliminar una línea de un pedido existente en la base de datos
+     * @param idPedido
+     * @param idProducto
+     */
+    public static void borrarLineaPedido(int idPedido, int idProducto) {
+
+        String sql = "DELETE FROM linea_pedido WHERE id_pedido = ? AND id_producto = ?";
+            
+        try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+            PreparedStatement ps = conexion.prepareStatement(sql)) {
+
+            ps.setInt(1, idPedido);
+            ps.setInt(2, idProducto);
+            
+            int filas = ps.executeUpdate();
+
+            if (filas > 0) {
+                System.out.println(VERDE + "\n\t¡Línea de pedido eliminada!" + RESET);
+            } else {
+                System.out.println(ROJO + "\n\tLa información no pertenece a ninguna línea de pedido" + RESET);
+            }
+        } catch(SQLException e) {
+            System.out.println(ROJO + "\n\tError de conexión con la base de datos: " + e.getMessage() + RESET);
+        }    
+    }
+
+    /**
+     * Método para modificar la cantidad de una línea de pedido de la base de datos
+     * @param pedido
+     * @param dato
+     * @return
+     */
+    public static void modificarLineaPedido(int idPedido, int idProducto, int cantidad) {
+
+        String sql = "UPDATE linea_pedido SET cantidad = ? WHERE idPedido = ? AND idProducto = ?";
+            
+        try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+            PreparedStatement ps = conexion.prepareStatement(sql)) {
+
+            ps.setInt(2, idPedido);
+            ps.setInt(3, idProducto);
+
+            System.out.print(VERDE + "\n Nueva cantidad: " + RESET);
+            Scanner sc = new Scanner(System.in);
+
+            String info = sc.nextLine();
+            
+            ps.setString(1, info);
+
+            int filas = ps.executeUpdate();
+
+            if (filas > 0) {
+                System.out.println(VERDE + "\n\t¡Cantidad modificada con éxito!" + RESET);
+            } else {
+                System.out.println(ROJO + "\n\tError al modificar la cantidad" + RESET);
+            }
+        } catch(SQLException e) {
+            System.out.println(ROJO + "\n\tError de conexión con la base de datos: " + e.getMessage() + RESET);
+        } catch(Exception ex) {
+            System.out.println(ROJO + ex.getMessage() + RESET);
+        }
+    }
+
+    /**
+     * Método para mostrar todas las líneas de un pedido de la base de datos
+     * @param id
+     * @return
+     */
+    public static List<LineaPedido> mostrarLineasPedido(int idPedido) {
+
+        String sql = "SELECT * FROM linea_pedido WHERE id_pedido = ?";
+
+        LineaPedido lineaPedido = null;
+        LocalDateTime fecha = LocalDateTime.now();
+        List<LineaPedido> contenidoPedido = new ArrayList<>();
+
+        try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+            PreparedStatement ps = conexion.prepareStatement(sql)) {
+
+            String[] columnas = {"id", "id_pedido", "id_producto", "cantidad", "fecha"};
+            
+            System.out.println(VERDE + "\n-----------------------------------------------------------------------" + RESET);
+
+            ps.setInt(1, idPedido);
+            ResultSet rs = ps.executeQuery();
+                    
+            while (rs.next()) {
+                
+                lineaPedido = new LineaPedido(1L, 0, 0, 0, fecha);
+
+                for (String columna : columnas) {
+
+                    System.out.print(VERDE + " " + columna.toUpperCase() + "\t" + RESET);
+
+                    if(columna.length() < 8) {
+                        System.out.println(VERDE + "\t\t->\t" + RESET + rs.getString(columna));
+                    } else if(columna.length() == 8 || columna.length() < 15) {
+                        System.out.println(VERDE + "\t->\t" + RESET + rs.getString(columna));
+                    } else {
+                        System.out.println(VERDE + "->\t" + RESET + rs.getString(columna));
+                    }
+
+                    switch(columna) {
+
+                        case "id":
+                            lineaPedido.setId(rs.getLong(columna));
+                            break;
+
+                        case "id_pedido":
+                            lineaPedido.setIdPedido(rs.getInt(columna));
+                            break;
+
+                        case "id_producto":
+                            lineaPedido.setIdProducto(rs.getInt(columna));
+                            break;
+
+                        case "cantidad":
+                            lineaPedido.setCantidad(rs.getInt(columna));
+                            break;
+
+                        case "fecha":
+                            lineaPedido.setFecha(LocalDateTime.parse(rs.getString(columna)));
+                            break;
+
+                        default:
+                            break;
+                    }
+                }
+                contenidoPedido.add(lineaPedido);
+            }
+            System.out.println(VERDE + "-----------------------------------------------------------------------" + RESET);   
+            
+        } catch(SQLException e) {
+            System.out.println(ROJO + "\n\tError de conexión a la base de datos: " + e.getMessage() + RESET);
+        }
+        return contenidoPedido;
+    }
 }

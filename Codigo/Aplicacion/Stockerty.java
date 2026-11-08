@@ -390,8 +390,8 @@ public class Stockerty {
                 System.out.println("==============================================");
                 System.out.println(GRIS_OSCURO + "\n\t1-RECEPCIÓN");
                 System.out.println("\n\t2-EXPEDICIÓN");
-                System.out.println("\n\t3-PEDIDOS");
-                System.out.println(VERDE + "\n\t4-ALMACÉN");
+                System.out.println(VERDE + "\n\t3-PEDIDOS");
+                System.out.println("\n\t4-ALMACÉN");
 
                 if(usuarioActual.getTipo().equals("gestor")) {
                     System.out.println(VERDE + "\n\t5-PRODUCTOS");
@@ -422,7 +422,306 @@ public class Stockerty {
                         break;
                 
                     case 3:
-                        opcion = 0;
+                        do {
+                            nuevaPantalla();
+                            System.out.println(VERDE + "==============================================");
+                            System.out.println("\t\tPEDIDOS");
+                            System.out.println("==============================================");
+
+                            try {
+                                System.out.println(VERDE + "\n\t1-CREAR PEDIDO");
+                                System.out.println("\n\t2-ANULAR PEDIDO");
+                                System.out.println("\n\t3-MODIFICAR PEDIDO");
+                                System.out.println("\n\t4-VER PEDIDO");
+                                System.out.println("\n\t5-SALIR");
+                                System.out.println("\n <- Volver [0]");
+                                System.out.println("==============================================");
+
+                                System.out.print("\n Introduce una opción: " + RESET);
+                                
+                                opcion = Integer.parseInt(sc.nextLine());
+
+                                if(opcion < 1 || opcion > 5) {
+                                    if(opcion == 0) {
+                                        nuevaPantalla();
+                                        break;
+                                    } else {
+                                        nuevaPantalla();
+                                        System.out.println(ROJO + "\n\tError, introduce una opción válida" + RESET);
+                                    }
+                                    
+                                } else {
+                                    switch (opcion) {
+                                        case 1:
+                                            nuevaPantalla();
+                                            System.out.println(VERDE + "----------------------------------------------");
+                                            System.out.println("\t\tCREAR PEDIDO");
+                                            System.out.println("----------------------------------------------" + RESET);
+                                            
+                                            LineaPedido lineaPedido = null;
+                                            Pedido nuevoPedido = new Pedido("ls", usuarioActual.getId());
+                                            int idPedido = 0;
+
+                                            do{
+                                                try {
+                                                    System.out.println("\n Introduce los datos del nuevo pedido");
+
+                                                    System.out.print("\n Tipo de pedido (ls/pc): " + RESET);
+                                                    nuevoPedido.setTipo(sc.nextLine().toLowerCase());
+
+                                                    error = false;
+
+                                                    idPedido = BD.insertarPedido(nuevoPedido);
+                                                    nuevaPantalla();
+
+                                                    do{
+                                                        try {
+                                                            System.out.print(VERDE + "\n Producto: " + RESET);
+                                                            int nuevoProducto = Integer.parseInt(sc.nextLine());
+
+                                                            error = false;
+
+                                                            int cantidad = 0;
+
+                                                            do{
+                                                                try {
+                                                                    System.out.println(VERDE + "\n Cantidad: " + RESET);
+                                                                    cantidad = Integer.parseInt(sc.nextLine());
+
+                                                                    error = false;
+
+                                                                } catch(Exception e) {
+                                                                    System.out.println(ROJO + e.getMessage() + RESET);
+                                                                    error = true;
+                                                                }
+                                                            } while(error);
+
+                                                            lineaPedido = new LineaPedido(idPedido, nuevoProducto, cantidad);
+                                                            
+                                                            long idLineaPedido = BD.insertarLineaPedido(lineaPedido);
+
+                                                        } catch(Exception e) {
+                                                            System.out.println(ROJO + e.getMessage() + RESET);
+                                                            error = true;
+                                                        }
+                                                    } while(error);
+
+                                                } catch(Exception e) {
+                                                    System.out.println(ROJO + e.getMessage() + RESET);
+                                                    error = true;
+                                                }
+                                            } while(error);
+
+                                            System.out.println(VERDE + "\n\t¡Pedido creado! Número de pedido: " + RESET + idPedido);
+                                            List<LineaPedido> contenidoPedido = BD.mostrarLineasPedido(idPedido);
+                                            break;
+
+                                        case 2:
+                                            
+                                            nuevaPantalla();
+                                            System.out.println(VERDE + "----------------------------------------------");
+                                            System.out.println("\t\tANULAR PEDIDO");
+                                            System.out.println("----------------------------------------------" + RESET);
+
+                                            do {
+                                                try {
+                                                    System.out.print(VERDE + "\n Introduce el número de pedido que quieres anular: " + RESET);
+                                                    idPedido = Integer.parseInt(sc.nextLine());
+
+                                                    Pedido pedido = BD.mostrarPedido(idPedido);
+                                                    contenidoPedido = BD.mostrarLineasPedido(idPedido);
+
+                                                    System.out.print(VERDE + "\n ¿Anular el pedido " + pedido.getTipo().toUpperCase() + " " + pedido.getId() + " " + pedido.getEstado() + " de la base de datos? s/n: " + RESET);
+                                                    String validar = sc.nextLine().toLowerCase();
+
+                                                    if(validar.equals("s")) {
+                                                        pedido = BD.anularPedido(pedido);
+                                                        error = false;
+
+                                                        if(opcion == 0) {
+                                                            nuevaPantalla();
+                                                        } else {
+                                                            System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
+                                                            sc.nextLine();
+                                                        }
+                                                    } else {
+                                                        opcion = 0;
+                                                        nuevaPantalla();
+                                                    }
+                                                } catch (Exception e) {
+                                                    System.out.println(ROJO + "\n\tError, se necesita un ID numérico" + RESET);
+                                                    error = true;
+                                                }
+                                            } while(error);
+                                            break;
+                                    
+                                        case 3:
+                                            nuevaPantalla();
+                                            System.out.println(VERDE + "----------------------------------------------");
+                                            System.out.println("\t\tMODIFICAR PEDIDO");
+                                            System.out.println("----------------------------------------------" + RESET);
+
+                                            do {
+                                                try {
+                                                    System.out.print(VERDE + "\n Introduce el pedido que quieres modificar: " + RESET);
+                                                    idPedido = Integer.parseInt(sc.nextLine());
+
+                                                    Pedido pedido = BD.mostrarPedido(idPedido);
+                                                    List<LineaPedido> contenido = BD.mostrarLineasPedido(idPedido);
+
+                                                    do {
+                                                        System.out.print(VERDE + "\n ¿Qué dato quieres modificar?: " + RESET);
+                                                        String dato = sc.nextLine().toLowerCase();
+
+                                                        if (dato.equals("contenido")) {
+
+                                                            do {
+                                                                System.out.print(VERDE + "\n ¿Añadir línea (A), Borrar línea (B) o Modificar cantidad (M)?: " + RESET);
+                                                                String accion = sc.nextLine();
+
+                                                                if (accion.toLowerCase().equals("a")) {
+                                                                    do{
+                                                                        try {
+                                                                            System.out.print(VERDE + "\n Producto: " + RESET);
+                                                                            int nuevoProducto = Integer.parseInt(sc.nextLine());
+
+                                                                            error = false;
+
+                                                                            int cantidad = 0;
+
+                                                                            do{
+                                                                                try {
+                                                                                    System.out.println(VERDE + "\n Cantidad: " + RESET);
+                                                                                    cantidad = Integer.parseInt(sc.nextLine());
+
+                                                                                    error = false;
+
+                                                                                } catch(Exception e) {
+                                                                                    System.out.println(ROJO + e.getMessage() + RESET);
+                                                                                    error = true;
+                                                                                }
+                                                                            } while(error);
+
+                                                                            lineaPedido = new LineaPedido(idPedido, nuevoProducto, cantidad);
+                                                                            
+                                                                            long idLineaPedido = BD.insertarLineaPedido(lineaPedido);
+
+                                                                        } catch(Exception e) {
+                                                                            System.out.println(ROJO + e.getMessage() + RESET);
+                                                                            error = true;
+                                                                        }
+                                                                    } while(error);
+
+                                                                } else if (accion.toLowerCase().equals("b")) {
+                                                                    do{
+                                                                        try {
+                                                                            System.out.print(VERDE + "\n Producto: " + RESET);
+                                                                            int idProducto = Integer.parseInt(sc.nextLine());
+
+                                                                            error = false;
+
+                                                                            int cantidad = 0;
+                                                                            
+                                                                            BD.borrarLineaPedido(idPedido, idProducto);
+
+                                                                        } catch(Exception e) {
+                                                                            System.out.println(ROJO + e.getMessage() + RESET);
+                                                                            error = true;
+                                                                        }
+                                                                    } while(error);
+
+                                                                } else if (accion.toLowerCase().equals("m")) {
+                                                                    do{
+                                                                        try {
+                                                                            System.out.print(VERDE + "\n Producto: " + RESET);
+                                                                            int idProducto = Integer.parseInt(sc.nextLine());
+
+                                                                            error = false;
+
+                                                                            int cantidad = 0;
+
+                                                                            do{
+                                                                                try {
+                                                                                    System.out.println(VERDE + "\n Cantidad: " + RESET);
+                                                                                    cantidad = Integer.parseInt(sc.nextLine());
+
+                                                                                    error = false;
+
+                                                                                } catch(Exception e) {
+                                                                                    System.out.println(ROJO + e.getMessage() + RESET);
+                                                                                    error = true;
+                                                                                }
+                                                                            } while(error);
+
+                                                                            BD.modificarLineaPedido(idPedido, idProducto, cantidad);
+
+                                                                        } catch(Exception e) {
+                                                                            System.out.println(ROJO + e.getMessage() + RESET);
+                                                                            error = true;
+                                                                        }
+                                                                    } while(error);
+                                                                } else {
+                                                                    System.out.println(ROJO + "\n\tIntroduce una opción válida" + RESET);
+                                                                    error = true;
+                                                                }
+                                                            } while(error);
+
+                                                        } else {
+                                                            pedido = BD.modificarPedido(pedido, dato);
+                                                            error = false;
+                                                        }
+                                                        System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
+                                                        sc.nextLine();
+
+                                                    } while(error);
+
+                                                } catch (Exception e) {
+                                                    System.out.println(ROJO + "\n\tError, se necesita un ID numérico" + RESET);
+                                                    error = true;
+                                                }
+                                            } while(error);
+                                            break;
+
+                                        case 4: 
+                                            nuevaPantalla();
+                                            System.out.println(VERDE + "----------------------------------------------");
+                                            System.out.println("\t\tVER PEDIDO");
+                                            System.out.println("----------------------------------------------" + RESET);
+
+                                            do {
+                                                try {
+                                                    System.out.print(VERDE + "\n Introduce el pedido que quieres mostrar: " + RESET);
+                                                    idPedido = Integer.parseInt(sc.nextLine());
+
+                                                    Pedido pedido = BD.mostrarPedido(idPedido);
+
+                                                    List<LineaPedido> contenido = BD.mostrarLineasPedido(idPedido);
+                                                    
+                                                    error = false;
+
+                                                    System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
+                                                    sc.nextLine();
+
+                                                } catch (Exception e) {
+                                                    System.out.println(ROJO + "\n\tError, se necesita un ID numérico" + RESET);
+                                                    error = true;
+                                                }
+                                            } while(error);
+                                            break;
+
+                                        case 5:
+                                            salir();
+
+                                        default:
+                                            break;
+                                    }
+                                }
+                            } catch(Exception e) {
+                                nuevaPantalla();
+                                System.out.println(ROJO + "\n\tError, introduce un número [1-5]" + RESET);
+                            }
+                            if(opcion == 0) break;
+                        } while(opcion > 0 || opcion < 6);
                         break;
 
                     case 4:
@@ -799,8 +1098,10 @@ public class Stockerty {
 
                                                                 do {
                                                                     try {
-                                                                        System.out.print(VERDE + "\n Introduce el ID del pasillo que quieres eliminar: " + RESET);
-                                                                        // int idPasillo = Integer.parseInt(sc.nextLine());
+                                                                        System.out.print(VERDE + "\n Introduce el nombre de la ubicación que quieres modificar: " + RESET);
+                                                                        String nombreUbicacion = sc.nextLine();
+
+
 
                                                                         // borrarPasillo(idPasillo);
                                                                         error = false;
@@ -1159,6 +1460,11 @@ public class Stockerty {
                                                                                         }
                                                                                         Direccion direccion = new Direccion(posicion, idAltura);
                                                                                         int idDireccion = BD.insertarDireccion(direccion);
+
+                                                                                        String nombreUbicacion = nombreRack + "-" + contador + "-" + posicion;
+                                                                                        Ubicacion ubicacion = new Ubicacion(nombreUbicacion, idRack, idAltura, idDireccion);
+
+                                                                                        BD.insertarUbicacion(ubicacion);
 
                                                                                         if(contador2 != posicionDireccion) {
                                                                                             contador2++;
@@ -1679,14 +1985,14 @@ public class Stockerty {
                         do {
                             nuevaPantalla();
                             System.out.println(VERDE + "==============================================");
-                            System.out.println("\t\tCLIENTES");
+                            System.out.println("\t\tCLIENTES/PROVEEDORES");
                             System.out.println("==============================================");
 
                             try {
-                                System.out.println(VERDE + "\n\t1-INTRODUCIR CLIENTE");
-                                System.out.println("\n\t2-ELIMINAR CLIENTE");
-                                System.out.println("\n\t3-MODIFICAR CLIENTE");
-                                System.out.println("\n\t4-DATOS CLIENTE");
+                                System.out.println(VERDE + "\n\t1-INTRODUCIR CLIENTE/PROVEEDOR");
+                                System.out.println("\n\t2-ELIMINAR CLIENTE/PROVEEDOR");
+                                System.out.println("\n\t3-MODIFICAR CLIENTE/PROVEEDOR");
+                                System.out.println("\n\t4-DATOS CLIENTE/PROVEEDOR");
                                 System.out.println("\n\t5-SALIR");
                                 System.out.println("\n <- Volver [0]");
                                 System.out.println("==============================================");
@@ -1709,51 +2015,135 @@ public class Stockerty {
                                         case 1:
                                             nuevaPantalla();
                                             System.out.println(VERDE + "----------------------------------------------");
-                                            System.out.println("\t\tINTRODUCIR CLIENTE");
+                                            System.out.println("\t\tINTRODUCIR CLIENTE/PROVEEDOR");
                                             System.out.println("----------------------------------------------");
 
-                                            Cliente cliente = new Cliente("00000000X", "X", "X", "X","x@x.xx", "700000000");
+                                            do {
+                                                System.out.print("\n Elige entre cliente (c) o proveedor (p): " + RESET);
+                                                String tipo = sc.nextLine().toLowerCase();
 
-                                            do{
-                                                try {
-                                                    System.out.println("\n Introduce los datos del nuevo cliente");
-                                                    System.out.println("\n NIF o DNI: " + RESET);
-                                                    cliente.setNif(sc.nextLine());
+                                                if(tipo.equals("c")) {
 
-                                                    error = false;
+                                                    Cliente cliente = new Cliente("00000000X", "X", "X", "X","x@x.xx", "700000000");
 
                                                     do{
                                                         try {
-                                                            System.out.println(VERDE + "\n Nombre: " + RESET);
-                                                            cliente.setNombre(sc.nextLine());
+                                                            System.out.println("\n Introduce los datos del nuevo cliente");
+                                                            System.out.println("\n NIF o DNI: " + RESET);
+                                                            cliente.setNif(sc.nextLine());
 
                                                             error = false;
 
                                                             do{
                                                                 try {
-                                                                    System.out.println(VERDE + "\n Apellidos: " + RESET);
-                                                                    cliente.setApellidos(sc.nextLine());
+                                                                    System.out.println(VERDE + "\n Nombre: " + RESET);
+                                                                    cliente.setNombre(sc.nextLine());
 
                                                                     error = false;
 
                                                                     do{
                                                                         try {
-                                                                            System.out.println(VERDE + "\n Dirección: " + RESET);
-                                                                            cliente.setDireccion(sc.nextLine());
+                                                                            System.out.println(VERDE + "\n Apellidos: " + RESET);
+                                                                            cliente.setApellidos(sc.nextLine());
+
+                                                                            error = false;
+
+                                                                            do{
+                                                                                try {
+                                                                                    System.out.println(VERDE + "\n Dirección: " + RESET);
+                                                                                    cliente.setDireccion(sc.nextLine());
+
+                                                                                    error = false;
+
+                                                                                    do{
+                                                                                        try {
+                                                                                            System.out.println(VERDE + "\n Email: " + RESET);
+                                                                                            cliente.setEmail(sc.nextLine());
+
+                                                                                            error = false;
+
+                                                                                            do{
+                                                                                                try {
+                                                                                                    System.out.println(VERDE + "\n Teléfono: " + RESET);
+                                                                                                    cliente.setTelefono(sc.nextLine());
+
+                                                                                                    error = false;
+
+                                                                                                } catch(Exception e) {
+                                                                                                    System.out.println(ROJO + e.getMessage() + RESET);
+                                                                                                    error = true;
+                                                                                                }
+                                                                                            } while(error);
+
+                                                                                        } catch(Exception e) {
+                                                                                            System.out.println(ROJO + e.getMessage() + RESET);
+                                                                                            error = true;
+                                                                                        }
+                                                                                    } while(error);
+
+                                                                                } catch(Exception e) {
+                                                                                    System.out.println(ROJO + e.getMessage() + RESET);
+                                                                                    error = true;
+                                                                                }
+                                                                            } while(error);
+
+                                                                        } catch(Exception e) {
+                                                                            System.out.println(ROJO + e.getMessage() + RESET);
+                                                                            error = true;
+                                                                        }
+                                                                    } while(error);
+
+                                                                } catch(Exception e) {
+                                                                    System.out.println(ROJO + e.getMessage() + RESET);
+                                                                    error = true;
+                                                                }
+                                                            } while(error);
+
+                                                        } catch(Exception e) {
+                                                            System.out.println(ROJO + e.getMessage() + RESET);
+                                                            error = true;
+                                                        }
+                                                    } while(error);
+
+                                                    BD.insertarCliente(cliente);
+                                                    
+                                                } else if (tipo.equals("p")) {
+
+                                                    Proveedor proveedor = new Proveedor(0, "X00000000", "X", "666999777","x@x.xx", "X");
+
+                                                    do{
+                                                        try {
+                                                            System.out.println("\n Introduce los datos del nuevo proveedor");
+                                                            System.out.println("\n CIF: " + RESET);
+                                                            proveedor.setCif(sc.nextLine());
+
+                                                            error = false;
+
+                                                            do{
+                                                                try {
+                                                                    System.out.println(VERDE + "\n Nombre: " + RESET);
+                                                                    proveedor.setNombre(sc.nextLine());
+
+                                                                    error = false;
+
+                                                                    do{
+                                                                        try {
+                                                                            System.out.println(VERDE + "\n Teléfono: " + RESET);
+                                                                            proveedor.setTelefono(sc.nextLine());
 
                                                                             error = false;
 
                                                                             do{
                                                                                 try {
                                                                                     System.out.println(VERDE + "\n Email: " + RESET);
-                                                                                    cliente.setEmail(sc.nextLine());
+                                                                                    proveedor.setEmail(sc.nextLine());
 
                                                                                     error = false;
 
                                                                                     do{
                                                                                         try {
-                                                                                            System.out.println(VERDE + "\n Teléfono: " + RESET);
-                                                                                            cliente.setTelefono(sc.nextLine());
+                                                                                            System.out.println(VERDE + "\n Dirección: " + RESET);
+                                                                                            proveedor.setDireccion(sc.nextLine());
 
                                                                                             error = false;
 
@@ -1787,47 +2177,91 @@ public class Stockerty {
                                                         }
                                                     } while(error);
 
-                                                } catch(Exception e) {
-                                                    System.out.println(ROJO + e.getMessage() + RESET);
+                                                    BD.insertarProveedor(proveedor);
+                                                    
+                                                } else {
+                                                    System.out.println(ROJO + "\t\t¡Introduce una opcion válida!" + RESET);
                                                     error = true;
                                                 }
                                             } while(error);
-
-                                            BD.insertarCliente(cliente);
                                             break;
 
                                         case 2:
                                             nuevaPantalla();
                                             System.out.println(VERDE + "----------------------------------------------");
-                                            System.out.println("\t\tELIMINAR CLIENTE");
+                                            System.out.println("\t\tELIMINAR CLIENTE/PROVEEDOR");
                                             System.out.println("----------------------------------------------" + RESET);
 
                                             do {
-                                                try {
-                                                    System.out.print(VERDE + "\n Introduce el NIF del cliente que quieres borrar: " + RESET);
-                                                    String nifCliente = sc.nextLine();
+                                                System.out.print("\n Elige entre cliente (c) o proveedor (p): " + RESET);
+                                                String tipo = sc.nextLine().toLowerCase();
 
-                                                    Cliente cliente1 = BD.mostrarCliente(nifCliente);
+                                                if(tipo.equals("c")) {
 
-                                                    System.out.print(VERDE + "\n ¿Borrar al cliente " + cliente1.getNombre() + " " + cliente1.getApellidos() + " " + cliente1.getNif() + " de la base de datos? s/n: " + RESET);
-                                                    String validar = sc.nextLine().toLowerCase();
+                                                    do {
+                                                        try {
+                                                            System.out.print(VERDE + "\n Introduce el NIF del cliente que quieres borrar: " + RESET);
+                                                            String nifCliente = sc.nextLine();
 
-                                                    if(validar.equals("s")) {
-                                                        BD.borrarCliente(nifCliente);
-                                                        error = false;
+                                                            Cliente cliente1 = BD.mostrarCliente(nifCliente);
 
-                                                        if(opcion == 0) {
-                                                            nuevaPantalla();
-                                                        } else {
-                                                            System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
-                                                            sc.nextLine();
+                                                            System.out.print(VERDE + "\n ¿Borrar al cliente " + cliente1.getNombre() + " " + cliente1.getApellidos() + " " + cliente1.getNif() + " de la base de datos? s/n: " + RESET);
+                                                            String validar = sc.nextLine().toLowerCase();
+
+                                                            if(validar.equals("s")) {
+                                                                BD.borrarCliente(nifCliente);
+                                                                error = false;
+
+                                                                if(opcion == 0) {
+                                                                    nuevaPantalla();
+                                                                } else {
+                                                                    System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
+                                                                    sc.nextLine();
+                                                                }
+                                                            } else {
+                                                                opcion = 0;
+                                                                nuevaPantalla();
+                                                            }
+                                                        } catch (Exception e) {
+                                                            System.out.println(ROJO + "\n\t" + e.getMessage() + RESET);
+                                                            error = true;
                                                         }
-                                                    } else {
-                                                        opcion = 0;
-                                                        nuevaPantalla();
-                                                    }
-                                                } catch (Exception e) {
-                                                    System.out.println(ROJO + "\n\t" + e.getMessage() + RESET);
+                                                    } while(error);
+
+                                                } else if(tipo.equals("p")) {
+
+                                                    do {
+                                                        try {
+                                                            System.out.print(VERDE + "\n Introduce el CIF del proveedor que quieres borrar: " + RESET);
+                                                            String cifProveedor = sc.nextLine();
+
+                                                            Proveedor proveedor1 = BD.mostrarProveedor(cifProveedor);
+
+                                                            System.out.print(VERDE + "\n ¿Borrar al proveedor " + proveedor1.getId() + " " + proveedor1.getNombre() + " " + proveedor1.getCif() + " de la base de datos? s/n: " + RESET);
+                                                            String validar = sc.nextLine().toLowerCase();
+
+                                                            if(validar.equals("s")) {
+                                                                BD.borrarProveedor(cifProveedor);
+                                                                error = false;
+
+                                                                if(opcion == 0) {
+                                                                    nuevaPantalla();
+                                                                } else {
+                                                                    System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
+                                                                    sc.nextLine();
+                                                                }
+                                                            } else {
+                                                                opcion = 0;
+                                                                nuevaPantalla();
+                                                            }
+                                                        } catch (Exception e) {
+                                                            System.out.println(ROJO + "\n\t" + e.getMessage() + RESET);
+                                                            error = true;
+                                                        }
+                                                    } while(error);
+
+                                                } else {
+                                                    System.out.println(ROJO + "\t\t¡Introduce una opcion válida!" + RESET);
                                                     error = true;
                                                 }
                                             } while(error);
@@ -1836,30 +2270,67 @@ public class Stockerty {
                                         case 3:
                                             nuevaPantalla();
                                             System.out.println(VERDE + "----------------------------------------------");
-                                            System.out.println("\t\tMODIFICAR CLIENTE");
+                                            System.out.println("\t\tMODIFICAR CLIENTE/PROVEEDOR");
                                             System.out.println("----------------------------------------------" + RESET);
 
                                             do {
-                                                try {
-                                                    System.out.print(VERDE + "\n Introduce el NIF del cliente que quieres modificar: " + RESET);
-                                                    String nifCliente = sc.nextLine();
+                                                System.out.print("\n Elige entre cliente (c) o proveedor (p): " + RESET);
+                                                String tipo = sc.nextLine().toLowerCase();
 
-                                                    Cliente cliente1 = BD.mostrarCliente(nifCliente);
-
+                                                if(tipo.equals("c")) {
                                                     do {
-                                                        System.out.print(VERDE + "\n ¿Qué dato quieres modificar?: " + RESET);
-                                                        String dato = sc.nextLine().toLowerCase();
-                                                        
-                                                        cliente1 = BD.modificarCliente(cliente1, dato);
-                                                        error = false;
+                                                        try {
+                                                            System.out.print(VERDE + "\n Introduce el NIF del cliente que quieres modificar: " + RESET);
+                                                            String nifCliente = sc.nextLine();
 
-                                                        System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
-                                                        sc.nextLine();
+                                                            Cliente cliente1 = BD.mostrarCliente(nifCliente);
 
+                                                            do {
+                                                                System.out.print(VERDE + "\n ¿Qué dato quieres modificar?: " + RESET);
+                                                                String dato = sc.nextLine().toLowerCase();
+                                                                
+                                                                cliente1 = BD.modificarCliente(cliente1, dato);
+                                                                error = false;
+
+                                                                System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
+                                                                sc.nextLine();
+
+                                                            } while(error);
+
+                                                        } catch (Exception e) {
+                                                            System.out.println(ROJO + "\n\t" + e.getMessage() + RESET);
+                                                            error = true;
+                                                        }
                                                     } while(error);
 
-                                                } catch (Exception e) {
-                                                    System.out.println(ROJO + "\n\tError, se necesita un ID numérico" + RESET);
+                                                } else if(tipo.equals("p")) {
+
+                                                    do {
+                                                        try {
+                                                            System.out.print(VERDE + "\n Introduce el CIF del proveedor que quieres modificar: " + RESET);
+                                                            String cifProveedor = sc.nextLine();
+
+                                                            Proveedor proveedor1 = BD.mostrarProveedor(cifProveedor);
+
+                                                            do {
+                                                                System.out.print(VERDE + "\n ¿Qué dato quieres modificar?: " + RESET);
+                                                                String dato = sc.nextLine().toLowerCase();
+                                                                
+                                                                proveedor1 = BD.modificarProveedor(proveedor1, dato);
+                                                                error = false;
+
+                                                                System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
+                                                                sc.nextLine();
+
+                                                            } while(error);
+
+                                                        } catch (Exception e) {
+                                                            System.out.println(ROJO + "\n\t" + e.getMessage() + RESET);
+                                                            error = true;
+                                                        }
+                                                    } while(error);
+                                                } else {
+                                                    System.out.println(ROJO + "\t\t¡Introduce una opcion válida!" + RESET);
                                                     error = true;
                                                 }
                                             } while(error);
@@ -1868,23 +2339,53 @@ public class Stockerty {
                                         case 4:
                                             nuevaPantalla();
                                             System.out.println(VERDE + "----------------------------------------------");
-                                            System.out.println("\t\tDATOS CLIENTE");
+                                            System.out.println("\t\tDATOS CLIENTE/PROVEEDOR");
                                             System.out.println("----------------------------------------------" + RESET);
 
                                             do {
-                                                try {
-                                                    System.out.print(VERDE + "\n Introduce el NIF del cliente que quieres mostrar: " + RESET);
-                                                    String nifCliente = sc.nextLine();
+                                                System.out.print("\n Elige entre cliente (c) o proveedor (p): " + RESET);
+                                                String tipo = sc.nextLine().toLowerCase();
 
-                                                    Cliente cliente1 = BD.mostrarCliente(nifCliente);
+                                                if(tipo.equals("c")) {
+                                                    do {
+                                                        try {
+                                                            System.out.print(VERDE + "\n Introduce el NIF del cliente que quieres mostrar: " + RESET);
+                                                            String nifCliente = sc.nextLine();
 
-                                                    error = false;
+                                                            Cliente cliente1 = BD.mostrarCliente(nifCliente);
 
-                                                    System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
-                                                    sc.nextLine();
+                                                            error = false;
 
-                                                } catch (Exception e) {
-                                                    System.out.println(ROJO + "\n\tError, se necesita un ID numérico" + RESET);
+                                                            System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
+                                                            sc.nextLine();
+
+                                                        } catch (Exception e) {
+                                                            System.out.println(ROJO + "\n\t" + e.getMessage() + RESET);
+                                                            error = true;
+                                                        }
+                                                    } while(error);
+
+                                                } else if(tipo.equals("p")) {
+
+                                                    do {
+                                                        try {
+                                                            System.out.print(VERDE + "\n Introduce el cif del proveedor que quieres mostrar: " + RESET);
+                                                            String cifProveedor = sc.nextLine();
+
+                                                            Proveedor proveedor1 = BD.mostrarProveedor(cifProveedor);
+
+                                                            error = false;
+
+                                                            System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
+                                                            sc.nextLine();
+
+                                                        } catch (Exception e) {
+                                                            System.out.println(ROJO + "\n\t" + e.getMessage() + RESET);
+                                                            error = true;
+                                                        }
+                                                    } while(error);
+                                                } else {
+                                                    System.out.println(ROJO + "\t\t¡Introduce una opcion válida!" + RESET);
                                                     error = true;
                                                 }
                                             } while(error);

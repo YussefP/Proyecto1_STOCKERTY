@@ -58,11 +58,45 @@ public class Pedido {
         this.estado = estado;
     }
 
+    // Constructor 3 - Para insertar un pedido en la base de datos omitiendo el ID, las lineas, las fechas y el estado
+    public Pedido(String tipo, int idEmpleado) {
+
+        if(tipo==null || tipo.isEmpty() || tipo.isBlank()) {
+            throw new IllegalArgumentException("Tipo de pedido obligatorio");
+        } else if(!tipo.toLowerCase().equals("ls") && !tipo.toLowerCase().equals("pc")) {
+            throw new IllegalArgumentException("Tipo de pedido incorrecto, introduce uno de los siguientes valores: LS o PC");
+        }
+
+        this.tipo = tipo;
+        this.fechaCreacion = LocalDateTime.now();
+        this.fechaEstimada = fechaCreacion.toLocalDate().plusDays(7);
+        this.idEmpleado = idEmpleado;
+        this.estado = "Pendiente";
+    }
+
+    // Constructor 4 - Para leer un pedido en la base de datos omitiendo las lineas
+    public Pedido(int id, String tipo, LocalDateTime fechaCreacion, LocalDate fechaEstimada, int idEmpleado, String estado) {
+
+        if(tipo==null || tipo.isEmpty() || tipo.isBlank()) {
+            throw new IllegalArgumentException("Tipo de pedido obligatorio");
+        } else if(!tipo.toLowerCase().equals("ls") && !tipo.toLowerCase().equals("pc")) {
+            throw new IllegalArgumentException("Tipo de pedido incorrecto, introduce uno de los siguientes valores: LS o PC");
+        }
+
+        this.id = id;
+        this.tipo = tipo;
+        this.fechaCreacion = fechaCreacion;
+        this.fechaEstimada = fechaEstimada;
+        this.idEmpleado = idEmpleado;
+        this.estado = estado;
+    }
+
     // Getters y Setters
 
     public int getId() { return id; }
     public String getTipo() { return tipo; }
     public List<Producto> getLineas() { return lineas; }
+    public Producto getLinea(int i) { return lineas.get(i); } 
     public LocalDateTime getFechaCreacion() { return fechaCreacion; }
     public LocalDate getFechaEstimada() { return fechaEstimada; }
     public int getIdEmpleado() { return idEmpleado; }
