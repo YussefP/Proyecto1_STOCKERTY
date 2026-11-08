@@ -144,8 +144,8 @@ public class Pedido {
 
         if(estado==null || estado.isEmpty() || estado.isBlank()) {
             throw new IllegalArgumentException("Estado de pedido obligatorio");
-        } else if(!estado.toLowerCase().equals("Pendiente") && !estado.toLowerCase().equals("En tránsito") && !estado.toLowerCase().equals("Recepcionado") && !estado.toLowerCase().equals("Ubicado") && !estado.toLowerCase().equals("Saldado")) {
-            throw new IllegalArgumentException("Estado de pedido incorrecto, introduce uno de los siguientes valores: LS o PC");
+        } else if(!estado.toLowerCase().equals("pendiente") && !estado.toLowerCase().equals("en tránsito") && !estado.toLowerCase().equals("recepcionado") && !estado.toLowerCase().equals("ubicado") && !estado.toLowerCase().equals("saldado")) {
+            throw new IllegalArgumentException("Estado de pedido incorrecto, introduce uno de los siguientes valores: pendiente, en tránsito, recepcionado, ubicado, saldado");
         }
         this.estado = estado;
     }

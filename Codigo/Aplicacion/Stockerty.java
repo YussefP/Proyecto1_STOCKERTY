@@ -699,11 +699,11 @@ public class Stockerty {
                                                     
                                                     error = false;
 
-                                                    System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
+                                                    System.out.println(VERDE + "\n\n Pulsa ENTER para continuar..." + RESET);
                                                     sc.nextLine();
 
                                                 } catch (Exception e) {
-                                                    System.out.println(ROJO + "\n\tError, se necesita un ID numérico" + RESET);
+                                                    System.out.println(ROJO + "\n\t" + e.getMessage() + RESET);
                                                     error = true;
                                                 }
                                             } while(error);

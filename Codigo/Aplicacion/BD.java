@@ -1840,7 +1840,7 @@ public class BD {
                             break;
 
                         case "fecha":
-                            soporte.setFecha(LocalDateTime.parse(rs.getString(columna)));
+                            soporte.setFecha(LocalDateTime.parse(rs.getString(columna).replace(" ", "T")));
                             break;
 
                         case "id_empleado":
@@ -2043,7 +2043,7 @@ public class BD {
                             break;
 
                         case "fecha":
-                            accion.setFecha(LocalDateTime.parse(rs.getString(columna)));
+                            accion.setFecha(LocalDateTime.parse(rs.getString(columna).replace(" ", "T")));
 
                         default:
                             break;
@@ -2148,7 +2148,7 @@ public class BD {
                             break;
 
                         case "fecha":
-                            ubicaSoporte.setFecha(LocalDateTime.parse(rs.getString(columna)));
+                            ubicaSoporte.setFecha(LocalDateTime.parse(rs.getString(columna).replace(" ", "T")));
                             break;
 
                         case "tipo":
@@ -2263,7 +2263,7 @@ public class BD {
                             break;
 
                         case "fecha":
-                            ubicaProducto.setFecha(LocalDateTime.parse(rs.getString(columna)));
+                            ubicaProducto.setFecha(LocalDateTime.parse(rs.getString(columna).replace(" ", "T")));
                             break;
 
                         case "tipo":
@@ -2617,7 +2617,7 @@ public class BD {
      */
     public static Proveedor mostrarProveedor(String cif) {
 
-        String sql = "SELECT * FROM proveedor WHERE nif = ?";
+        String sql = "SELECT * FROM proveedor WHERE cif = ?";
 
         Proveedor proveedor = null;
 
@@ -3070,11 +3070,11 @@ public class BD {
                             break;
 
                         case "fecha_creacion":
-                            pedido.setFechaCreacion(LocalDateTime.parse(rs.getString(columna)));
+                            pedido.setFechaCreacion(LocalDateTime.parse(rs.getString(columna).replace(" ", "T")));
                             break;
 
                         case "fecha_estimada":
-                            pedido.setFechaEstimada(LocalDate.parse(rs.getString(columna)));
+                            pedido.setFechaEstimada(LocalDate.parse(rs.getString(columna).substring(0, 10)));
                             break;
 
                         case "id_empleado":
@@ -3224,8 +3224,6 @@ public class BD {
             PreparedStatement ps = conexion.prepareStatement(sql)) {
 
             String[] columnas = {"id", "id_pedido", "id_producto", "cantidad", "fecha"};
-            
-            System.out.println(VERDE + "\n-----------------------------------------------------------------------" + RESET);
 
             ps.setInt(1, idPedido);
             ResultSet rs = ps.executeQuery();
@@ -3236,16 +3234,11 @@ public class BD {
 
                 for (String columna : columnas) {
 
-                    System.out.print(VERDE + " " + columna.toUpperCase() + "\t" + RESET);
-
-                    if(columna.length() < 8) {
-                        System.out.println(VERDE + "\t\t->\t" + RESET + rs.getString(columna));
-                    } else if(columna.length() == 8 || columna.length() < 15) {
-                        System.out.println(VERDE + "\t->\t" + RESET + rs.getString(columna));
+                    if(columna.equals("id") || columna.equals("id_pedido")) {
+                        ;
                     } else {
-                        System.out.println(VERDE + "->\t" + RESET + rs.getString(columna));
+                        System.out.print(VERDE + " " + columna.toUpperCase() + ":\t" + RESET + rs.getString(columna) + "\t");
                     }
-
                     switch(columna) {
 
                         case "id":
@@ -3265,7 +3258,7 @@ public class BD {
                             break;
 
                         case "fecha":
-                            lineaPedido.setFecha(LocalDateTime.parse(rs.getString(columna)));
+                            lineaPedido.setFecha(LocalDateTime.parse(rs.getString(columna).replace(" ", "T")));
                             break;
 
                         default:
@@ -3273,8 +3266,7 @@ public class BD {
                     }
                 }
                 contenidoPedido.add(lineaPedido);
-            }
-            System.out.println(VERDE + "-----------------------------------------------------------------------" + RESET);   
+            }   
             
         } catch(SQLException e) {
             System.out.println(ROJO + "\n\tError de conexión a la base de datos: " + e.getMessage() + RESET);
