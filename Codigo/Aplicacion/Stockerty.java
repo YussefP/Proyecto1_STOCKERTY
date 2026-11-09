@@ -733,8 +733,8 @@ public class Stockerty {
 
                             try {
                                 System.out.println(VERDE + "\n\t1-GESTIONAR SOPORTES");
-                                System.out.println(GRIS_OSCURO + "\n\t2-UBICAR MERCANCÍA");
-                                System.out.println("\n\t3-GESTIÓN ALMACÉN");
+                                System.out.println("\n\t2-UBICAR MERCANCÍA");
+                                System.out.println(GRIS_OSCURO + "\n\t3-GESTIÓN ALMACÉN");
                                 
                                 if(usuarioActual.getTipo().equals("gestor")) {
                                     System.out.println(VERDE + "\n\t4-ESTRUCTURA ALMACÉN");
@@ -982,12 +982,12 @@ public class Stockerty {
                                                 System.out.println("==============================================");
 
                                                 try {
-                                                    System.out.println(GRIS_OSCURO + "\n\t1-UBICAR SOPORTE");
+                                                    System.out.println(VERDE + "\n\t1-UBICAR SOPORTE");
                                                     System.out.println("\n\t2-UBICAR PRODUCTOS");
                                                     System.out.println("\n\t3-MODIFICAR UBICACIÓN");
                                                     System.out.println("\n\t4-LIBERAR UBICACIÓN");
                                                     System.out.println("\n\t5-MOSTRAR UBICACIÓN");
-                                                    System.out.println(VERDE + "\n\t6-SALIR");
+                                                    System.out.println("\n\t6-SALIR");
                                                     System.out.println("\n <- Volver [0]");
                                                     System.out.println("==============================================");
 
@@ -1030,10 +1030,8 @@ public class Stockerty {
                                                                         System.out.println(VERDE + "\n Nº de Identificación de la acción: " + RESET + accion);
 
                                                                         Soporte soporte = BD.mostrarSoporte(numSoporte);
-                                                                        nuevaPantalla();
 
-                                                                        BD.modificarSoporte(soporte, "ubicacion", nombreUbicacion);
-                                                                        nuevaPantalla();
+                                                                        BD.modificarSoporte(soporte, "nombre_ubicacion", nombreUbicacion);
 
                                                                         error = false;
 

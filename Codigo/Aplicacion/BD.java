@@ -1580,9 +1580,9 @@ public class BD {
 
                     System.out.print(VERDE + " " + columna.toUpperCase() + "\t" + RESET);
 
-                    if(columna.length() < 8) {
+                    if(columna.length() < 7) {
                         System.out.println(VERDE + "\t\t->\t" + RESET + rs.getString(columna));
-                    } else if(columna.length() == 8 || columna.length() < 15) {
+                    } else if(columna.length() == 7 || columna.length() < 15) {
                         System.out.println(VERDE + "\t->\t" + RESET + rs.getString(columna));
                     } else {
                         System.out.println(VERDE + "->\t" + RESET + rs.getString(columna));
@@ -1797,7 +1797,7 @@ public class BD {
         try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
             PreparedStatement ps = conexion.prepareStatement(sql)) {
 
-            String[] columnas = {"id", "abreviatura", "tipo", "id_ubicacion", "fecha", "id_empleado"};
+            String[] columnas = {"id", "abreviatura", "tipo", "nombre_ubicacion", "fecha", "id_empleado"};
             LocalDateTime fecha = LocalDateTime.now();
             List<Producto> lista = new ArrayList<>();
             
@@ -1835,7 +1835,7 @@ public class BD {
                             soporte.setTipo(rs.getString(columna));
                             break;
 
-                        case "id_ubicacion":
+                        case "nombre_ubicacion":
                             soporte.setUbicacion(rs.getString(columna));
                             break;
 
@@ -2180,7 +2180,7 @@ public class BD {
      */
     public static long insertarUbicaProducto(UbicaProducto ubicaProducto) {
 
-        String sql = "INSERT INTO ubica_producto (id_empleado, id_ubicacion, id_soporte, cantidad, fecha, tipo) VALUES (?, ?, ?, ?, ?, ?);";
+        String sql = "INSERT INTO ubica_producto (id_empleado, id_ubicacion, id_producto, cantidad, fecha, tipo) VALUES (?, ?, ?, ?, ?, ?);";
 
         long idUbicaProducto = 0;
 
@@ -3172,8 +3172,9 @@ public class BD {
 
     /**
      * Método para modificar la cantidad de una línea de pedido de la base de datos
-     * @param pedido
-     * @param dato
+     * @param idPedido
+     * @param idProducto
+     * @param cantidad
      * @return
      */
     public static void modificarLineaPedido(int idPedido, int idProducto, int cantidad) {
@@ -3209,7 +3210,7 @@ public class BD {
 
     /**
      * Método para mostrar todas las líneas de un pedido de la base de datos
-     * @param id
+     * @param idPedido
      * @return
      */
     public static List<LineaPedido> mostrarLineasPedido(int idPedido) {
@@ -3272,5 +3273,206 @@ public class BD {
             System.out.println(ROJO + "\n\tError de conexión a la base de datos: " + e.getMessage() + RESET);
         }
         return contenidoPedido;
+    }
+
+    // ContenidoUbicacion ==========================================================================================================================================================
+
+    /**
+     * Método para insertar el contenido de ubicacion de la base de datos
+     * @param contenidoUbicacion
+     * @return
+     */
+    public static long insertarContenidoUbicacion(ContenidoUbicacion contenidoUbicacion) {
+
+        String sql = "";
+
+        if(contenidoUbicacion.getTipo().equals("producto")) {
+
+            sql = "INSERT INTO contenido_ubicacion (nombre_ubicacion, tipo, id_producto, cantidad, fecha) VALUES (?, ?, ?, ?, ?);";
+
+        } else if(contenidoUbicacion.getTipo().equals("soporte")) {
+
+            sql = "INSERT INTO contenido_ubicacion (nombre_ubicacion, tipo, id_soporte, cantidad, fecha) VALUES (?, ?, ?, ?, ?);";
+
+        } else if(contenidoUbicacion.getTipo().equals("producto")) {
+
+            sql = "INSERT INTO contenido_ubicacion (nombre_ubicacion, tipo, id_pedido, cantidad, fecha) VALUES (?, ?, ?, ?, ?);";
+        }
+
+        long idContenidoUbicacion = 1L;
+
+        String sql2 = "SELECT id FROM contenido_ubicacion ORDER BY id DESC LIMIT 1";
+
+        try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+            PreparedStatement ps = conexion.prepareStatement(sql)) {
+
+            ps.setString(1, contenidoUbicacion.getNombreUbicacion());
+            ps.setString(2, contenidoUbicacion.getTipo());
+            ps.setInt(3, contenidoUbicacion.getIdContenido());
+            ps.setInt(4, contenidoUbicacion.getCantidad());
+            ps.setObject(5, contenidoUbicacion.getFecha());
+
+            int filas = ps.executeUpdate();
+
+            if(filas > 0) {
+                System.out.println(VERDE + "\n\t¡Nuevo contenido ubicado!");
+
+                try (PreparedStatement pst = conexion.prepareStatement(sql2);
+                    ResultSet rs = pst.executeQuery()) {
+
+                    while (rs.next()) {
+
+                        idContenidoUbicacion = rs.getLong("id");
+                    }
+                }
+            } else {
+                System.out.println(ROJO + "\n\tError al insertar contenido" + RESET);
+            }
+        } catch(SQLException e) {
+            System.out.println(ROJO + "\n\tError de conexión a la base de datos: " + e.getMessage() + RESET);
+        }
+        return idContenidoUbicacion;
+    }
+    
+    /**
+     * Método para eliminar un contenido de una ubicación existente en la base de datos
+     * @param idContenido
+     */
+    public static void borrarContenidoUbicacion(int idContenido, String nombreUbicacion) {
+
+        String sql = "DELETE FROM contenido_ubicacion WHERE id_contenido = ? AND nombre_ubicacion = ?";
+            
+        try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+            PreparedStatement ps = conexion.prepareStatement(sql)) {
+
+            ps.setInt(1, idContenido);
+            ps.setString(2, nombreUbicacion);
+            
+            int filas = ps.executeUpdate();
+
+            if (filas > 0) {
+                System.out.println(VERDE + "\n\t¡Contenido de ubicación eliminado!" + RESET);
+            } else {
+                System.out.println(ROJO + "\n\tLa información no pertenece a ningún contenido de la ubicación" + RESET);
+            }
+        } catch(SQLException e) {
+            System.out.println(ROJO + "\n\tError de conexión con la base de datos: " + e.getMessage() + RESET);
+        }    
+    }
+
+    /**
+     * Método para modificar la cantidad de una línea de pedido de la base de datos
+     * @param idContenido
+     * @param cantidad
+     * @return
+     */
+    public static void modificarContenidoPedido(int idContenido, int cantidad, String nombreUbicacion) {
+
+        String sql = "UPDATE contenido_ubicacion SET cantidad = ? WHERE idContenido = ? AND nombreUbicacion = ?";
+            
+        try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+            PreparedStatement ps = conexion.prepareStatement(sql)) {
+
+            ps.setInt(2, idContenido);
+            ps.setString(3, nombreUbicacion);
+
+            System.out.print(VERDE + "\n Nueva cantidad: " + RESET);
+            Scanner sc = new Scanner(System.in);
+
+            String info = sc.nextLine();
+            
+            ps.setString(1, info);
+
+            int filas = ps.executeUpdate();
+
+            if (filas > 0) {
+                System.out.println(VERDE + "\n\t¡Cantidad modificada con éxito!" + RESET);
+            } else {
+                System.out.println(ROJO + "\n\tError al modificar la cantidad" + RESET);
+            }
+        } catch(SQLException e) {
+            System.out.println(ROJO + "\n\tError de conexión con la base de datos: " + e.getMessage() + RESET);
+        } catch(Exception ex) {
+            System.out.println(ROJO + ex.getMessage() + RESET);
+        }
+    }
+
+    /**
+     * Método para mostrar el contenido de una ubicación de la base de datos
+     * @param id
+     * @return
+     */
+    public static List<ContenidoUbicacion> mostrarContenidoUbicacion(String nombreUbicacion) {
+
+        String sql = "SELECT * FROM contenido_ubicacion WHERE nombre_ubicacion = ?";
+
+        ContenidoUbicacion lineaContenido = null;
+        LocalDateTime fecha = LocalDateTime.now();
+        List<ContenidoUbicacion> contenidoUbicacion = new ArrayList<>();
+
+        try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+            PreparedStatement ps = conexion.prepareStatement(sql)) {
+
+            String[] columnas = {"id", "nombre_ubicacion", "tipo", "id_producto", "id_soporte", "id_pedido", "cantidad", "fecha"};
+
+            ps.setString(1, nombreUbicacion);
+            ResultSet rs = ps.executeQuery();
+                    
+            while (rs.next()) {
+                
+                lineaContenido = new ContenidoUbicacion(1L, "X", "producto", 0, 0, fecha);
+
+                for (String columna : columnas) {
+
+                    if(columna.equals("id") || columna.equals("id_pedido")) {
+                        ;
+                    } else {
+                        System.out.print(VERDE + " " + columna.toUpperCase() + ":\t" + RESET + rs.getString(columna) + "\t");
+                    }
+                    switch(columna) {
+
+                        case "id":
+                            lineaContenido.setId(rs.getLong(columna));
+                            break;
+
+                        case "nombre_ubicacion":
+                            lineaContenido.setNombreUbicacion(rs.getString(columna));
+                            break;
+
+                        case "tipo":
+                            lineaContenido.setTipo(rs.getString(columna));
+                            break;
+
+                        case "id_producto":
+                            lineaContenido.setIdContenido(rs.getInt(columna));
+                            break;
+
+                        case "id_soporte":
+                            lineaContenido.setIdContenido(rs.getInt(columna));
+                            break;
+
+                        case "id_pedido":
+                            lineaContenido.setIdContenido(rs.getInt(columna));
+                            break;
+
+                        case "cantidad":
+                            lineaContenido.setCantidad(rs.getInt(columna));
+                            break;
+
+                        case "fecha":
+                            lineaContenido.setFecha(LocalDateTime.parse(rs.getString(columna).replace(" ", "T")));
+                            break;
+
+                        default:
+                            break;
+                    }
+                }
+                contenidoUbicacion.add(lineaContenido);
+            }   
+            
+        } catch(SQLException e) {
+            System.out.println(ROJO + "\n\tError de conexión a la base de datos: " + e.getMessage() + RESET);
+        }
+        return contenidoUbicacion;
     }
 }
