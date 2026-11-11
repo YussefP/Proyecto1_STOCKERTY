@@ -3,7 +3,7 @@ import java.util.Objects;
 
 public class Entrada {
     
-    private int id;
+    private long id;
     private int idPedido;
     private int idAgencia;
     private int numAlbaran;
@@ -29,7 +29,7 @@ public class Entrada {
     }
 
     // Constructor 2 - Para leer un entrada de la base de datos
-    public Entrada(int id, int idPedido, int idAgencia, int numAlbaran, int numExpedicion, int bultos, int palets, String observaciones, LocalDateTime fecha) {
+    public Entrada(long id, int idPedido, int idAgencia, int numAlbaran, int numExpedicion, int bultos, int palets, String observaciones, LocalDateTime fecha) {
 
         this.id = id;
         this.idPedido = idPedido;
@@ -44,7 +44,7 @@ public class Entrada {
 
     // Getters y Setters
 
-    public int getId() { return id; }
+    public long getId() { return id; }
     public int getIdPedido() { return idPedido; }
     public int getIdAgencia() { return idAgencia; }
     public int getNumAlbaran() { return numAlbaran; }
@@ -54,7 +54,7 @@ public class Entrada {
     public String getObservaciones() { return observaciones; }
     public LocalDateTime getFecha() { return fecha; }
 
-    public void setId(int id) {
+    public void setId(long id) {
 
         this.id = id;
     }

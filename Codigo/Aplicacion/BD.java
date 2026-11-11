@@ -3475,4 +3475,220 @@ public class BD {
         }
         return contenidoUbicacion;
     }
+
+    // Entrada ==========================================================================================================================================================
+
+    /**
+     * Método para insertar un nueva entrada de mercancía en la base de datos
+     * @param entrada
+     */
+    public static long insertarEntrada(Entrada entrada) {
+
+        String sql = "INSERT INTO entrada (id_pedido, id_agencia, num_albaran, num_expedicion, bultos, palets, observaciones, fecha) VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
+
+        long idEntrada = 1L;
+
+        String sql2 = "SELECT id FROM entrada ORDER BY id DESC LIMIT 1";
+
+        try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+            PreparedStatement ps = conexion.prepareStatement(sql)) {
+
+            ps.setInt(1, entrada.getIdPedido());
+            ps.setInt(2, entrada.getIdAgencia());
+            ps.setInt(3, entrada.getNumAlbaran());
+            ps.setInt(4, entrada.getNumExpedicion());
+            ps.setInt(5, entrada.getBultos());
+            ps.setInt(6, entrada.getPalets());
+            ps.setString(7, entrada.getObservaciones());
+            ps.setObject(8, entrada.getFecha());
+
+            int filas = ps.executeUpdate();
+
+            if(filas > 0) {
+                System.out.println(VERDE + "\n\t¡Nueva entrada creada!");
+
+                try (PreparedStatement pst = conexion.prepareStatement(sql2);
+                    ResultSet rs = pst.executeQuery()) {
+
+                    while (rs.next()) {
+
+                        idEntrada = rs.getLong("id");
+                    }
+                }
+            } else {
+                System.out.println(ROJO + "\n\tError al crear la entrada" + RESET);
+            }
+        } catch(SQLException e) {
+            System.out.println(ROJO + "\n\tError de conexión a la base de datos: " + e.getMessage() + RESET);
+        }
+        return idEntrada;
+    }    
+
+    /**
+     * Método para anular una entrada de mercancía de la base de datos
+     * @param entrada
+     */
+    public static void anularEntrada(Entrada entrada) {
+
+        String sql = "DELETE entrada WHERE id = ?";
+            
+        try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+            PreparedStatement ps = conexion.prepareStatement(sql)) {
+
+            ps.setLong(1, entrada.getId());
+                   
+            int filas = ps.executeUpdate();
+
+            if (filas > 0) {
+                System.out.println(VERDE + "\n\t¡Entrada anulada!" + RESET);
+            } else {
+                System.out.println(ROJO + "\n\tError al anular la entrada" + RESET);
+            }
+        } catch(SQLException e) {
+            System.out.println(ROJO + "\n\tError de conexión con la base de datos: " + e.getMessage() + RESET);
+        } catch(Exception ex) {
+            System.out.println(ROJO + ex.getMessage() + RESET);
+        }
+    }
+
+    /**
+     * Método para modificar una entrada de mercancía de la base de datos
+     * @param entrada
+     * @param dato
+     * @return
+     */
+    public static Entrada modificarEntrada(Entrada entrada, String dato) {
+
+        String sql = "UPDATE entrada SET " + dato + " = ? WHERE id = ?";
+            
+        try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+            PreparedStatement ps = conexion.prepareStatement(sql)) {
+
+            ps.setLong(2, entrada.getId());
+
+            System.out.print(VERDE + "\n Nuevo " + dato + ": " + RESET);
+            Scanner sc = new Scanner(System.in);
+
+            String info = sc.nextLine();
+            
+            /* 
+            switch(dato) {
+
+                case "id":
+                    entrada.setId(Integer.parseInt(info));
+                    ps.setString(1, info);
+                    break;
+
+                case "tipo":
+                    entrada.setTipo(info);
+                    ps.setString(1, info);
+                    break;
+
+                case "fecha_estimada":
+                    entrada.setFechaEstimada(LocalDate.parse(info));
+                    ps.setString(1, info);
+                    break;
+
+                case "estado":
+                    entrada.setEstado(info);
+                    ps.setString(1, info);
+                    break;
+
+                default:
+                    break;
+            }
+            */
+            int filas = ps.executeUpdate();
+
+            if (filas > 0) {
+                System.out.println(VERDE + "\n\t¡Dato modificado con éxito!" + RESET);
+            } else {
+                System.out.println(ROJO + "\n\tError al modificar el dato" + RESET);
+            }
+        } catch(SQLException e) {
+            System.out.println(ROJO + "\n\tError de conexión con la base de datos: " + e.getMessage() + RESET);
+        } catch(Exception ex) {
+            System.out.println(ROJO + ex.getMessage() + RESET);
+        }
+        return entrada;
+    }
+
+    /**
+     * Método para mostrar cualquier entrada de mercancía de la base de datos mediante su número ID
+     * @param id
+     * @return
+     */
+    public static Entrada mostrarEntrada(int id) {
+
+        String sql = "SELECT * FROM entrada WHERE id = ?";
+
+        Entrada entrada = null;
+        LocalDateTime fecha = LocalDateTime.now();
+
+        try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+            PreparedStatement ps = conexion.prepareStatement(sql)) {
+
+            String[] columnas = {"id", "id_pedido", "id_agencia", "num_albaran", "num_expedicion", "bultos", "palets", "observaciones", "fecha"};
+            
+            System.out.println(VERDE + "\n-----------------------------------------------------------------------" + RESET);
+
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+                    
+            while (rs.next()) {
+                
+                entrada = new Entrada(1L, 0, 0, 0, 0, 0, 0, "X", fecha);
+
+                for (String columna : columnas) {
+
+                    System.out.print(VERDE + " " + columna.toUpperCase() + "\t" + RESET);
+
+                    if(columna.length() < 8) {
+                        System.out.println(VERDE + "\t\t->\t" + RESET + rs.getString(columna));
+                    } else if(columna.length() == 8 || columna.length() < 15) {
+                        System.out.println(VERDE + "\t->\t" + RESET + rs.getString(columna));
+                    } else {
+                        System.out.println(VERDE + "->\t" + RESET + rs.getString(columna));
+                    }
+
+                    /* 
+                    switch(columna) {
+
+                        case "id":
+                            pedido.setId(rs.getInt(columna));
+                            break;
+
+                        case "tipo":
+                            pedido.setTipo(rs.getString(columna));
+                            break;
+
+                        case "fecha_creacion":
+                            pedido.setFechaCreacion(LocalDateTime.parse(rs.getString(columna).replace(" ", "T")));
+                            break;
+
+                        case "fecha_estimada":
+                            pedido.setFechaEstimada(LocalDate.parse(rs.getString(columna).substring(0, 10)));
+                            break;
+
+                        case "id_empleado":
+                            pedido.setIdEmpleado(rs.getInt(columna));
+                            break;
+
+                        case "estado":
+                            pedido.setEstado(rs.getString(columna));
+                            break;
+
+                        default:
+                            break;
+                    }
+                            */
+                }
+            }
+            System.out.println(VERDE + "-----------------------------------------------------------------------" + RESET);   
+            
+        } catch(SQLException e) {
+            System.out.println(ROJO + "\n\tError de conexión a la base de datos: " + e.getMessage() + RESET);
+        }
+        return entrada;
+    }
 }
