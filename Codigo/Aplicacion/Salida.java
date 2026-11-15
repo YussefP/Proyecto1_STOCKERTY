@@ -3,7 +3,7 @@ import java.util.Objects;
 
 public class Salida {
     
-    private int id;
+    private long id;
     private int idPedido;
     private int idAgencia;
     private int numAlbaran;
@@ -11,12 +11,13 @@ public class Salida {
     private int bultos;
     private int palets;
     private String observaciones;
+    private int idEmpleado;
     private LocalDateTime fecha;
 
     // Constructores
 
     // Constructor 1 - Para insertar una salida en la base de datos omitiendo el id y la fecha
-    public Salida(int idPedido, int idAgencia, int numAlbaran, int numExpedicion, int bultos, int palets, String observaciones) {
+    public Salida(int idPedido, int idAgencia, int numAlbaran, int numExpedicion, int bultos, int palets, String observaciones, int idEmpleado) {
 
         this.idPedido = idPedido;
         this.idAgencia = idAgencia;
@@ -25,11 +26,12 @@ public class Salida {
         this.bultos = bultos;
         this.palets = palets;
         this.observaciones = observaciones;
+        this.idEmpleado = idEmpleado;
         this.fecha = LocalDateTime.now();
     }
 
     // Constructor 2 - Para leer un salida de la base de datos
-    public Salida(int id, int idPedido, int idAgencia, int numAlbaran, int numExpedicion, int bultos, int palets, String observaciones, LocalDateTime fecha) {
+    public Salida(long id, int idPedido, int idAgencia, int numAlbaran, int numExpedicion, int bultos, int palets, String observaciones, int idEmpleado, LocalDateTime fecha) {
 
         this.id = id;
         this.idPedido = idPedido;
@@ -39,12 +41,13 @@ public class Salida {
         this.bultos = bultos;
         this.palets = palets;
         this.observaciones = observaciones;
+        this.idEmpleado = idEmpleado;
         this.fecha = fecha;
     }
 
     // Getters y Setters
 
-    public int getId() { return id; }
+    public long getId() { return id; }
     public int getIdPedido() { return idPedido; }
     public int getIdAgencia() { return idAgencia; }
     public int getNumAlbaran() { return numAlbaran; }
@@ -52,9 +55,10 @@ public class Salida {
     public int getBultos() { return bultos; }
     public int getPalets() { return palets; }
     public String getObservaciones() { return observaciones; }
+    public int getIdEmpleado() { return idEmpleado; }
     public LocalDateTime getFecha() { return fecha; }
 
-    public void setId(int id) {
+    public void setId(long id) {
 
         this.id = id;
     }
@@ -94,6 +98,11 @@ public class Salida {
         this.observaciones = observaciones;
     }
 
+    public void setIdEmpleado(int idEmpleado) {
+
+        this.idEmpleado = idEmpleado;
+    }
+
     public void setFecha(LocalDateTime fecha) {
 
         this.fecha = fecha;
@@ -104,7 +113,7 @@ public class Salida {
     @Override 
     public String toString() {
 
-        return "ID: " + id + ", Pedido: " + idPedido + ", Agencia: " + idAgencia + ", Albarán: " + numAlbaran + ", Expedición: " + numExpedicion + ", Nº Bultos: " + bultos + ", Nº Palets: " + palets + ", Observaciones: " + observaciones + ", Fecha: " + fecha;
+        return "ID: " + id + ", Pedido: " + idPedido + ", Agencia: " + idAgencia + ", Albarán: " + numAlbaran + ", Expedición: " + numExpedicion + ", Nº Bultos: " + bultos + ", Nº Palets: " + palets + ", Observaciones: " + observaciones + ", Empleado: " + idEmpleado + ", Fecha: " + fecha;
     }
 
     @Override 

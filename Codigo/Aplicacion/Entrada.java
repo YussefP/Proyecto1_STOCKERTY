@@ -11,12 +11,13 @@ public class Entrada {
     private int bultos;
     private int palets;
     private String observaciones;
+    private int idEmpleado;
     private LocalDateTime fecha;
 
     // Constructores
 
     // Constructor 1 - Para insertar una entrada en la base de datos omitiendo el id y la fecha
-    public Entrada(int idPedido, int idAgencia, int numAlbaran, int numExpedicion, int bultos, int palets, String observaciones) {
+    public Entrada(int idPedido, int idAgencia, int numAlbaran, int numExpedicion, int bultos, int palets, String observaciones, int idEmpleado) {
 
         this.idPedido = idPedido;
         this.idAgencia = idAgencia;
@@ -25,11 +26,12 @@ public class Entrada {
         this.bultos = bultos;
         this.palets = palets;
         this.observaciones = observaciones;
+        this.idEmpleado = idEmpleado;
         this.fecha = LocalDateTime.now();
     }
 
     // Constructor 2 - Para leer un entrada de la base de datos
-    public Entrada(long id, int idPedido, int idAgencia, int numAlbaran, int numExpedicion, int bultos, int palets, String observaciones, LocalDateTime fecha) {
+    public Entrada(long id, int idPedido, int idAgencia, int numAlbaran, int numExpedicion, int bultos, int palets, String observaciones, int idEmpleado, LocalDateTime fecha) {
 
         this.id = id;
         this.idPedido = idPedido;
@@ -39,6 +41,7 @@ public class Entrada {
         this.bultos = bultos;
         this.palets = palets;
         this.observaciones = observaciones;
+        this.idEmpleado = idEmpleado;
         this.fecha = fecha;
     }
 
@@ -52,6 +55,7 @@ public class Entrada {
     public int getBultos() { return bultos; }
     public int getPalets() { return palets; }
     public String getObservaciones() { return observaciones; }
+    public int getIdEmpleado() { return idEmpleado; }
     public LocalDateTime getFecha() { return fecha; }
 
     public void setId(long id) {
@@ -94,6 +98,11 @@ public class Entrada {
         this.observaciones = observaciones;
     }
 
+    public void setIdEmpleado(int idEmpleado) {
+
+        this.idEmpleado = idEmpleado;
+    }
+
     public void setFecha(LocalDateTime fecha) {
 
         this.fecha = fecha;
@@ -104,7 +113,7 @@ public class Entrada {
     @Override 
     public String toString() {
 
-        return "ID: " + id + ", Pedido: " + idPedido + ", Agencia: " + idAgencia + ", Albarán: " + numAlbaran + ", Expedición: " + numExpedicion + ", Nº Bultos: " + bultos + ", Nº Palets: " + palets + ", Observaciones: " + observaciones + ", Fecha: " + fecha;
+        return "ID: " + id + ", Pedido: " + idPedido + ", Agencia: " + idAgencia + ", Albarán: " + numAlbaran + ", Expedición: " + numExpedicion + ", Nº Bultos: " + bultos + ", Nº Palets: " + palets + ", Observaciones: " + observaciones + ", Empleado: " + idEmpleado + ", Fecha: " + fecha;
     }
 
     @Override 

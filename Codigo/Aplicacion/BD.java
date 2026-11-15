@@ -3021,6 +3021,35 @@ public class BD {
     }
 
     /**
+     * Método para modificar el estado de un pedido de la base de datos
+     * @param pedido
+     * @param estado
+     */
+    public static void modificarEstadoPedido(int pedido, String estado) {
+
+        String sql = "UPDATE pedido SET estado = ? WHERE id = ?";
+            
+        try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+            PreparedStatement ps = conexion.prepareStatement(sql)) {
+
+            ps.setInt(2, pedido);
+            ps.setString(1, estado);
+
+            int filas = ps.executeUpdate();
+
+            if (filas > 0) {
+                ;
+            } else {
+                System.out.println(ROJO + "\n\tError al modificar el dato" + RESET);
+            }
+        } catch(SQLException e) {
+            System.out.println(ROJO + "\n\tError de conexión con la base de datos: " + e.getMessage() + RESET);
+        } catch(Exception ex) {
+            System.out.println(ROJO + ex.getMessage() + RESET);
+        }
+    }
+
+    /**
      * Método para mostrar cualquier pedido de la base de datos mediante su número ID
      * @param id
      * @return
@@ -3481,10 +3510,11 @@ public class BD {
     /**
      * Método para insertar un nueva entrada de mercancía en la base de datos
      * @param entrada
+     * @return
      */
     public static long insertarEntrada(Entrada entrada) {
 
-        String sql = "INSERT INTO entrada (id_pedido, id_agencia, num_albaran, num_expedicion, bultos, palets, observaciones, fecha) VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
+        String sql = "INSERT INTO entrada (id_pedido, id_agencia, num_albaran, num_expedicion, bultos, palets, observaciones, id_empleado, fecha) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
         long idEntrada = 1L;
 
@@ -3500,7 +3530,8 @@ public class BD {
             ps.setInt(5, entrada.getBultos());
             ps.setInt(6, entrada.getPalets());
             ps.setString(7, entrada.getObservaciones());
-            ps.setObject(8, entrada.getFecha());
+            ps.setInt(8, entrada.getIdEmpleado());
+            ps.setObject(9, entrada.getFecha());
 
             int filas = ps.executeUpdate();
 
@@ -3571,33 +3602,8 @@ public class BD {
 
             String info = sc.nextLine();
             
-            /* 
-            switch(dato) {
+            ps.setString(1, info);
 
-                case "id":
-                    entrada.setId(Integer.parseInt(info));
-                    ps.setString(1, info);
-                    break;
-
-                case "tipo":
-                    entrada.setTipo(info);
-                    ps.setString(1, info);
-                    break;
-
-                case "fecha_estimada":
-                    entrada.setFechaEstimada(LocalDate.parse(info));
-                    ps.setString(1, info);
-                    break;
-
-                case "estado":
-                    entrada.setEstado(info);
-                    ps.setString(1, info);
-                    break;
-
-                default:
-                    break;
-            }
-            */
             int filas = ps.executeUpdate();
 
             if (filas > 0) {
@@ -3615,12 +3621,12 @@ public class BD {
 
     /**
      * Método para mostrar cualquier entrada de mercancía de la base de datos mediante su número ID
-     * @param id
+     * @param idPedido
      * @return
      */
-    public static Entrada mostrarEntrada(int id) {
+    public static Entrada mostrarEntrada(int idPedido) {
 
-        String sql = "SELECT * FROM entrada WHERE id = ?";
+        String sql = "SELECT * FROM entrada WHERE id_pedido = ?";
 
         Entrada entrada = null;
         LocalDateTime fecha = LocalDateTime.now();
@@ -3628,16 +3634,16 @@ public class BD {
         try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
             PreparedStatement ps = conexion.prepareStatement(sql)) {
 
-            String[] columnas = {"id", "id_pedido", "id_agencia", "num_albaran", "num_expedicion", "bultos", "palets", "observaciones", "fecha"};
+            String[] columnas = {"id", "id_pedido", "id_agencia", "num_albaran", "num_expedicion", "bultos", "palets", "observaciones", "id_empleado", "fecha"};
             
             System.out.println(VERDE + "\n-----------------------------------------------------------------------" + RESET);
 
-            ps.setInt(1, id);
+            ps.setInt(1, idPedido);
             ResultSet rs = ps.executeQuery();
                     
             while (rs.next()) {
                 
-                entrada = new Entrada(1L, 0, 0, 0, 0, 0, 0, "X", fecha);
+                entrada = new Entrada(1L, 0, 0, 0, 0, 0, 0, "X", 0, fecha);
 
                 for (String columna : columnas) {
 
@@ -3651,37 +3657,51 @@ public class BD {
                         System.out.println(VERDE + "->\t" + RESET + rs.getString(columna));
                     }
 
-                    /* 
                     switch(columna) {
 
                         case "id":
-                            pedido.setId(rs.getInt(columna));
+                            entrada.setId(rs.getLong(columna));
                             break;
 
-                        case "tipo":
-                            pedido.setTipo(rs.getString(columna));
+                        case "id_pedido":
+                            entrada.setIdPedido(rs.getInt(columna));
                             break;
 
-                        case "fecha_creacion":
-                            pedido.setFechaCreacion(LocalDateTime.parse(rs.getString(columna).replace(" ", "T")));
+                        case "id_agencia":
+                            entrada.setIdAgencia(rs.getInt(columna));
                             break;
 
-                        case "fecha_estimada":
-                            pedido.setFechaEstimada(LocalDate.parse(rs.getString(columna).substring(0, 10)));
+                        case "num_albaran":
+                            entrada.setNumAlbaran(rs.getInt(columna));
+                            break;
+
+                        case "num_expedicion":
+                            entrada.setNumExpedicion(rs.getInt(columna));
+                            break;
+
+                        case "bultos":
+                            entrada.setBultos(rs.getInt(columna));
+                            break;
+
+                        case "palets":
+                            entrada.setPalets(rs.getInt(columna));
+                            break;
+
+                        case "observaciones":
+                            entrada.setObservaciones(rs.getString(columna));
                             break;
 
                         case "id_empleado":
-                            pedido.setIdEmpleado(rs.getInt(columna));
+                            entrada.setIdEmpleado(rs.getInt(columna));
                             break;
 
-                        case "estado":
-                            pedido.setEstado(rs.getString(columna));
+                        case "fecha":
+                            entrada.setFecha(LocalDateTime.parse(rs.getString(columna).replace(" ", "T")));
                             break;
 
                         default:
                             break;
                     }
-                            */
                 }
             }
             System.out.println(VERDE + "-----------------------------------------------------------------------" + RESET);   
@@ -3690,5 +3710,246 @@ public class BD {
             System.out.println(ROJO + "\n\tError de conexión a la base de datos: " + e.getMessage() + RESET);
         }
         return entrada;
+    }
+
+    // Salida ==========================================================================================================================================================
+
+    /**
+     * Método para insertar un nueva salida de mercancía en la base de datos
+     * @param salida
+     * @return
+     */
+    public static long insertarSalida(Salida salida) {
+
+        String sql = "INSERT INTO salida (id_pedido, id_agencia, num_albaran, num_expedicion, bultos, palets, observaciones, id_empleado, fecha) VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
+
+        long idSalida = 1L;
+
+        String sql2 = "SELECT id FROM salida ORDER BY id DESC LIMIT 1";
+
+        try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+            PreparedStatement ps = conexion.prepareStatement(sql)) {
+
+            ps.setInt(1, salida.getIdPedido());
+            ps.setInt(2, salida.getIdAgencia());
+            ps.setInt(3, salida.getNumAlbaran());
+            ps.setInt(4, salida.getNumExpedicion());
+            ps.setInt(5, salida.getBultos());
+            ps.setInt(6, salida.getPalets());
+            ps.setString(7, salida.getObservaciones());
+            ps.setInt(8, salida.getIdEmpleado());
+            ps.setObject(9, salida.getFecha());
+
+            int filas = ps.executeUpdate();
+
+            if(filas > 0) {
+                System.out.println(VERDE + "\n\t¡Nueva salida creada!");
+
+                try (PreparedStatement pst = conexion.prepareStatement(sql2);
+                    ResultSet rs = pst.executeQuery()) {
+
+                    while (rs.next()) {
+
+                        idSalida = rs.getLong("id");
+                    }
+                }
+            } else {
+                System.out.println(ROJO + "\n\tError al crear la salida" + RESET);
+            }
+        } catch(SQLException e) {
+            System.out.println(ROJO + "\n\tError de conexión a la base de datos: " + e.getMessage() + RESET);
+        }
+        return idSalida;
+    }    
+
+    /**
+     * Método para anular una salida de mercancía de la base de datos
+     * @param salida
+     */
+    public static void anularSalida(Salida salida) {
+
+        String sql = "DELETE salida WHERE id = ?";
+            
+        try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+            PreparedStatement ps = conexion.prepareStatement(sql)) {
+
+            ps.setLong(1, salida.getId());
+                   
+            int filas = ps.executeUpdate();
+
+            if (filas > 0) {
+                System.out.println(VERDE + "\n\t¡Salida anulada!" + RESET);
+            } else {
+                System.out.println(ROJO + "\n\tError al anular la salida" + RESET);
+            }
+        } catch(SQLException e) {
+            System.out.println(ROJO + "\n\tError de conexión con la base de datos: " + e.getMessage() + RESET);
+        } catch(Exception ex) {
+            System.out.println(ROJO + ex.getMessage() + RESET);
+        }
+    }
+
+    /**
+     * Método para modificar una salida de mercancía de la base de datos
+     * @param salida
+     * @param dato
+     * @return
+     */
+    public static Salida modificarSalida(Salida salida, String dato) {
+
+        String sql = "UPDATE salida SET " + dato + " = ? WHERE id = ?";
+            
+        try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+            PreparedStatement ps = conexion.prepareStatement(sql)) {
+
+            ps.setLong(2, salida.getId());
+
+            System.out.print(VERDE + "\n Nuevo " + dato + ": " + RESET);
+            Scanner sc = new Scanner(System.in);
+
+            String info = sc.nextLine();
+            
+            ps.setString(1, info);
+
+            int filas = ps.executeUpdate();
+
+            if (filas > 0) {
+                System.out.println(VERDE + "\n\t¡Dato modificado con éxito!" + RESET);
+            } else {
+                System.out.println(ROJO + "\n\tError al modificar el dato" + RESET);
+            }
+        } catch(SQLException e) {
+            System.out.println(ROJO + "\n\tError de conexión con la base de datos: " + e.getMessage() + RESET);
+        } catch(Exception ex) {
+            System.out.println(ROJO + ex.getMessage() + RESET);
+        }
+        return salida;
+    }
+
+    /**
+     * Método para mostrar cualquier salida de mercancía de la base de datos mediante su número ID
+     * @param idPedido
+     * @return
+     */
+    public static Salida mostrarSalida(int idPedido) {
+
+        String sql = "SELECT * FROM salida WHERE id_pedido = ?";
+
+        Salida salida = null;
+        LocalDateTime fecha = LocalDateTime.now();
+
+        try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+            PreparedStatement ps = conexion.prepareStatement(sql)) {
+
+            String[] columnas = {"id", "id_pedido", "id_agencia", "num_albaran", "num_expedicion", "bultos", "palets", "observaciones", "id_empleado", "fecha"};
+            
+            System.out.println(VERDE + "\n-----------------------------------------------------------------------" + RESET);
+
+            ps.setInt(1, idPedido);
+            ResultSet rs = ps.executeQuery();
+                    
+            while (rs.next()) {
+                
+                salida = new Salida(1L, 0, 0, 0, 0, 0, 0, "X", 0, fecha);
+
+                for (String columna : columnas) {
+
+                    System.out.print(VERDE + " " + columna.toUpperCase() + "\t" + RESET);
+
+                    if(columna.length() < 8) {
+                        System.out.println(VERDE + "\t\t->\t" + RESET + rs.getString(columna));
+                    } else if(columna.length() == 8 || columna.length() < 15) {
+                        System.out.println(VERDE + "\t->\t" + RESET + rs.getString(columna));
+                    } else {
+                        System.out.println(VERDE + "->\t" + RESET + rs.getString(columna));
+                    }
+
+                    switch(columna) {
+
+                        case "id":
+                            salida.setId(rs.getLong(columna));
+                            break;
+
+                        case "id_pedido":
+                            salida.setIdPedido(rs.getInt(columna));
+                            break;
+
+                        case "id_agencia":
+                            salida.setIdAgencia(rs.getInt(columna));
+                            break;
+
+                        case "num_albaran":
+                            salida.setNumAlbaran(rs.getInt(columna));
+                            break;
+
+                        case "num_expedicion":
+                            salida.setNumExpedicion(rs.getInt(columna));
+                            break;
+
+                        case "bultos":
+                            salida.setBultos(rs.getInt(columna));
+                            break;
+
+                        case "palets":
+                            salida.setPalets(rs.getInt(columna));
+                            break;
+
+                        case "observaciones":
+                            salida.setObservaciones(rs.getString(columna));
+                            break;
+
+                        case "id_empleado":
+                            salida.setIdEmpleado(rs.getInt(columna));
+                            break;
+
+                        case "fecha":
+                            salida.setFecha(LocalDateTime.parse(rs.getString(columna).replace(" ", "T")));
+                            break;
+
+                        default:
+                            break;
+                    }
+                }
+            }
+            System.out.println(VERDE + "-----------------------------------------------------------------------" + RESET);   
+            
+        } catch(SQLException e) {
+            System.out.println(ROJO + "\n\tError de conexión a la base de datos: " + e.getMessage() + RESET);
+        }
+        return salida;
+    }
+
+    // Comprobación datos ==========================================================================================================================================================
+
+    /**
+     * Método para comprobar el valor de los datos de cualquier tabla
+     * @param tabla
+     * @param dato
+     * @param valor
+     * @param dato2
+     * @param valor2
+     * @return
+     */
+    public static boolean comprobarDato(String tabla, String dato, Object valor, String dato2, Object valor2) {
+
+        boolean existe = false;
+
+        String sql = "SELECT 1 FROM " + tabla + " WHERE " + dato + " = ? AND " + dato2 + " = ?";
+
+        try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+            PreparedStatement ps = conexion.prepareStatement(sql)) {
+
+            ps.setObject(1, valor);
+            ps.setObject(2, valor2);
+
+            ResultSet rs = ps.executeQuery();
+                    
+            if (rs.next()) {
+                existe = true;
+            }
+        } catch(SQLException e) {
+            System.out.println(ROJO + "\n\tError de conexión a la base de datos: " + e.getMessage() + RESET);
+        }
+        return existe;
     }
 }

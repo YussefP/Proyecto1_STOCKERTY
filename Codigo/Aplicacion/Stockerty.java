@@ -421,7 +421,7 @@ public class Stockerty {
                             System.out.println("==============================================");
 
                             try {
-                                System.out.println(VERDE + "\n\t1-ALBARÁN DE ENTRADA");
+                                System.out.println("\n\t1-ALBARÁN DE ENTRADA");
                                 System.out.println("\n\t2-ANULAR ENTRADA");
                                 System.out.println("\n\t3-MODIFICAR ENTRADA");
                                 System.out.println("\n\t4-VER ENTRADA");
@@ -448,40 +448,107 @@ public class Stockerty {
                                             nuevaPantalla();
                                             System.out.println(VERDE + "----------------------------------------------");
                                             System.out.println("\t\tALBARÁN DE ENTRADA");
-                                            System.out.println("----------------------------------------------" + RESET);
+                                            System.out.println("----------------------------------------------");
                                             
-                                            /* 
-                                            LineaPedido lineaPedido = null;
-                                            Pedido nuevoPedido = new Pedido("ls", usuarioActual.getId());
-                                            int idPedido = 0;
+                                            long idEntrada = 1L;
+                                            Entrada entrada = new Entrada(0, 0, 0, 0, 0, 0, "X", usuarioActual.getId());
 
                                             do{
                                                 try {
-                                                    System.out.println("\n Introduce los datos del nuevo pedido");
+                                                    System.out.println(VERDE + "\n Introduce los datos de recepción de mercancía");
 
-                                                    System.out.print("\n Tipo de pedido (ls/pc): " + RESET);
-                                                    nuevoPedido.setTipo(sc.nextLine().toLowerCase());
+                                                    System.out.print("\n Nº Pedido: " + RESET);
+                                                    int pedido = Integer.parseInt(sc.nextLine());
 
-                                                    error = false;
+                                                    boolean existePendiente = BD.comprobarDato("pedido", "id", pedido, "estado", "pendiente");
+                                                    boolean existeEnTransito = BD.comprobarDato("pedido", "id", pedido, "estado", "en tránsito");
 
-                                                    idPedido = BD.insertarPedido(nuevoPedido);
-                                                    nuevaPantalla();
+                                                    if(existePendiente || existeEnTransito) {
 
+                                                        entrada.setIdPedido(pedido);
+
+                                                        error = false;
+
+                                                    } else {
+                                                        throw new IllegalArgumentException();
+                                                    }
                                                     do{
                                                         try {
-                                                            System.out.print(VERDE + "\n Producto: " + RESET);
-                                                            int nuevoProducto = Integer.parseInt(sc.nextLine());
+                                                            System.out.print(VERDE + "\n ID Agencia: " + RESET);
+                                                            int agencia = Integer.parseInt(sc.nextLine());
+
+                                                            entrada.setIdAgencia(agencia);
 
                                                             error = false;
 
-                                                            int cantidad = 0;
-
                                                             do{
                                                                 try {
-                                                                    System.out.println(VERDE + "\n Cantidad: " + RESET);
-                                                                    cantidad = Integer.parseInt(sc.nextLine());
+                                                                    System.out.print(VERDE + "\n Nº Albarán: " + RESET);
+                                                                    int albaran = Integer.parseInt(sc.nextLine());
+
+                                                                    entrada.setNumAlbaran(albaran);
 
                                                                     error = false;
+
+                                                                    do{
+                                                                        try {
+                                                                            System.out.print(VERDE + "\n Nº Expedición: " + RESET);
+                                                                            int expedicion = Integer.parseInt(sc.nextLine());
+
+                                                                            entrada.setNumExpedicion(expedicion);
+
+                                                                            error = false;
+
+                                                                            do{
+                                                                                try {
+                                                                                    System.out.print(VERDE + "\n Bultos: " + RESET);
+                                                                                    int bultos = Integer.parseInt(sc.nextLine());
+
+                                                                                    entrada.setBultos(bultos);
+
+                                                                                    error = false;
+
+                                                                                    do{
+                                                                                        try {
+                                                                                            System.out.print(VERDE + "\n Palets: " + RESET);
+                                                                                            int palets = Integer.parseInt(sc.nextLine());
+
+                                                                                            entrada.setPalets(palets);
+
+                                                                                            error = false;
+
+                                                                                            do{
+                                                                                                try {
+                                                                                                    System.out.print(VERDE + "\n Observaciones: " + RESET);
+                                                                                                    String observaciones = sc.nextLine();
+
+                                                                                                    entrada.setObservaciones(observaciones);
+
+                                                                                                    error = false;
+
+                                                                                                } catch(Exception e) {
+                                                                                                    System.out.println(ROJO + e.getMessage() + RESET);
+                                                                                                    error = true;
+                                                                                                }
+                                                                                            } while(error);
+
+                                                                                        } catch(Exception e) {
+                                                                                            System.out.println(ROJO + e.getMessage() + RESET);
+                                                                                            error = true;
+                                                                                        }
+                                                                                    } while(error);
+
+                                                                                } catch(Exception e) {
+                                                                                    System.out.println(ROJO + e.getMessage() + RESET);
+                                                                                    error = true;
+                                                                                }
+                                                                            } while(error);
+
+                                                                        } catch(Exception e) {
+                                                                            System.out.println(ROJO + e.getMessage() + RESET);
+                                                                            error = true;
+                                                                        }
+                                                                    } while(error);
 
                                                                 } catch(Exception e) {
                                                                     System.out.println(ROJO + e.getMessage() + RESET);
@@ -489,15 +556,16 @@ public class Stockerty {
                                                                 }
                                                             } while(error);
 
-                                                            lineaPedido = new LineaPedido(idPedido, nuevoProducto, cantidad);
-                                                            
-                                                            long idLineaPedido = BD.insertarLineaPedido(lineaPedido);
-
                                                         } catch(Exception e) {
                                                             System.out.println(ROJO + e.getMessage() + RESET);
                                                             error = true;
                                                         }
                                                     } while(error);
+
+                                                } catch(IllegalArgumentException ex) {
+
+                                                    System.out.println(ROJO + "\n\tPedido no existente" + RESET);
+                                                    error = true;
 
                                                 } catch(Exception e) {
                                                     System.out.println(ROJO + e.getMessage() + RESET);
@@ -505,9 +573,13 @@ public class Stockerty {
                                                 }
                                             } while(error);
 
-                                            System.out.println(VERDE + "\n\t¡Pedido creado! Número de pedido: " + RESET + idPedido);
-                                            List<LineaPedido> contenidoPedido = BD.mostrarLineasPedido(idPedido);
-                                            */
+                                            entrada.setFecha(LocalDateTime.now());
+
+                                            idEntrada = BD.insertarEntrada(entrada);
+
+                                            BD.modificarEstadoPedido(entrada.getIdPedido(), "recepcionado");
+
+                                            System.out.println(VERDE + "\n\t¡Entrada creada! Número de recepción: " + RESET + idEntrada);
                                             break;
 
                                         case 2:
@@ -515,22 +587,21 @@ public class Stockerty {
                                             nuevaPantalla();
                                             System.out.println(VERDE + "----------------------------------------------");
                                             System.out.println("\t\tANULAR ENTRADA");
-                                            System.out.println("----------------------------------------------" + RESET);
-
-                                            /* 
+                                            System.out.println("----------------------------------------------");
+ 
                                             do {
                                                 try {
-                                                    System.out.print(VERDE + "\n Introduce el número de pedido que quieres anular: " + RESET);
-                                                    idPedido = Integer.parseInt(sc.nextLine());
+                                                    System.out.print(VERDE + "\n Introduce el número de pedido del que quieres anular la recepción: " + RESET);
+                                                    int pedidoEntrada = Integer.parseInt(sc.nextLine());
 
-                                                    Pedido pedido = BD.mostrarPedido(idPedido);
-                                                    contenidoPedido = BD.mostrarLineasPedido(idPedido);
+                                                    Entrada entradaElegida = BD.mostrarEntrada(pedidoEntrada);
 
-                                                    System.out.print(VERDE + "\n ¿Anular el pedido " + pedido.getTipo().toUpperCase() + " " + pedido.getId() + " " + pedido.getEstado() + " de la base de datos? s/n: " + RESET);
+                                                    System.out.print(VERDE + "\n ¿Anular la entrada del pedido " + entradaElegida.getIdPedido() + " con Nº de Albarán: " + entradaElegida.getNumAlbaran() + " de la base de datos? s/n: " + RESET);
                                                     String validar = sc.nextLine().toLowerCase();
 
                                                     if(validar.equals("s")) {
-                                                        pedido = BD.anularPedido(pedido);
+                                                        BD.anularEntrada(entradaElegida);
+                                                        BD.modificarEstadoPedido(entradaElegida.getIdPedido(), "pendiente");
                                                         error = false;
 
                                                         if(opcion == 0) {
@@ -548,125 +619,28 @@ public class Stockerty {
                                                     error = true;
                                                 }
                                             } while(error);
-                                             */
                                             break;
                                     
                                         case 3:
                                             nuevaPantalla();
                                             System.out.println(VERDE + "----------------------------------------------");
                                             System.out.println("\t\tMODIFICAR ENTRADA");
-                                            System.out.println("----------------------------------------------" + RESET);
-
-                                            /* 
+                                            System.out.println("----------------------------------------------");
+ 
                                             do {
                                                 try {
-                                                    System.out.print(VERDE + "\n Introduce el pedido que quieres modificar: " + RESET);
-                                                    idPedido = Integer.parseInt(sc.nextLine());
+                                                    System.out.print(VERDE + "\n Introduce el Nº de pedido del que quieres modificar la entrada: " + RESET);
+                                                    int pedido = Integer.parseInt(sc.nextLine());
 
-                                                    Pedido pedido = BD.mostrarPedido(idPedido);
-                                                    List<LineaPedido> contenido = BD.mostrarLineasPedido(idPedido);
+                                                    entrada = BD.mostrarEntrada(pedido);
 
                                                     do {
                                                         System.out.print(VERDE + "\n ¿Qué dato quieres modificar?: " + RESET);
                                                         String dato = sc.nextLine().toLowerCase();
 
-                                                        if (dato.equals("contenido")) {
+                                                        entrada = BD.modificarEntrada(entrada, dato);
+                                                        error = false;
 
-                                                            do {
-                                                                System.out.print(VERDE + "\n ¿Añadir línea (A), Borrar línea (B) o Modificar cantidad (M)?: " + RESET);
-                                                                String accion = sc.nextLine();
-
-                                                                if (accion.toLowerCase().equals("a")) {
-                                                                    do{
-                                                                        try {
-                                                                            System.out.print(VERDE + "\n Producto: " + RESET);
-                                                                            int nuevoProducto = Integer.parseInt(sc.nextLine());
-
-                                                                            error = false;
-
-                                                                            int cantidad = 0;
-
-                                                                            do{
-                                                                                try {
-                                                                                    System.out.println(VERDE + "\n Cantidad: " + RESET);
-                                                                                    cantidad = Integer.parseInt(sc.nextLine());
-
-                                                                                    error = false;
-
-                                                                                } catch(Exception e) {
-                                                                                    System.out.println(ROJO + e.getMessage() + RESET);
-                                                                                    error = true;
-                                                                                }
-                                                                            } while(error);
-
-                                                                            lineaPedido = new LineaPedido(idPedido, nuevoProducto, cantidad);
-                                                                            
-                                                                            long idLineaPedido = BD.insertarLineaPedido(lineaPedido);
-
-                                                                        } catch(Exception e) {
-                                                                            System.out.println(ROJO + e.getMessage() + RESET);
-                                                                            error = true;
-                                                                        }
-                                                                    } while(error);
-
-                                                                } else if (accion.toLowerCase().equals("b")) {
-                                                                    do{
-                                                                        try {
-                                                                            System.out.print(VERDE + "\n Producto: " + RESET);
-                                                                            int idProducto = Integer.parseInt(sc.nextLine());
-
-                                                                            error = false;
-
-                                                                            int cantidad = 0;
-                                                                            
-                                                                            BD.borrarLineaPedido(idPedido, idProducto);
-
-                                                                        } catch(Exception e) {
-                                                                            System.out.println(ROJO + e.getMessage() + RESET);
-                                                                            error = true;
-                                                                        }
-                                                                    } while(error);
-
-                                                                } else if (accion.toLowerCase().equals("m")) {
-                                                                    do{
-                                                                        try {
-                                                                            System.out.print(VERDE + "\n Producto: " + RESET);
-                                                                            int idProducto = Integer.parseInt(sc.nextLine());
-
-                                                                            error = false;
-
-                                                                            int cantidad = 0;
-
-                                                                            do{
-                                                                                try {
-                                                                                    System.out.println(VERDE + "\n Cantidad: " + RESET);
-                                                                                    cantidad = Integer.parseInt(sc.nextLine());
-
-                                                                                    error = false;
-
-                                                                                } catch(Exception e) {
-                                                                                    System.out.println(ROJO + e.getMessage() + RESET);
-                                                                                    error = true;
-                                                                                }
-                                                                            } while(error);
-
-                                                                            BD.modificarLineaPedido(idPedido, idProducto, cantidad);
-
-                                                                        } catch(Exception e) {
-                                                                            System.out.println(ROJO + e.getMessage() + RESET);
-                                                                            error = true;
-                                                                        }
-                                                                    } while(error);
-                                                                } else {
-                                                                    System.out.println(ROJO + "\n\tIntroduce una opción válida" + RESET);
-                                                                    error = true;
-                                                                }
-                                                            } while(error);
-
-                                                        } else {
-                                                            pedido = BD.modificarPedido(pedido, dato);
-                                                            error = false;
-                                                        }
                                                         System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
                                                         sc.nextLine();
 
@@ -677,24 +651,20 @@ public class Stockerty {
                                                     error = true;
                                                 }
                                             } while(error);
-                                             */
                                             break;
 
                                         case 4: 
                                             nuevaPantalla();
                                             System.out.println(VERDE + "----------------------------------------------");
                                             System.out.println("\t\tVER ENTRADA");
-                                            System.out.println("----------------------------------------------" + RESET);
+                                            System.out.println("----------------------------------------------");
 
-                                            /* 
                                             do {
                                                 try {
-                                                    System.out.print(VERDE + "\n Introduce el pedido que quieres mostrar: " + RESET);
-                                                    idPedido = Integer.parseInt(sc.nextLine());
+                                                    System.out.print(VERDE + "\n Introduce el Nº de pedido del que quieres mostrar la entrada: " + RESET);
+                                                    int pedido = Integer.parseInt(sc.nextLine());
 
-                                                    Pedido pedido = BD.mostrarPedido(idPedido);
-
-                                                    List<LineaPedido> contenido = BD.mostrarLineasPedido(idPedido);
+                                                    entrada = BD.mostrarEntrada(pedido);
                                                     
                                                     error = false;
 
@@ -706,7 +676,6 @@ public class Stockerty {
                                                     error = true;
                                                 }
                                             } while(error);
-                                             */
                                             break;
 
                                         case 5:
@@ -732,7 +701,7 @@ public class Stockerty {
                             System.out.println("==============================================");
 
                             try {
-                                System.out.println(VERDE + "\n\t1-ALBARÁN DE SALIDA");
+                                System.out.println("\n\t1-ALBARÁN DE SALIDA");
                                 System.out.println("\n\t2-ANULAR SALIDA");
                                 System.out.println("\n\t3-MODIFICAR SALIDA");
                                 System.out.println("\n\t4-VER SALIDA");
@@ -759,50 +728,105 @@ public class Stockerty {
                                             nuevaPantalla();
                                             System.out.println(VERDE + "----------------------------------------------");
                                             System.out.println("\t\tALBARÁN DE SALIDA");
-                                            System.out.println("----------------------------------------------" + RESET);
+                                            System.out.println("----------------------------------------------");
                                             
-                                            /* 
-                                            LineaPedido lineaPedido = null;
-                                            Pedido nuevoPedido = new Pedido("ls", usuarioActual.getId());
-                                            int idPedido = 0;
+                                            long idSalida = 1L;
+                                            Salida salida = new Salida(0, 0, 0, 0, 0, 0, "X", usuarioActual.getId());
 
                                             do{
                                                 try {
-                                                    System.out.println("\n Introduce los datos del nuevo pedido");
+                                                    System.out.println(VERDE + "\n Introduce los datos de expedición de mercancía");
 
-                                                    System.out.print("\n Tipo de pedido (ls/pc): " + RESET);
-                                                    nuevoPedido.setTipo(sc.nextLine().toLowerCase());
+                                                    System.out.print("\n Nº Pedido: " + RESET);
+                                                    int pedido = Integer.parseInt(sc.nextLine());
+
+                                                    salida.setIdPedido(pedido);
 
                                                     error = false;
 
-                                                    idPedido = BD.insertarPedido(nuevoPedido);
-                                                    nuevaPantalla();
-
                                                     do{
                                                         try {
-                                                            System.out.print(VERDE + "\n Producto: " + RESET);
-                                                            int nuevoProducto = Integer.parseInt(sc.nextLine());
+                                                            System.out.print(VERDE + "\n ID Agencia: " + RESET);
+                                                            int agencia = Integer.parseInt(sc.nextLine());
+
+                                                            salida.setIdAgencia(agencia);
 
                                                             error = false;
 
-                                                            int cantidad = 0;
-
                                                             do{
                                                                 try {
-                                                                    System.out.println(VERDE + "\n Cantidad: " + RESET);
-                                                                    cantidad = Integer.parseInt(sc.nextLine());
+                                                                    System.out.print(VERDE + "\n Nº Albarán: " + RESET);
+                                                                    int albaran = Integer.parseInt(sc.nextLine());
+
+                                                                    salida.setNumAlbaran(albaran);
 
                                                                     error = false;
+
+                                                                    do{
+                                                                        try {
+                                                                            System.out.print(VERDE + "\n Nº Expedición: " + RESET);
+                                                                            int expedicion = Integer.parseInt(sc.nextLine());
+
+                                                                            salida.setNumExpedicion(expedicion);
+
+                                                                            error = false;
+
+                                                                            do{
+                                                                                try {
+                                                                                    System.out.print(VERDE + "\n Bultos: " + RESET);
+                                                                                    int bultos = Integer.parseInt(sc.nextLine());
+
+                                                                                    salida.setBultos(bultos);
+
+                                                                                    error = false;
+
+                                                                                    do{
+                                                                                        try {
+                                                                                            System.out.print(VERDE + "\n Palets: " + RESET);
+                                                                                            int palets = Integer.parseInt(sc.nextLine());
+
+                                                                                            salida.setPalets(palets);
+
+                                                                                            error = false;
+
+                                                                                            do{
+                                                                                                try {
+                                                                                                    System.out.print(VERDE + "\n Observaciones: " + RESET);
+                                                                                                    String observaciones = sc.nextLine();
+
+                                                                                                    salida.setObservaciones(observaciones);
+
+                                                                                                    error = false;
+
+                                                                                                } catch(Exception e) {
+                                                                                                    System.out.println(ROJO + e.getMessage() + RESET);
+                                                                                                    error = true;
+                                                                                                }
+                                                                                            } while(error);
+
+                                                                                        } catch(Exception e) {
+                                                                                            System.out.println(ROJO + e.getMessage() + RESET);
+                                                                                            error = true;
+                                                                                        }
+                                                                                    } while(error);
+
+                                                                                } catch(Exception e) {
+                                                                                    System.out.println(ROJO + e.getMessage() + RESET);
+                                                                                    error = true;
+                                                                                }
+                                                                            } while(error);
+
+                                                                        } catch(Exception e) {
+                                                                            System.out.println(ROJO + e.getMessage() + RESET);
+                                                                            error = true;
+                                                                        }
+                                                                    } while(error);
 
                                                                 } catch(Exception e) {
                                                                     System.out.println(ROJO + e.getMessage() + RESET);
                                                                     error = true;
                                                                 }
                                                             } while(error);
-
-                                                            lineaPedido = new LineaPedido(idPedido, nuevoProducto, cantidad);
-                                                            
-                                                            long idLineaPedido = BD.insertarLineaPedido(lineaPedido);
 
                                                         } catch(Exception e) {
                                                             System.out.println(ROJO + e.getMessage() + RESET);
@@ -816,9 +840,11 @@ public class Stockerty {
                                                 }
                                             } while(error);
 
-                                            System.out.println(VERDE + "\n\t¡Pedido creado! Número de pedido: " + RESET + idPedido);
-                                            List<LineaPedido> contenidoPedido = BD.mostrarLineasPedido(idPedido);
-                                            */
+                                            salida.setFecha(LocalDateTime.now());
+
+                                            idSalida = BD.insertarSalida(salida);
+
+                                            System.out.println(VERDE + "\n\t¡Entrada creada! Número de recepción: " + RESET + idSalida);
                                             break;
 
                                         case 2:
@@ -826,22 +852,20 @@ public class Stockerty {
                                             nuevaPantalla();
                                             System.out.println(VERDE + "----------------------------------------------");
                                             System.out.println("\t\tANULAR SALIDA");
-                                            System.out.println("----------------------------------------------" + RESET);
-
-                                            /* 
+                                            System.out.println("----------------------------------------------");
+ 
                                             do {
                                                 try {
-                                                    System.out.print(VERDE + "\n Introduce el número de pedido que quieres anular: " + RESET);
-                                                    idPedido = Integer.parseInt(sc.nextLine());
+                                                    System.out.print(VERDE + "\n Introduce el número de pedido del que quieres anular la expedición: " + RESET);
+                                                    int pedidoSalida = Integer.parseInt(sc.nextLine());
 
-                                                    Pedido pedido = BD.mostrarPedido(idPedido);
-                                                    contenidoPedido = BD.mostrarLineasPedido(idPedido);
+                                                    Salida salidaElegida = BD.mostrarSalida(pedidoSalida);
 
-                                                    System.out.print(VERDE + "\n ¿Anular el pedido " + pedido.getTipo().toUpperCase() + " " + pedido.getId() + " " + pedido.getEstado() + " de la base de datos? s/n: " + RESET);
+                                                    System.out.print(VERDE + "\n ¿Anular la salida del pedido " + salidaElegida.getIdPedido() + " con Nº de Expedición: " + salidaElegida.getNumExpedicion() + " de la base de datos? s/n: " + RESET);
                                                     String validar = sc.nextLine().toLowerCase();
 
                                                     if(validar.equals("s")) {
-                                                        pedido = BD.anularPedido(pedido);
+                                                        BD.anularSalida(salidaElegida);
                                                         error = false;
 
                                                         if(opcion == 0) {
@@ -859,125 +883,28 @@ public class Stockerty {
                                                     error = true;
                                                 }
                                             } while(error);
-                                             */
                                             break;
                                     
                                         case 3:
                                             nuevaPantalla();
                                             System.out.println(VERDE + "----------------------------------------------");
                                             System.out.println("\t\tMODIFICAR SALIDA");
-                                            System.out.println("----------------------------------------------" + RESET);
-
-                                            /* 
+                                            System.out.println("----------------------------------------------");
+ 
                                             do {
                                                 try {
-                                                    System.out.print(VERDE + "\n Introduce el pedido que quieres modificar: " + RESET);
-                                                    idPedido = Integer.parseInt(sc.nextLine());
+                                                    System.out.print(VERDE + "\n Introduce el Nº de pedido del que quieres modificar la salida: " + RESET);
+                                                    int pedido = Integer.parseInt(sc.nextLine());
 
-                                                    Pedido pedido = BD.mostrarPedido(idPedido);
-                                                    List<LineaPedido> contenido = BD.mostrarLineasPedido(idPedido);
+                                                    salida = BD.mostrarSalida(pedido);
 
                                                     do {
                                                         System.out.print(VERDE + "\n ¿Qué dato quieres modificar?: " + RESET);
                                                         String dato = sc.nextLine().toLowerCase();
 
-                                                        if (dato.equals("contenido")) {
+                                                        salida = BD.modificarSalida(salida, dato);
+                                                        error = false;
 
-                                                            do {
-                                                                System.out.print(VERDE + "\n ¿Añadir línea (A), Borrar línea (B) o Modificar cantidad (M)?: " + RESET);
-                                                                String accion = sc.nextLine();
-
-                                                                if (accion.toLowerCase().equals("a")) {
-                                                                    do{
-                                                                        try {
-                                                                            System.out.print(VERDE + "\n Producto: " + RESET);
-                                                                            int nuevoProducto = Integer.parseInt(sc.nextLine());
-
-                                                                            error = false;
-
-                                                                            int cantidad = 0;
-
-                                                                            do{
-                                                                                try {
-                                                                                    System.out.println(VERDE + "\n Cantidad: " + RESET);
-                                                                                    cantidad = Integer.parseInt(sc.nextLine());
-
-                                                                                    error = false;
-
-                                                                                } catch(Exception e) {
-                                                                                    System.out.println(ROJO + e.getMessage() + RESET);
-                                                                                    error = true;
-                                                                                }
-                                                                            } while(error);
-
-                                                                            lineaPedido = new LineaPedido(idPedido, nuevoProducto, cantidad);
-                                                                            
-                                                                            long idLineaPedido = BD.insertarLineaPedido(lineaPedido);
-
-                                                                        } catch(Exception e) {
-                                                                            System.out.println(ROJO + e.getMessage() + RESET);
-                                                                            error = true;
-                                                                        }
-                                                                    } while(error);
-
-                                                                } else if (accion.toLowerCase().equals("b")) {
-                                                                    do{
-                                                                        try {
-                                                                            System.out.print(VERDE + "\n Producto: " + RESET);
-                                                                            int idProducto = Integer.parseInt(sc.nextLine());
-
-                                                                            error = false;
-
-                                                                            int cantidad = 0;
-                                                                            
-                                                                            BD.borrarLineaPedido(idPedido, idProducto);
-
-                                                                        } catch(Exception e) {
-                                                                            System.out.println(ROJO + e.getMessage() + RESET);
-                                                                            error = true;
-                                                                        }
-                                                                    } while(error);
-
-                                                                } else if (accion.toLowerCase().equals("m")) {
-                                                                    do{
-                                                                        try {
-                                                                            System.out.print(VERDE + "\n Producto: " + RESET);
-                                                                            int idProducto = Integer.parseInt(sc.nextLine());
-
-                                                                            error = false;
-
-                                                                            int cantidad = 0;
-
-                                                                            do{
-                                                                                try {
-                                                                                    System.out.println(VERDE + "\n Cantidad: " + RESET);
-                                                                                    cantidad = Integer.parseInt(sc.nextLine());
-
-                                                                                    error = false;
-
-                                                                                } catch(Exception e) {
-                                                                                    System.out.println(ROJO + e.getMessage() + RESET);
-                                                                                    error = true;
-                                                                                }
-                                                                            } while(error);
-
-                                                                            BD.modificarLineaPedido(idPedido, idProducto, cantidad);
-
-                                                                        } catch(Exception e) {
-                                                                            System.out.println(ROJO + e.getMessage() + RESET);
-                                                                            error = true;
-                                                                        }
-                                                                    } while(error);
-                                                                } else {
-                                                                    System.out.println(ROJO + "\n\tIntroduce una opción válida" + RESET);
-                                                                    error = true;
-                                                                }
-                                                            } while(error);
-
-                                                        } else {
-                                                            pedido = BD.modificarPedido(pedido, dato);
-                                                            error = false;
-                                                        }
                                                         System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
                                                         sc.nextLine();
 
@@ -988,24 +915,20 @@ public class Stockerty {
                                                     error = true;
                                                 }
                                             } while(error);
-                                             */
                                             break;
 
                                         case 4: 
                                             nuevaPantalla();
                                             System.out.println(VERDE + "----------------------------------------------");
                                             System.out.println("\t\tVER SALIDA");
-                                            System.out.println("----------------------------------------------" + RESET);
+                                            System.out.println("----------------------------------------------");
 
-                                            /* 
                                             do {
                                                 try {
-                                                    System.out.print(VERDE + "\n Introduce el pedido que quieres mostrar: " + RESET);
-                                                    idPedido = Integer.parseInt(sc.nextLine());
+                                                    System.out.print(VERDE + "\n Introduce el Nº de pedido del que quieres mostrar la salida: " + RESET);
+                                                    int pedido = Integer.parseInt(sc.nextLine());
 
-                                                    Pedido pedido = BD.mostrarPedido(idPedido);
-
-                                                    List<LineaPedido> contenido = BD.mostrarLineasPedido(idPedido);
+                                                    salida = BD.mostrarSalida(pedido);
                                                     
                                                     error = false;
 
@@ -1017,7 +940,6 @@ public class Stockerty {
                                                     error = true;
                                                 }
                                             } while(error);
-                                            */
                                             break;
 
                                         case 5:
@@ -1099,7 +1021,7 @@ public class Stockerty {
 
                                                             do{
                                                                 try {
-                                                                    System.out.println(VERDE + "\n Cantidad: " + RESET);
+                                                                    System.out.print(VERDE + "\n Cantidad: " + RESET);
                                                                     cantidad = Integer.parseInt(sc.nextLine());
 
                                                                     error = false;
@@ -1205,7 +1127,7 @@ public class Stockerty {
 
                                                                             do{
                                                                                 try {
-                                                                                    System.out.println(VERDE + "\n Cantidad: " + RESET);
+                                                                                    System.out.print(VERDE + "\n Cantidad: " + RESET);
                                                                                     cantidad = Integer.parseInt(sc.nextLine());
 
                                                                                     error = false;
@@ -1256,7 +1178,7 @@ public class Stockerty {
 
                                                                             do{
                                                                                 try {
-                                                                                    System.out.println(VERDE + "\n Cantidad: " + RESET);
+                                                                                    System.out.print(VERDE + "\n Cantidad: " + RESET);
                                                                                     cantidad = Integer.parseInt(sc.nextLine());
 
                                                                                     error = false;
@@ -1712,8 +1634,6 @@ public class Stockerty {
                                                                     try {
                                                                         System.out.print(VERDE + "\n Introduce el nombre de la ubicación que quieres modificar: " + RESET);
                                                                         String nombreUbicacion = sc.nextLine();
-
-
 
                                                                         // borrarPasillo(idPasillo);
                                                                         error = false;
