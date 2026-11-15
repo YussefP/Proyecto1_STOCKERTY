@@ -388,9 +388,9 @@ public class Stockerty {
                 System.out.println(VERDE + "==============================================");
                 System.out.println("\t\tMENU PRINCIPAL");
                 System.out.println("==============================================");
-                System.out.println(GRIS_OSCURO + "\n\t1-RECEPCIÓN");
+                System.out.println("\n\t1-RECEPCIÓN");
                 System.out.println("\n\t2-EXPEDICIÓN");
-                System.out.println(VERDE + "\n\t3-PEDIDOS");
+                System.out.println("\n\t3-PEDIDOS");
                 System.out.println("\n\t4-ALMACÉN");
 
                 if(usuarioActual.getTipo().equals("gestor")) {
@@ -414,11 +414,625 @@ public class Stockerty {
                 }
                 switch (opcion) {
                     case 1:
-                        opcion = 0;
+                        do {
+                            nuevaPantalla();
+                            System.out.println(VERDE + "==============================================");
+                            System.out.println("\t\tRECEPCIÓN");
+                            System.out.println("==============================================");
+
+                            try {
+                                System.out.println(VERDE + "\n\t1-ALBARÁN DE ENTRADA");
+                                System.out.println("\n\t2-ANULAR ENTRADA");
+                                System.out.println("\n\t3-MODIFICAR ENTRADA");
+                                System.out.println("\n\t4-VER ENTRADA");
+                                System.out.println("\n\t5-SALIR");
+                                System.out.println("\n <- Volver [0]");
+                                System.out.println("==============================================");
+
+                                System.out.print("\n Introduce una opción: " + RESET);
+                                
+                                opcion = Integer.parseInt(sc.nextLine());
+
+                                if(opcion < 1 || opcion > 5) {
+                                    if(opcion == 0) {
+                                        nuevaPantalla();
+                                        break;
+                                    } else {
+                                        nuevaPantalla();
+                                        System.out.println(ROJO + "\n\tError, introduce una opción válida" + RESET);
+                                    }
+                                    
+                                } else {
+                                    switch (opcion) {
+                                        case 1:
+                                            nuevaPantalla();
+                                            System.out.println(VERDE + "----------------------------------------------");
+                                            System.out.println("\t\tALBARÁN DE ENTRADA");
+                                            System.out.println("----------------------------------------------" + RESET);
+                                            
+                                            /* 
+                                            LineaPedido lineaPedido = null;
+                                            Pedido nuevoPedido = new Pedido("ls", usuarioActual.getId());
+                                            int idPedido = 0;
+
+                                            do{
+                                                try {
+                                                    System.out.println("\n Introduce los datos del nuevo pedido");
+
+                                                    System.out.print("\n Tipo de pedido (ls/pc): " + RESET);
+                                                    nuevoPedido.setTipo(sc.nextLine().toLowerCase());
+
+                                                    error = false;
+
+                                                    idPedido = BD.insertarPedido(nuevoPedido);
+                                                    nuevaPantalla();
+
+                                                    do{
+                                                        try {
+                                                            System.out.print(VERDE + "\n Producto: " + RESET);
+                                                            int nuevoProducto = Integer.parseInt(sc.nextLine());
+
+                                                            error = false;
+
+                                                            int cantidad = 0;
+
+                                                            do{
+                                                                try {
+                                                                    System.out.println(VERDE + "\n Cantidad: " + RESET);
+                                                                    cantidad = Integer.parseInt(sc.nextLine());
+
+                                                                    error = false;
+
+                                                                } catch(Exception e) {
+                                                                    System.out.println(ROJO + e.getMessage() + RESET);
+                                                                    error = true;
+                                                                }
+                                                            } while(error);
+
+                                                            lineaPedido = new LineaPedido(idPedido, nuevoProducto, cantidad);
+                                                            
+                                                            long idLineaPedido = BD.insertarLineaPedido(lineaPedido);
+
+                                                        } catch(Exception e) {
+                                                            System.out.println(ROJO + e.getMessage() + RESET);
+                                                            error = true;
+                                                        }
+                                                    } while(error);
+
+                                                } catch(Exception e) {
+                                                    System.out.println(ROJO + e.getMessage() + RESET);
+                                                    error = true;
+                                                }
+                                            } while(error);
+
+                                            System.out.println(VERDE + "\n\t¡Pedido creado! Número de pedido: " + RESET + idPedido);
+                                            List<LineaPedido> contenidoPedido = BD.mostrarLineasPedido(idPedido);
+                                            */
+                                            break;
+
+                                        case 2:
+                                            
+                                            nuevaPantalla();
+                                            System.out.println(VERDE + "----------------------------------------------");
+                                            System.out.println("\t\tANULAR ENTRADA");
+                                            System.out.println("----------------------------------------------" + RESET);
+
+                                            /* 
+                                            do {
+                                                try {
+                                                    System.out.print(VERDE + "\n Introduce el número de pedido que quieres anular: " + RESET);
+                                                    idPedido = Integer.parseInt(sc.nextLine());
+
+                                                    Pedido pedido = BD.mostrarPedido(idPedido);
+                                                    contenidoPedido = BD.mostrarLineasPedido(idPedido);
+
+                                                    System.out.print(VERDE + "\n ¿Anular el pedido " + pedido.getTipo().toUpperCase() + " " + pedido.getId() + " " + pedido.getEstado() + " de la base de datos? s/n: " + RESET);
+                                                    String validar = sc.nextLine().toLowerCase();
+
+                                                    if(validar.equals("s")) {
+                                                        pedido = BD.anularPedido(pedido);
+                                                        error = false;
+
+                                                        if(opcion == 0) {
+                                                            nuevaPantalla();
+                                                        } else {
+                                                            System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
+                                                            sc.nextLine();
+                                                        }
+                                                    } else {
+                                                        opcion = 0;
+                                                        nuevaPantalla();
+                                                    }
+                                                } catch (Exception e) {
+                                                    System.out.println(ROJO + "\n\tError, se necesita un ID numérico" + RESET);
+                                                    error = true;
+                                                }
+                                            } while(error);
+                                             */
+                                            break;
+                                    
+                                        case 3:
+                                            nuevaPantalla();
+                                            System.out.println(VERDE + "----------------------------------------------");
+                                            System.out.println("\t\tMODIFICAR ENTRADA");
+                                            System.out.println("----------------------------------------------" + RESET);
+
+                                            /* 
+                                            do {
+                                                try {
+                                                    System.out.print(VERDE + "\n Introduce el pedido que quieres modificar: " + RESET);
+                                                    idPedido = Integer.parseInt(sc.nextLine());
+
+                                                    Pedido pedido = BD.mostrarPedido(idPedido);
+                                                    List<LineaPedido> contenido = BD.mostrarLineasPedido(idPedido);
+
+                                                    do {
+                                                        System.out.print(VERDE + "\n ¿Qué dato quieres modificar?: " + RESET);
+                                                        String dato = sc.nextLine().toLowerCase();
+
+                                                        if (dato.equals("contenido")) {
+
+                                                            do {
+                                                                System.out.print(VERDE + "\n ¿Añadir línea (A), Borrar línea (B) o Modificar cantidad (M)?: " + RESET);
+                                                                String accion = sc.nextLine();
+
+                                                                if (accion.toLowerCase().equals("a")) {
+                                                                    do{
+                                                                        try {
+                                                                            System.out.print(VERDE + "\n Producto: " + RESET);
+                                                                            int nuevoProducto = Integer.parseInt(sc.nextLine());
+
+                                                                            error = false;
+
+                                                                            int cantidad = 0;
+
+                                                                            do{
+                                                                                try {
+                                                                                    System.out.println(VERDE + "\n Cantidad: " + RESET);
+                                                                                    cantidad = Integer.parseInt(sc.nextLine());
+
+                                                                                    error = false;
+
+                                                                                } catch(Exception e) {
+                                                                                    System.out.println(ROJO + e.getMessage() + RESET);
+                                                                                    error = true;
+                                                                                }
+                                                                            } while(error);
+
+                                                                            lineaPedido = new LineaPedido(idPedido, nuevoProducto, cantidad);
+                                                                            
+                                                                            long idLineaPedido = BD.insertarLineaPedido(lineaPedido);
+
+                                                                        } catch(Exception e) {
+                                                                            System.out.println(ROJO + e.getMessage() + RESET);
+                                                                            error = true;
+                                                                        }
+                                                                    } while(error);
+
+                                                                } else if (accion.toLowerCase().equals("b")) {
+                                                                    do{
+                                                                        try {
+                                                                            System.out.print(VERDE + "\n Producto: " + RESET);
+                                                                            int idProducto = Integer.parseInt(sc.nextLine());
+
+                                                                            error = false;
+
+                                                                            int cantidad = 0;
+                                                                            
+                                                                            BD.borrarLineaPedido(idPedido, idProducto);
+
+                                                                        } catch(Exception e) {
+                                                                            System.out.println(ROJO + e.getMessage() + RESET);
+                                                                            error = true;
+                                                                        }
+                                                                    } while(error);
+
+                                                                } else if (accion.toLowerCase().equals("m")) {
+                                                                    do{
+                                                                        try {
+                                                                            System.out.print(VERDE + "\n Producto: " + RESET);
+                                                                            int idProducto = Integer.parseInt(sc.nextLine());
+
+                                                                            error = false;
+
+                                                                            int cantidad = 0;
+
+                                                                            do{
+                                                                                try {
+                                                                                    System.out.println(VERDE + "\n Cantidad: " + RESET);
+                                                                                    cantidad = Integer.parseInt(sc.nextLine());
+
+                                                                                    error = false;
+
+                                                                                } catch(Exception e) {
+                                                                                    System.out.println(ROJO + e.getMessage() + RESET);
+                                                                                    error = true;
+                                                                                }
+                                                                            } while(error);
+
+                                                                            BD.modificarLineaPedido(idPedido, idProducto, cantidad);
+
+                                                                        } catch(Exception e) {
+                                                                            System.out.println(ROJO + e.getMessage() + RESET);
+                                                                            error = true;
+                                                                        }
+                                                                    } while(error);
+                                                                } else {
+                                                                    System.out.println(ROJO + "\n\tIntroduce una opción válida" + RESET);
+                                                                    error = true;
+                                                                }
+                                                            } while(error);
+
+                                                        } else {
+                                                            pedido = BD.modificarPedido(pedido, dato);
+                                                            error = false;
+                                                        }
+                                                        System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
+                                                        sc.nextLine();
+
+                                                    } while(error);
+
+                                                } catch (Exception e) {
+                                                    System.out.println(ROJO + "\n\tError, se necesita un ID numérico" + RESET);
+                                                    error = true;
+                                                }
+                                            } while(error);
+                                             */
+                                            break;
+
+                                        case 4: 
+                                            nuevaPantalla();
+                                            System.out.println(VERDE + "----------------------------------------------");
+                                            System.out.println("\t\tVER ENTRADA");
+                                            System.out.println("----------------------------------------------" + RESET);
+
+                                            /* 
+                                            do {
+                                                try {
+                                                    System.out.print(VERDE + "\n Introduce el pedido que quieres mostrar: " + RESET);
+                                                    idPedido = Integer.parseInt(sc.nextLine());
+
+                                                    Pedido pedido = BD.mostrarPedido(idPedido);
+
+                                                    List<LineaPedido> contenido = BD.mostrarLineasPedido(idPedido);
+                                                    
+                                                    error = false;
+
+                                                    System.out.println(VERDE + "\n\n Pulsa ENTER para continuar..." + RESET);
+                                                    sc.nextLine();
+
+                                                } catch (Exception e) {
+                                                    System.out.println(ROJO + "\n\t" + e.getMessage() + RESET);
+                                                    error = true;
+                                                }
+                                            } while(error);
+                                             */
+                                            break;
+
+                                        case 5:
+                                            salir();
+
+                                        default:
+                                            break;
+                                    }
+                                }
+                            } catch(Exception e) {
+                                nuevaPantalla();
+                                System.out.println(ROJO + "\n\tError, introduce un número [1-5]" + RESET);
+                            }
+                            if(opcion == 0) break;
+                        } while(opcion > 0 || opcion < 6);
                         break;
 
                     case 2:
-                        opcion = 0;
+                        do {
+                            nuevaPantalla();
+                            System.out.println(VERDE + "==============================================");
+                            System.out.println("\t\tEXPEDICIÓN");
+                            System.out.println("==============================================");
+
+                            try {
+                                System.out.println(VERDE + "\n\t1-ALBARÁN DE SALIDA");
+                                System.out.println("\n\t2-ANULAR SALIDA");
+                                System.out.println("\n\t3-MODIFICAR SALIDA");
+                                System.out.println("\n\t4-VER SALIDA");
+                                System.out.println("\n\t5-SALIR");
+                                System.out.println("\n <- Volver [0]");
+                                System.out.println("==============================================");
+
+                                System.out.print("\n Introduce una opción: " + RESET);
+                                
+                                opcion = Integer.parseInt(sc.nextLine());
+
+                                if(opcion < 1 || opcion > 5) {
+                                    if(opcion == 0) {
+                                        nuevaPantalla();
+                                        break;
+                                    } else {
+                                        nuevaPantalla();
+                                        System.out.println(ROJO + "\n\tError, introduce una opción válida" + RESET);
+                                    }
+                                    
+                                } else {
+                                    switch (opcion) {
+                                        case 1:
+                                            nuevaPantalla();
+                                            System.out.println(VERDE + "----------------------------------------------");
+                                            System.out.println("\t\tALBARÁN DE SALIDA");
+                                            System.out.println("----------------------------------------------" + RESET);
+                                            
+                                            /* 
+                                            LineaPedido lineaPedido = null;
+                                            Pedido nuevoPedido = new Pedido("ls", usuarioActual.getId());
+                                            int idPedido = 0;
+
+                                            do{
+                                                try {
+                                                    System.out.println("\n Introduce los datos del nuevo pedido");
+
+                                                    System.out.print("\n Tipo de pedido (ls/pc): " + RESET);
+                                                    nuevoPedido.setTipo(sc.nextLine().toLowerCase());
+
+                                                    error = false;
+
+                                                    idPedido = BD.insertarPedido(nuevoPedido);
+                                                    nuevaPantalla();
+
+                                                    do{
+                                                        try {
+                                                            System.out.print(VERDE + "\n Producto: " + RESET);
+                                                            int nuevoProducto = Integer.parseInt(sc.nextLine());
+
+                                                            error = false;
+
+                                                            int cantidad = 0;
+
+                                                            do{
+                                                                try {
+                                                                    System.out.println(VERDE + "\n Cantidad: " + RESET);
+                                                                    cantidad = Integer.parseInt(sc.nextLine());
+
+                                                                    error = false;
+
+                                                                } catch(Exception e) {
+                                                                    System.out.println(ROJO + e.getMessage() + RESET);
+                                                                    error = true;
+                                                                }
+                                                            } while(error);
+
+                                                            lineaPedido = new LineaPedido(idPedido, nuevoProducto, cantidad);
+                                                            
+                                                            long idLineaPedido = BD.insertarLineaPedido(lineaPedido);
+
+                                                        } catch(Exception e) {
+                                                            System.out.println(ROJO + e.getMessage() + RESET);
+                                                            error = true;
+                                                        }
+                                                    } while(error);
+
+                                                } catch(Exception e) {
+                                                    System.out.println(ROJO + e.getMessage() + RESET);
+                                                    error = true;
+                                                }
+                                            } while(error);
+
+                                            System.out.println(VERDE + "\n\t¡Pedido creado! Número de pedido: " + RESET + idPedido);
+                                            List<LineaPedido> contenidoPedido = BD.mostrarLineasPedido(idPedido);
+                                            */
+                                            break;
+
+                                        case 2:
+                                            
+                                            nuevaPantalla();
+                                            System.out.println(VERDE + "----------------------------------------------");
+                                            System.out.println("\t\tANULAR SALIDA");
+                                            System.out.println("----------------------------------------------" + RESET);
+
+                                            /* 
+                                            do {
+                                                try {
+                                                    System.out.print(VERDE + "\n Introduce el número de pedido que quieres anular: " + RESET);
+                                                    idPedido = Integer.parseInt(sc.nextLine());
+
+                                                    Pedido pedido = BD.mostrarPedido(idPedido);
+                                                    contenidoPedido = BD.mostrarLineasPedido(idPedido);
+
+                                                    System.out.print(VERDE + "\n ¿Anular el pedido " + pedido.getTipo().toUpperCase() + " " + pedido.getId() + " " + pedido.getEstado() + " de la base de datos? s/n: " + RESET);
+                                                    String validar = sc.nextLine().toLowerCase();
+
+                                                    if(validar.equals("s")) {
+                                                        pedido = BD.anularPedido(pedido);
+                                                        error = false;
+
+                                                        if(opcion == 0) {
+                                                            nuevaPantalla();
+                                                        } else {
+                                                            System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
+                                                            sc.nextLine();
+                                                        }
+                                                    } else {
+                                                        opcion = 0;
+                                                        nuevaPantalla();
+                                                    }
+                                                } catch (Exception e) {
+                                                    System.out.println(ROJO + "\n\tError, se necesita un ID numérico" + RESET);
+                                                    error = true;
+                                                }
+                                            } while(error);
+                                             */
+                                            break;
+                                    
+                                        case 3:
+                                            nuevaPantalla();
+                                            System.out.println(VERDE + "----------------------------------------------");
+                                            System.out.println("\t\tMODIFICAR SALIDA");
+                                            System.out.println("----------------------------------------------" + RESET);
+
+                                            /* 
+                                            do {
+                                                try {
+                                                    System.out.print(VERDE + "\n Introduce el pedido que quieres modificar: " + RESET);
+                                                    idPedido = Integer.parseInt(sc.nextLine());
+
+                                                    Pedido pedido = BD.mostrarPedido(idPedido);
+                                                    List<LineaPedido> contenido = BD.mostrarLineasPedido(idPedido);
+
+                                                    do {
+                                                        System.out.print(VERDE + "\n ¿Qué dato quieres modificar?: " + RESET);
+                                                        String dato = sc.nextLine().toLowerCase();
+
+                                                        if (dato.equals("contenido")) {
+
+                                                            do {
+                                                                System.out.print(VERDE + "\n ¿Añadir línea (A), Borrar línea (B) o Modificar cantidad (M)?: " + RESET);
+                                                                String accion = sc.nextLine();
+
+                                                                if (accion.toLowerCase().equals("a")) {
+                                                                    do{
+                                                                        try {
+                                                                            System.out.print(VERDE + "\n Producto: " + RESET);
+                                                                            int nuevoProducto = Integer.parseInt(sc.nextLine());
+
+                                                                            error = false;
+
+                                                                            int cantidad = 0;
+
+                                                                            do{
+                                                                                try {
+                                                                                    System.out.println(VERDE + "\n Cantidad: " + RESET);
+                                                                                    cantidad = Integer.parseInt(sc.nextLine());
+
+                                                                                    error = false;
+
+                                                                                } catch(Exception e) {
+                                                                                    System.out.println(ROJO + e.getMessage() + RESET);
+                                                                                    error = true;
+                                                                                }
+                                                                            } while(error);
+
+                                                                            lineaPedido = new LineaPedido(idPedido, nuevoProducto, cantidad);
+                                                                            
+                                                                            long idLineaPedido = BD.insertarLineaPedido(lineaPedido);
+
+                                                                        } catch(Exception e) {
+                                                                            System.out.println(ROJO + e.getMessage() + RESET);
+                                                                            error = true;
+                                                                        }
+                                                                    } while(error);
+
+                                                                } else if (accion.toLowerCase().equals("b")) {
+                                                                    do{
+                                                                        try {
+                                                                            System.out.print(VERDE + "\n Producto: " + RESET);
+                                                                            int idProducto = Integer.parseInt(sc.nextLine());
+
+                                                                            error = false;
+
+                                                                            int cantidad = 0;
+                                                                            
+                                                                            BD.borrarLineaPedido(idPedido, idProducto);
+
+                                                                        } catch(Exception e) {
+                                                                            System.out.println(ROJO + e.getMessage() + RESET);
+                                                                            error = true;
+                                                                        }
+                                                                    } while(error);
+
+                                                                } else if (accion.toLowerCase().equals("m")) {
+                                                                    do{
+                                                                        try {
+                                                                            System.out.print(VERDE + "\n Producto: " + RESET);
+                                                                            int idProducto = Integer.parseInt(sc.nextLine());
+
+                                                                            error = false;
+
+                                                                            int cantidad = 0;
+
+                                                                            do{
+                                                                                try {
+                                                                                    System.out.println(VERDE + "\n Cantidad: " + RESET);
+                                                                                    cantidad = Integer.parseInt(sc.nextLine());
+
+                                                                                    error = false;
+
+                                                                                } catch(Exception e) {
+                                                                                    System.out.println(ROJO + e.getMessage() + RESET);
+                                                                                    error = true;
+                                                                                }
+                                                                            } while(error);
+
+                                                                            BD.modificarLineaPedido(idPedido, idProducto, cantidad);
+
+                                                                        } catch(Exception e) {
+                                                                            System.out.println(ROJO + e.getMessage() + RESET);
+                                                                            error = true;
+                                                                        }
+                                                                    } while(error);
+                                                                } else {
+                                                                    System.out.println(ROJO + "\n\tIntroduce una opción válida" + RESET);
+                                                                    error = true;
+                                                                }
+                                                            } while(error);
+
+                                                        } else {
+                                                            pedido = BD.modificarPedido(pedido, dato);
+                                                            error = false;
+                                                        }
+                                                        System.out.println(VERDE + "\n Pulsa ENTER para continuar..." + RESET);
+                                                        sc.nextLine();
+
+                                                    } while(error);
+
+                                                } catch (Exception e) {
+                                                    System.out.println(ROJO + "\n\tError, se necesita un ID numérico" + RESET);
+                                                    error = true;
+                                                }
+                                            } while(error);
+                                             */
+                                            break;
+
+                                        case 4: 
+                                            nuevaPantalla();
+                                            System.out.println(VERDE + "----------------------------------------------");
+                                            System.out.println("\t\tVER SALIDA");
+                                            System.out.println("----------------------------------------------" + RESET);
+
+                                            /* 
+                                            do {
+                                                try {
+                                                    System.out.print(VERDE + "\n Introduce el pedido que quieres mostrar: " + RESET);
+                                                    idPedido = Integer.parseInt(sc.nextLine());
+
+                                                    Pedido pedido = BD.mostrarPedido(idPedido);
+
+                                                    List<LineaPedido> contenido = BD.mostrarLineasPedido(idPedido);
+                                                    
+                                                    error = false;
+
+                                                    System.out.println(VERDE + "\n\n Pulsa ENTER para continuar..." + RESET);
+                                                    sc.nextLine();
+
+                                                } catch (Exception e) {
+                                                    System.out.println(ROJO + "\n\t" + e.getMessage() + RESET);
+                                                    error = true;
+                                                }
+                                            } while(error);
+                                            */
+                                            break;
+
+                                        case 5:
+                                            salir();
+
+                                        default:
+                                            break;
+                                    }
+                                }
+                            } catch(Exception e) {
+                                nuevaPantalla();
+                                System.out.println(ROJO + "\n\tError, introduce un número [1-5]" + RESET);
+                            }
+                            if(opcion == 0) break;
+                        } while(opcion > 0 || opcion < 6);
                         break;
                 
                     case 3:
