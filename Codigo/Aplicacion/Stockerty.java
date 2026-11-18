@@ -1006,7 +1006,7 @@ public class Stockerty {
 
                                             do{
                                                 try {
-                                                    System.out.println("\n Introduce los datos del nuevo pedido");
+                                                    System.out.println(VERDE + "\n Introduce los datos del nuevo pedido");
 
                                                     System.out.print("\n Tipo de pedido (ls/pc): " + RESET);
                                                     nuevoPedido.setTipo(sc.nextLine().toLowerCase());
@@ -1016,6 +1016,7 @@ public class Stockerty {
                                                     idPedido = BD.insertarPedido(nuevoPedido);
                                                     nuevaPantalla();
 
+                                                    boolean repetir = false;
                                                     do{
                                                         try {
                                                             System.out.print(VERDE + "\n Producto: " + RESET);
@@ -1042,11 +1043,21 @@ public class Stockerty {
                                                             
                                                             long idLineaPedido = BD.insertarLineaPedido(lineaPedido);
 
+                                                            System.out.print(VERDE + "\n\t¿Añadir nueva linea? s/n: " + RESET);
+                                                            String respuesta = sc.nextLine();
+
+                                                            if(respuesta.toLowerCase().equals("s")) {
+                                                                
+                                                                repetir = true;
+                                                            } else if(respuesta.toLowerCase().equals("n")) {
+
+                                                                repetir = false;
+                                                            }
                                                         } catch(Exception e) {
                                                             System.out.println(ROJO + e.getMessage() + RESET);
                                                             error = true;
                                                         }
-                                                    } while(error);
+                                                    } while(error || repetir);
 
                                                 } catch(Exception e) {
                                                     System.out.println(ROJO + e.getMessage() + RESET);

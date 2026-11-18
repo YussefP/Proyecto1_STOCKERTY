@@ -17,6 +17,7 @@ public class LineaPedido {
         this.idPedido = idPedido;
         this.idProducto = idProducto;
         this.cantidad = cantidad;
+        this.fecha = LocalDateTime.now();
     }
 
     // Constructor 2 - Para leer una linea de pedido de la base de datos

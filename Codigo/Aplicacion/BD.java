@@ -3296,6 +3296,7 @@ public class BD {
                     }
                 }
                 contenidoPedido.add(lineaPedido);
+                System.out.println("\n");
             }   
             
         } catch(SQLException e) {
