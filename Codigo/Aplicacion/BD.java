@@ -3952,4 +3952,127 @@ public class BD {
         }
         return existe;
     }
+
+    // Manejar Stock ==========================================================================================================================================================
+
+    /**
+     * Método para sumar el stock de un producto al procesar una Entrada
+     * @param idProducto 
+     * @param cantidad 
+     * @return 
+     */
+    public static boolean sumarStockProducto(int idProducto, int cantidad) {
+
+        boolean sumar = false;
+        String sql = "UPDATE producto SET stock = stock + ? WHERE id = ?;";
+        
+        try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+            PreparedStatement ps = conexion.prepareStatement(sql)) {
+            
+            ps.setInt(1, cantidad);
+            ps.setInt(2, idProducto);
+            
+            int filas = ps.executeUpdate();
+            if (filas > 0) {
+                System.out.println(VERDE + "\n\tStock incrementado en " + cantidad + " unidades para el producto ID " + idProducto + RESET);
+                sumar = true;
+            }
+        } catch (SQLException e) {
+            System.out.println(ROJO + "\n\tError de conexión a la base de datos: " + e.getMessage() + RESET);
+        }
+        return sumar;
+    }
+
+    /**
+     * Método para restar el stock de un producto al procesar una Salida.
+     * @param idProducto
+     * @param cantidad
+     * @return
+     */
+    public static boolean restarStockProducto(int idProducto, int cantidad) {
+
+        boolean restar = false;
+
+        String sql = "SELECT stock FROM producto WHERE id = ?;";
+
+        String sql2 = "UPDATE producto SET stock = stock - ? WHERE id = ? AND stock >= ?;";
+        
+        try (Connection conexion = DriverManager.getConnection(URL, USUARIO, CLAVE)) {
+            try (PreparedStatement ps = conexion.prepareStatement(sql)) {
+
+                ps.setInt(1, idProducto);
+
+                try (ResultSet rs = ps.executeQuery()) {
+
+                    if (rs.next()) {
+
+                        int stockActual = rs.getInt("stock");
+
+                        if (stockActual < cantidad) {
+                            System.out.println(ROJO + "\n\tStock actual: " + stockActual + " | Requerido: " + cantidad + RESET);
+                        }
+                    } else {
+                        System.out.println(ROJO + "\n\tProducto " + idProducto + " no encontrado." + RESET); 
+                    }
+                }
+            }
+            try (PreparedStatement pst = conexion.prepareStatement(sql2)) {
+
+                pst.setInt(1, cantidad);
+                pst.setInt(2, idProducto);
+                pst.setInt(3, cantidad);
+                
+                int filas = pst.executeUpdate();
+
+                if (filas > 0) {
+                    System.out.println(VERDE + "\n\tStock descontado en " + cantidad + " unidades para el producto ID " + idProducto + RESET);
+                    restar = true;
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println(ROJO + "\n\tError de conexión a la base de datos: " + e.getMessage() + RESET);
+        }
+        return restar;
+    }
+
+    /**
+     * Método para actualizar el stock utilizando sumar o restar stock
+     * @param idPedido
+     * @param tipo
+     */
+    public static void actualizarStock(int idPedido, String tipo) {
+
+        boolean actualizacion = false;
+        List<LineaPedido> lineas = BD.mostrarLineasPedido(idPedido);
+
+        if(lineas == null || lineas.isEmpty()) {
+
+            System.out.println(ROJO + "\n\tError al encontar lineas en el pedido" + idPedido + RESET);
+        }
+        for(LineaPedido lp : lineas) {
+
+            int idProducto = lp.getIdProducto();
+            int cantidad = lp.getCantidad();
+
+            if(tipo.equals("sumar")) {
+
+                actualizacion = BD.sumarStockProducto(idProducto, cantidad);
+
+            } else if(tipo.equals("restar")) {
+
+                actualizacion = BD.restarStockProducto(idProducto, cantidad);
+            
+            } else {
+                System.out.println(ROJO + "\n\tEn actualizar stock solo se permiten los tipos: sumar o restar" + RESET);
+            }
+        }
+        if(actualizacion == true) {
+
+            System.out.println(VERDE + "\n\tStock actualizado!!" + RESET);
+        
+        } else {
+
+            System.out.println(ROJO + "\n\tError al actualizar el stock" + RESET);
+        }
+    }
 }

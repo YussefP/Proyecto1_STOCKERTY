@@ -580,6 +580,8 @@ public class Stockerty {
                                             BD.modificarEstadoPedido(entrada.getIdPedido(), "recepcionado");
 
                                             System.out.println(VERDE + "\n\t¡Entrada creada! Número de recepción: " + RESET + idEntrada);
+
+                                            BD.actualizarStock(entrada.getIdPedido(), "sumar");
                                             break;
 
                                         case 2:
@@ -602,6 +604,7 @@ public class Stockerty {
                                                     if(validar.equals("s")) {
                                                         BD.anularEntrada(entradaElegida);
                                                         BD.modificarEstadoPedido(entradaElegida.getIdPedido(), "pendiente");
+                                                        BD.actualizarStock(pedidoEntrada, "restar");
                                                         error = false;
 
                                                         if(opcion == 0) {
@@ -844,7 +847,9 @@ public class Stockerty {
 
                                             idSalida = BD.insertarSalida(salida);
 
-                                            System.out.println(VERDE + "\n\t¡Entrada creada! Número de recepción: " + RESET + idSalida);
+                                            System.out.println(VERDE + "\n\t¡Salida creada! Número de expedición: " + RESET + idSalida);
+
+                                            BD.actualizarStock(salida.getIdPedido(), "restar");
                                             break;
 
                                         case 2:
@@ -866,6 +871,7 @@ public class Stockerty {
 
                                                     if(validar.equals("s")) {
                                                         BD.anularSalida(salidaElegida);
+                                                        BD.actualizarStock(pedidoSalida, "sumar");
                                                         error = false;
 
                                                         if(opcion == 0) {
