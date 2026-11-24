@@ -18,6 +18,3 @@ Este proyecto se desarrolla utilizando las siguientes tecnologías:
 
 ---
 
-## Tablero Trello
-
-https://trello.com/invite/b/6ac419e797f4165692a4ce34/ATTIe29a47ba5d0d19e590135090fda136c640E492EF/stockerty 
